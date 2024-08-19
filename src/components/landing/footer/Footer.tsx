@@ -1,65 +1,104 @@
-export const Footer = () => {
+import React from "react";
+
+type FooterSectionProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+const FooterSection: React.FC<FooterSectionProps> = ({ title, children }) => (
+  <div>
+    <h3 className="text-body2 font-bold mb-4">{title}</h3>
+    {children}
+  </div>
+);
+
+type FooterLinkProps = {
+  href: string;
+  children: React.ReactNode;
+};
+
+const FooterLink: React.FC<FooterLinkProps> = ({ href, children }) => (
+  <a href={href} className="hover:text-primary-accent">
+    {children}
+  </a>
+);
+
+const CompanyInfo: React.FC = () => (
+  <ul className="text-primary-gray text-caption space-y-2">
+    {[
+      "사하라 웍스",
+      "대표: 나요한",
+      "사업자번호: 000-000-00000",
+      "통신판매업 신고번호: 000-000-00000",
+      "주소: 000-000-00000",
+      "-",
+      "이메일: info@company.com",
+      "전화번호: 02-1234-5678",
+    ].map((item, index) => (
+      <li key={index}>{item}</li>
+    ))}
+  </ul>
+);
+
+const LinkSection: React.FC = () => (
+  <ul className="text-primary-gray text-caption md:text-body2 space-y-2 flex flex-col">
+    {[
+      { href: "/", text: "홈" },
+      { href: "product", text: "제품" },
+      { href: "partner", text: "파트너십" },
+      { href: "doc", text: "도움말" },
+    ].map(({ href, text }) => (
+      <FooterLink key={href} href={href}>
+        {text}
+      </FooterLink>
+    ))}
+  </ul>
+);
+
+const LegalSection: React.FC = () => (
+  <ul className="text-primary-gray text-caption md:text-body2 space-y-2 flex flex-col">
+    {[
+      { href: "policies/terms-and-conditions", text: "이용약관" },
+      { href: "policies/privacy-policy", text: "개인정보 취급방침" },
+      { href: "policies/refund-policy", text: "취소 및 환불정책" },
+    ].map(({ href, text }) => (
+      <FooterLink key={href} href={href}>
+        {text}
+      </FooterLink>
+    ))}
+  </ul>
+);
+
+export const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-800 text-white py-10">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">회사 소개</h3>
-            <p className="text-gray-400">혁신적인 솔루션을 제공하는 리더</p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">링크</h3>
-            <ul className="text-gray-400">
-              <li>
-                <a href="#" className="hover:text-white">
-                  홈
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  서비스
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  가격
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  연락처
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">연락처</h3>
-            <p className="text-gray-400">
-              이메일: info@company.com
-              <br />
-              전화: 02-1234-5678
-            </p>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">소셜 미디어</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white">
-                <i className="fab fa-facebook"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <i className="fab fa-twitter"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <i className="fab fa-instagram"></i>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <i className="fab fa-linkedin"></i>
-              </a>
+    <footer className="bg-secondary-blue dark:bg-gray-800 mt-20">
+      <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+          <div className="grid lg:grid-cols-2 gap-14 xl:col-span-2">
+            <div className="md:grid md:grid-cols-2 md:gap-8">
+              <div className="col-span-2 text-xs text-gray-500 dark:text-gray-400">
+                <FooterSection title="WORK SAUCE">
+                  <CompanyInfo />
+                </FooterSection>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-8">
+              <FooterSection title="LINK">
+                <LinkSection />
+              </FooterSection>
+              <FooterSection title="LEGAL">
+                <LegalSection />
+              </FooterSection>
             </div>
           </div>
+          <div className="mt-8 flex flex-col items-center xl:mt-0">
+            <h1 className="text-body2 lg:text-heading2 text-primary-accent font-bold mb-4">
+              WORK SAUCE
+            </h1>
+          </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 회사명. 모든 권리 보유.</p>
+        <div className="border-t border-border mt-8 pt-8 text-center text-primary-gray">
+          <p>Copyright &copy; 2024 SAHARA All rights reserved</p>
         </div>
       </div>
     </footer>
