@@ -33,15 +33,15 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="relative container mx-auto px-6 text-center"
         >
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+          <h1 className="text-heading3 md:text-hero flex justify-center items-center font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
             당신의 비즈니스를 성장시키세요
           </h1>
-          <p className="text-xl md:text-2xl mb-10 text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-heading1 md:text-heading1 mb-10 text-dark dark:text-gray-300 max-w-2xl mx-auto">
             혁신적인 솔루션으로 비즈니스의 잠재력을 최대화하세요
           </p>
           <motion.a
             href="/login"
-            className="bg-blue-600 text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300 inline-block"
+            className="bg-primary-accent text-white font-bold py-3 px-8 rounded-full hover:bg-blue-700 transition duration-300 inline-block"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -52,7 +52,7 @@ export const Hero = () => {
 
       <section className="py-24 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">
+          <h2 className="text-heading2 font-bold text-center text-dark dark:text-white mb-12">
             고객 후기
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -68,14 +68,14 @@ export const Hero = () => {
                   {'"' + review.text + '"'}
                 </p>
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold text-xl">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center text-primary-blue dark:text-blue-300 font-bold text-heading1">
                     {review.name[0]}
                   </div>
                   <div className="ml-4">
                     <p className="font-semibold dark:text-white">
                       {review.name}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-body1 text-primary-gray dark:text-gray-400">
                       {review.role}
                     </p>
                   </div>
@@ -86,9 +86,9 @@ export const Hero = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-blue-600 dark:bg-blue-800 text-white">
+      <section className="py-24 bg-primary-blue dark:bg-blue-800 text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">뉴스레터 구독하기</h2>
+          <h2 className="text-heading2 font-bold mb-6">뉴스레터 구독하기</h2>
           <p className="mb-10 max-w-2xl mx-auto">
             최신 업데이트와 특별 혜택을 받아보세요.
           </p>
