@@ -71,12 +71,12 @@ const LegalSection: React.FC = () => (
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-secondary-blue dark:bg-gray-800 mt-20">
+    <footer className="bg-secondary-blue">
       <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="grid lg:grid-cols-2 gap-14 xl:col-span-2">
             <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div className="col-span-2 text-xs text-gray-500 dark:text-gray-400">
+              <div className="col-span-2 text-xs text-gray-500">
                 <FooterSection title="WORK SAUCE">
                   <CompanyInfo />
                 </FooterSection>
