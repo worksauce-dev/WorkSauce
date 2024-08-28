@@ -1,3 +1,11 @@
-export default function Login() {
-  return <h1>로그인페이지</h1>;
+import { Header } from "@/components/landing/header/Header";
+import { Login } from "@/components/login/Login";
+
+export default function LoginPage() {
+  return (
+    <>
+      <Header />
+      <Login />
+    </>
+  );
 }
