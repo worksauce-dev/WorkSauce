@@ -26,18 +26,18 @@ export const Hero = () => {
 
   return (
     <main className="overflow-hidden">
-      <section className="relative text-dark py-24 md:py-40 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-indigo-900">
+      <section className="relative text-dark py-24 md:py-40 bg-gradient-to-br from-blue-50 to-indigo-100 ">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="relative container mx-auto px-6 text-center"
         >
-          <h1 className="text-heading3 md:text-hero flex justify-center items-center font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-            당신의 비즈니스를 성장시키세요
+          <h1 className="text-heading3 md:text-hero flex justify-center items-center font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+            채용에 필요한 특별한 소스
           </h1>
-          <p className="text-heading1 md:text-heading1 mb-10 text-dark dark:text-gray-300 max-w-2xl mx-auto">
-            혁신적인 솔루션으로 비즈니스의 잠재력을 최대화하세요
+          <p className="text-heading1 md:text-heading1 mb-10 text-dark max-w-2xl mx-auto">
+            당신의 팀에 딱 맞는 인재를 찾는 비법
           </p>
           <motion.a
             href="/login"
@@ -50,9 +50,9 @@ export const Hero = () => {
         </motion.div>
       </section>
 
-      <section className="py-24 bg-white dark:bg-gray-800">
+      <section className="py-24 bg-white ">
         <div className="container mx-auto px-6">
-          <h2 className="text-heading2 font-bold text-center text-dark dark:text-white mb-12">
+          <h2 className="text-heading2 font-bold text-center text-dark mb-12">
             고객 후기
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -62,20 +62,18 @@ export const Hero = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white dark:bg-gray-700 p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                className="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               >
-                <p className="text-gray-600 dark:text-gray-300 mb-6 italic">
+                <p className="text-primary-gray mb-6 italic">
                   {'"' + review.text + '"'}
                 </p>
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center text-primary-blue dark:text-blue-300 font-bold text-heading1">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-primary-blue font-bold text-heading1">
                     {review.name[0]}
                   </div>
                   <div className="ml-4">
-                    <p className="font-semibold dark:text-white">
-                      {review.name}
-                    </p>
-                    <p className="text-body1 text-primary-gray dark:text-gray-400">
+                    <p className="font-semibold">{review.name}</p>
+                    <p className="text-body1 text-primary-gray">
                       {review.role}
                     </p>
                   </div>
