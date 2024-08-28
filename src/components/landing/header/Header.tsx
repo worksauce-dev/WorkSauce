@@ -1,52 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { href: "product", label: "제품" },
+    { href: "test", label: "테스트하기" },
     { href: "partners", label: "파트너십" },
     { href: "doc", label: "도움말" },
     { href: "login", label: "로그인 / 회원가입" },
   ];
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="bg-white dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90 shadow-lg fixed w-full z-10 backdrop-blur-md"
-    >
+    <header className="z-[99] bg-white w-full shadow fixed top-0">
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <motion.a
+        <a
           href="/"
-          className="text-2xl font-extrabold text-blue-600 dark:text-blue-400"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="text-2xl font-extrabold text-blue-600 hover:scale-105 transition"
         >
           WorkSauce
-        </motion.a>
+        </a>
         <div className="hidden md:flex space-x-1">
           {menuItems.map((item, index) => (
-            <motion.a
+            <a
               key={index}
               href={item.href}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md transition duration-300"
-              whileHover={{ scale: 1.05, color: "#2563EB" }}
-              whileTap={{ scale: 0.95 }}
+              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md hover:scale-105 transition"
             >
               {item.label}
-            </motion.a>
+            </a>
           ))}
         </div>
-        <motion.button
-          className="md:hidden text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+        <button
+          className="md:hidden text-gray-600 hover:text-blue-600 "
           onClick={() => setIsOpen(!isOpen)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
         >
           <svg
             className="w-6 h-6"
@@ -62,28 +50,21 @@ export const Header = () => {
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
-        </motion.button>
+        </button>
       </nav>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="md:hidden bg-white dark:bg-gray-800 shadow-lg"
-        >
+        <div className="md:hidden bg-white dark:bg-gray-800 shadow-lg z-20 w-full fixed">
           {menuItems.map((item, index) => (
-            <motion.a
+            <a
               key={index}
               href={item.href}
               className="block text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900 px-4 py-2 transition duration-300"
-              whileHover={{ x: 5 }}
             >
               {item.label}
-            </motion.a>
+            </a>
           ))}
-        </motion.div>
+        </div>
       )}
-    </motion.header>
+    </header>
   );
 };
