@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.text-stroke {
+  -webkit-text-stroke: 1px; /* 외곽선의 두께와 색상 */
+  /*  color: white;텍스트 색상 */
+  color: #3b5486;
+}

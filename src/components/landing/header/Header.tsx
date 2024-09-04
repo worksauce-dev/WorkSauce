@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import image from "../../../../public/_레이어_1.png";
+import Image from "next/image";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     { href: "test", label: "테스트하기" },
-    { href: "partners", label: "파트너십" },
+    { href: "email", label: "이메일 테스트" },
     { href: "doc", label: "도움말" },
     { href: "login", label: "로그인 / 회원가입" },
   ];
@@ -17,9 +19,10 @@ export const Header = () => {
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <a
           href="/"
-          className="text-2xl font-extrabold text-blue-600 hover:scale-105 transition"
+          className="flex gap-2 justify-center items-center hover:scale-105 transition"
         >
-          WorkSauce
+          <Image src={image} alt="logo" className="w-[48px]" />
+          <span className="text-stroke text-4xl font-bold">worksauce</span>
         </a>
         <div className="hidden md:flex space-x-1">
           {menuItems.map((item, index) => (
