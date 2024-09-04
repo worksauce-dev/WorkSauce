@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Noto_Sans_KR } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const notoSans = Noto_Sans_KR({ subsets: ["latin"] });
+const pretendard = localFont({
+  src: "../../public/fonts/PretendardVariable.woff2",
+  variable: "--font-pretendard",
+});
 
 export const metadata: Metadata = {
   title: "워크소스",
@@ -15,7 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${notoSans.className}`}>{children}</body>
+      <body
+        className={`relative ${pretendard.variable} font-pretendard text-[#1C1C1E] font-normal`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
