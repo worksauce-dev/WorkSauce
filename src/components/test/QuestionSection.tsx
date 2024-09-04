@@ -13,6 +13,14 @@ interface QusetionSectionProps {
   handleAnswer: (questionIndex: number, score: number) => void;
 }
 
+const answerArr = [
+  "매우 그렇지 않다",
+  "그렇지 않다",
+  "보통이다",
+  "그렇다",
+  "매우 그렇다",
+];
+
 export const QuestionSection = ({
   currentCategory,
   answers,
@@ -48,6 +56,11 @@ export const QuestionSection = ({
                 />
               ))}
             </div>
+            {/* <div className="flex">
+              {answerArr.map(el => (
+                <div key={el}>{el}</div>
+              ))}
+            </div> */}
           </div>
         ))}
       </motion.div>
