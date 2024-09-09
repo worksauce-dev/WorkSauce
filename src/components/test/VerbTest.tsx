@@ -15,11 +15,11 @@ interface VerbTestProps {
 
 interface TestItem {
   sort: string;
-  start?: string;
-  advance?: string[];
-  utility?: string[];
-  communicate?: string[];
-  expert?: string[];
+  start: string;
+  advance: string[];
+  utility: string[];
+  communicate: string[];
+  expert: string[];
   name: string;
 }
 
@@ -38,7 +38,9 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
 
   const getQuestion = () => verbQuestions[step - 1];
 
-  const getAnswers = (type: keyof TestItem) => {
+  const getAnswers = (
+    type: "advance" | "utility" | "communicate" | "expert"
+  ) => {
     const arr1 = testArr.filter(el => el.name === select[0]);
     const arr2 = testArr.filter(el => el.name === select[1]);
 
@@ -161,7 +163,9 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
 
     if (select.length < 2) return null;
 
-    const answerTypes: { [key: number]: keyof TestItem } = {
+    const answerTypes: {
+      [key: number]: "advance" | "utility" | "communicate" | "expert";
+    } = {
       2: "advance",
       3: "utility",
       4: "communicate",

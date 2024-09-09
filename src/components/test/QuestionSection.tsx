@@ -56,11 +56,6 @@ export const QuestionSection = ({
                 />
               ))}
             </div>
-            {/* <div className="flex">
-              {answerArr.map(el => (
-                <div key={el}>{el}</div>
-              ))}
-            </div> */}
           </div>
         ))}
       </motion.div>
