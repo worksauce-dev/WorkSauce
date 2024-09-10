@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { testArr, typeDescriptions, verbQuestions } from "@/constant/test";
+import { RefreshCw } from "lucide-react";
 
 interface VerbTestProps {
   prevScores: {
@@ -24,35 +25,270 @@ interface TestItem {
 }
 
 export const VerbTest = ({ prevScores }: VerbTestProps) => {
-  const [step, setStep] = useState(1);
-  const [select, setSelect] = useState<string[]>([]);
+  const [step, setStep] = useState(0);
+  const [nameArr, setNameArr] = useState<string[]>([]);
   const [scores, setScores] = useState(prevScores);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
 
-  useEffect(() => {
-    if ([2, 4, 6, 8, 10].includes(select.length)) {
-      setStep(prevStep => prevStep + 1);
-      setSelectedAnswers([]);
+  const renderQustion = () => {
+    if (step === 0 || step === 0.5) {
+      return "Q. " + verbQuestions[0];
     }
-  }, [select]);
 
-  const getQuestion = () => verbQuestions[step - 1];
+    if (step === 1 || step === 1.5) {
+      return "Q. " + verbQuestions[1];
+    }
 
-  const getAnswers = (
-    type: "advance" | "utility" | "communicate" | "expert"
-  ) => {
-    const arr1 = testArr.filter(el => el.name === select[0]);
-    const arr2 = testArr.filter(el => el.name === select[1]);
+    if (step === 2 || step === 2.5) {
+      return "Q. " + verbQuestions[2];
+    }
 
-    if (select[0] === select[1]) {
+    if (step === 3 || step === 3.5) {
+      return "Q. " + verbQuestions[3];
+    }
+    if (step === 4 || step === 4.5) {
+      return "Q. " + verbQuestions[4];
+    }
+  };
+
+  const handleSelect = (target: TestItem, word: string) => {
+    if (step === 0 || step === 0.5) {
+      if (selectedAnswers.includes(target.start)) {
+        const copyAnswers = [...selectedAnswers];
+        copyAnswers.pop();
+        setSelectedAnswers(copyAnswers);
+
+        const copyName = [...nameArr];
+        copyName.pop();
+        setNameArr(copyName);
+
+        setStep(prev => (prev -= 0.5));
+        setScores(prev =>
+          prev.map(score =>
+            score.sort === target.sort
+              ? { ...score, score: score.score - 3 }
+              : score
+          )
+        );
+      } else {
+        setNameArr(prev => [...prev, target.name]);
+        setSelectedAnswers(prev => [...prev, target.start]);
+        setStep(prev => (prev += 0.5));
+        setScores(prev =>
+          prev.map(score =>
+            score.sort === target.sort
+              ? { ...score, score: score.score + 3 }
+              : score
+          )
+        );
+      }
+    } else {
+      if (selectedAnswers.includes(word)) {
+        const copyAnswers = [...selectedAnswers];
+        copyAnswers.pop();
+        setSelectedAnswers(copyAnswers);
+
+        const copyName = [...nameArr];
+        copyName.pop();
+        setNameArr(copyName);
+
+        setStep(prev => (prev -= 0.5));
+        setScores(prev =>
+          prev.map(score =>
+            score.sort === target.sort
+              ? { ...score, score: score.score - 3 }
+              : score
+          )
+        );
+      } else {
+        setNameArr(prev => [...prev, target.name]);
+        setSelectedAnswers(prev => [...prev, word]);
+        setStep(prev => (prev += 0.5));
+        setScores(prev =>
+          prev.map(score =>
+            score.sort === target.sort
+              ? { ...score, score: score.score + 3 }
+              : score
+          )
+        );
+      }
+    }
+    // if (step === 1 || step === 1.5) {
+
+    // }
+    // if (step === 2 || step === 2.5) {
+    //   if (selectedAnswers.includes(word)) {
+    //     const copyAnswers = [...selectedAnswers];
+    //     copyAnswers.pop();
+    //     setSelectedAnswers(copyAnswers);
+
+    //     const copyName = [...nameArr];
+    //     copyName.pop();
+    //     setNameArr(copyName);
+
+    //     setStep(prev => (prev -= 0.5));
+    //     setScores(prev =>
+    //       prev.map(score =>
+    //         score.sort === target.sort
+    //           ? { ...score, score: score.score - 3 }
+    //           : score
+    //       )
+    //     );
+    //   } else {
+    //     setNameArr(prev => [...prev, target.name]);
+    //     setSelectedAnswers(prev => [...prev, word]);
+    //     setStep(prev => (prev += 0.5));
+    //     setScores(prev =>
+    //       prev.map(score =>
+    //         score.sort === target.sort
+    //           ? { ...score, score: score.score + 3 }
+    //           : score
+    //       )
+    //     );
+    //   }
+    // }
+    // if (step === 3 || step === 3.5) {
+    //   if (selectedAnswers.includes(word)) {
+    //     const copyAnswers = [...selectedAnswers];
+    //     copyAnswers.pop();
+    //     setSelectedAnswers(copyAnswers);
+
+    //     const copyName = [...nameArr];
+    //     copyName.pop();
+    //     setNameArr(copyName);
+
+    //     setStep(prev => (prev -= 0.5));
+    //     setScores(prev =>
+    //       prev.map(score =>
+    //         score.sort === target.sort
+    //           ? { ...score, score: score.score - 3 }
+    //           : score
+    //       )
+    //     );
+    //   } else {
+    //     setNameArr(prev => [...prev, target.name]);
+    //     setSelectedAnswers(prev => [...prev, word]);
+    //     setStep(prev => (prev += 0.5));
+    //     setScores(prev =>
+    //       prev.map(score =>
+    //         score.sort === target.sort
+    //           ? { ...score, score: score.score + 3 }
+    //           : score
+    //       )
+    //     );
+    //   }
+    // }
+    // if (step === 4 || step === 4.5) {
+    //   if (selectedAnswers.includes(word)) {
+    //     const copyAnswers = [...selectedAnswers];
+    //     copyAnswers.pop();
+    //     setSelectedAnswers(copyAnswers);
+
+    //     const copyName = [...nameArr];
+    //     copyName.pop();
+    //     setNameArr(copyName);
+
+    //     setStep(prev => (prev -= 0.5));
+    //     setScores(prev =>
+    //       prev.map(score =>
+    //         score.sort === target.sort
+    //           ? { ...score, score: score.score - 3 }
+    //           : score
+    //       )
+    //     );
+    //   } else {
+    //     setNameArr(prev => [...prev, target.name]);
+    //     setSelectedAnswers(prev => [...prev, word]);
+    //     setStep(prev => (prev += 0.5));
+    //     setScores(prev =>
+    //       prev.map(score =>
+    //         score.sort === target.sort
+    //           ? { ...score, score: score.score + 3 }
+    //           : score
+    //       )
+    //     );
+    //   }
+    // }
+  };
+
+  const renderAnswers = () => {
+    if (step === 0 || step === 0.5) {
       return (
         <>
-          {arr1.flatMap(el =>
-            el[type]?.map(word => (
+          {testArr.map(el => (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleSelect(el, el.start)}
+              key={el.sort}
+              className={`py-3 px-6 rounded-lg border border-gray-300 shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(el.start || "")
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+            >
+              {el.start}
+            </motion.button>
+          ))}
+        </>
+      );
+    }
+    if (step === 1 || step === 1.5) {
+      const arr1 = testArr.filter(el => el.name === nameArr[0]);
+      const arr2 = testArr.filter(el => el.name === nameArr[1]);
+
+      if (nameArr[0] === nameArr[1]) {
+        return (
+          <>
+            {arr1.map(words =>
+              words.advance.map(word => (
+                <motion.button
+                  onClick={() => handleSelect(words, word)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  key={word}
+                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+                >
+                  {word}
+                </motion.button>
+              ))
+            )}
+          </>
+        );
+      }
+
+      return (
+        <>
+          {arr1.map(words =>
+            words.advance.map(word => (
               <motion.button
+                onClick={() => handleSelect(words, word)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => handleSelect(el, word)}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
+          {arr2.map(words =>
+            words.advance.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 key={word}
                 className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
                 ${
@@ -68,114 +304,285 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
         </>
       );
     }
+    if (step === 2 || step === 2.5) {
+      const arr1 = testArr.filter(el => el.name === nameArr[0]);
+      const arr2 = testArr.filter(el => el.name === nameArr[1]);
 
-    return (
-      <>
-        {arr1.flatMap(el =>
-          el[type]?.map(word => (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleSelect(el, word)}
-              key={word}
-              className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+      if (nameArr[0] === nameArr[1]) {
+        return (
+          <>
+            {arr1.map(words =>
+              words.utility.map(word => (
+                <motion.button
+                  onClick={() => handleSelect(words, word)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  key={word}
+                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
                 ${
                   selectedAnswers.includes(word)
                     ? "bg-indigo-100 border-indigo-500 text-indigo-700"
                     : ""
                 }`}
-            >
-              {word}
-            </motion.button>
-          ))
-        )}
-        {arr2.flatMap(el =>
-          el[type]?.map(word => (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleSelect(el, word)}
-              key={word}
-              className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-            >
-              {word}
-            </motion.button>
-          ))
-        )}
-      </>
-    );
-  };
+                >
+                  {word}
+                </motion.button>
+              ))
+            )}
+          </>
+        );
+      }
 
-  const handleSelect = (el: TestItem, word: string) => {
-    console.log(el, word);
-
-    if (selectedAnswers.includes(word)) {
-      setSelectedAnswers(prev => prev.filter(item => item !== word));
-      setSelect(prev => {
-        const updatedSelect = [...prev]; // 이전 상태의 복사본 생성
-        updatedSelect.pop(); // 마지막 요소 제거
-        return updatedSelect; // 새로운 상태로 반환
-      });
-      setScores(prev =>
-        prev.map(score =>
-          score.sort === el.sort ? { ...score, score: score.score - 3 } : score
-        )
-      );
-    } else if (selectedAnswers.length < 2) {
-      setSelectedAnswers(prev => [...prev, word]);
-      setSelect(prev => [...prev, el.name]);
-      setScores(prev =>
-        prev.map(score =>
-          score.sort === el.sort ? { ...score, score: score.score + 3 } : score
-        )
-      );
-    }
-  };
-
-  const renderAnswers = () => {
-    if (step === 1) {
       return (
         <>
-          {testArr.map(el => (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleSelect(el, el.start || "")}
-              key={el.sort}
-              className={`py-3 px-6 rounded-lg border border-gray-300 shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+          {arr1.map(words =>
+            words.utility.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
                 ${
-                  selectedAnswers.includes(el.start || "")
+                  selectedAnswers.includes(word)
                     ? "bg-indigo-100 border-indigo-500 text-indigo-700"
                     : ""
                 }`}
-            >
-              {el.start}
-            </motion.button>
-          ))}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
+          {arr2.map(words =>
+            words.utility.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
         </>
       );
     }
+    if (step === 3 || step === 3.5) {
+      const arr1 = testArr.filter(el => el.name === nameArr[0]);
+      const arr2 = testArr.filter(el => el.name === nameArr[1]);
 
-    if (select.length < 2) return null;
+      if (nameArr[0] === nameArr[1]) {
+        return (
+          <>
+            {arr1.map(words =>
+              words.communicate.map(word => (
+                <motion.button
+                  onClick={() => handleSelect(words, word)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  key={word}
+                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+                >
+                  {word}
+                </motion.button>
+              ))
+            )}
+          </>
+        );
+      }
 
-    const answerTypes: {
-      [key: number]: "advance" | "utility" | "communicate" | "expert";
-    } = {
-      2: "advance",
-      3: "utility",
-      4: "communicate",
-      5: "expert",
-    };
+      return (
+        <>
+          {arr1.map(words =>
+            words.communicate.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
+          {arr2.map(words =>
+            words.communicate.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
+        </>
+      );
+    }
+    if (step === 4 || step === 4.5) {
+      const arr1 = testArr.filter(el => el.name === nameArr[0]);
+      const arr2 = testArr.filter(el => el.name === nameArr[1]);
 
-    return getAnswers(answerTypes[step]);
+      if (nameArr[0] === nameArr[1]) {
+        return (
+          <>
+            {arr1.map(words =>
+              words.expert.map(word => (
+                <motion.button
+                  onClick={() => handleSelect(words, word)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  key={word}
+                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+                >
+                  {word}
+                </motion.button>
+              ))
+            )}
+          </>
+        );
+      }
+
+      return (
+        <>
+          {arr1.map(words =>
+            words.expert.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
+          {arr2.map(words =>
+            words.expert.map(word => (
+              <motion.button
+                onClick={() => handleSelect(words, word)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                key={word}
+                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
+                ${
+                  selectedAnswers.includes(word)
+                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
+                    : ""
+                }`}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
+        </>
+      );
+    }
   };
 
-  const isFinalStep = step === 6;
+  const getCurrentProgress = () => {
+    return (step / 5) * 100;
+  };
+
+  const renderSidebar = () => {
+    return (
+      <div className="w-full lg:w-1/4 sm:p-8 bg-white p-6 rounded-xl shadow-lg flex flex-col">
+        <div className="flex-grow">
+          <h3 className="text-xl font-bold mb-6 text-gray-800">진행 상황</h3>
+
+          <div className="mb-4">
+            <div className="bg-gray-100 h-2 rounded-full overflow-hidden">
+              <motion.div
+                className="bg-blue-500 h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${getCurrentProgress()}%` }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+            <p className="text-right mt-2 text-sm font-medium text-gray-600">
+              {Math.round(getCurrentProgress())}% 완료
+            </p>
+          </div>
+
+          <div className="space-y-4 mb-6 ">
+            {[
+              "Start 동사",
+              "Advance 동사",
+              "Utility 동사",
+              "Communicate 동사",
+              "Expert 동사",
+            ].map(
+              (question, index) =>
+                step > index - 0.5 && (
+                  <div
+                    key={index}
+                    className="bg-gray-50 p-4 rounded-lg flex items-center justify-between h-[56px]"
+                  >
+                    <p className="text-sm font-semibold text-gray-700">
+                      {question}
+                    </p>
+                    <div className="flex gap-2 text-xs">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full ">
+                        {selectedAnswers[index * 2]}
+                      </span>
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                        {selectedAnswers[index * 2 + 1]}
+                      </span>
+                    </div>
+                  </div>
+                )
+            )}
+          </div>
+        </div>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full py-3 mt-auto rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+          onClick={clickReset}
+        >
+          <RefreshCw size={18} />
+          소스테스트 다시하기
+        </motion.button>
+      </div>
+    );
+  };
 
   const getTopScore = () => {
     return scores.reduce((prev, current) =>
@@ -189,99 +596,91 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
     );
   };
 
-  console.log(step);
-  console.log(scores);
-  console.log(select);
-  console.log(selectedAnswers);
-
-  return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col items-center bg-gradient-to-b from-blue-50 to-indigo-100">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden"
-      >
-        <div className="bg-indigo-600 text-white p-6">
-          <h1 className="text-2xl font-bold mb-2">{select.length} / 10</h1>
-          <div className="w-full bg-indigo-300 h-2 rounded-full">
-            <motion.div
-              className="bg-white h-2 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${(step - 1) * 20}%` }}
-              transition={{ duration: 0.5 }}
-            />
-          </div>
-        </div>
-        <div className="p-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div
-                className={`flex flex-col gap-8 ${isFinalStep ? "hidden" : ""}`}
+  const renderResult = () => {
+    return (
+      <div className="max-w-7xl">
+        <h3 className="text-2xl font-semibold mb-6 text-gray-800">
+          Your Results
+        </h3>
+        <div className="space-y-6">
+          {scores
+            .sort((a, b) => b.score - a.score)
+            .map((score, idx) => (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                key={idx}
+                className={`p-4 rounded-lg ${
+                  score.sort === getTopScore().sort
+                    ? "bg-indigo-100 border-2 border-indigo-500"
+                    : "bg-gray-100"
+                }`}
               >
-                <h2 className="text-2xl font-semibold text-gray-800">
-                  {getQuestion()}
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {renderAnswers()}
-                </div>
-              </div>
-              {isFinalStep && (
-                <div>
-                  <h3 className="text-2xl font-semibold mb-6 text-gray-800">
-                    Your Results
-                  </h3>
-                  <div className="space-y-6">
-                    {scores
-                      .sort((a, b) => b.score - a.score)
-                      .map((score, idx) => (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          key={idx}
-                          className={`p-4 rounded-lg ${
-                            score.sort === getTopScore().sort
-                              ? "bg-indigo-100 border-2 border-indigo-500"
-                              : "bg-gray-100"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="font-medium text-gray-700">
-                              {score.sort}
-                            </div>
-                            <div className="font-bold text-indigo-600">
-                              {score.score} / {score.maxScore}
-                            </div>
-                          </div>
-                          {score.sort === getTopScore().sort && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              transition={{ duration: 0.3 }}
-                              className="mt-2 text-sm text-gray-600"
-                            >
-                              <p className="font-semibold mb-1">
-                                당신의 주요 유형:
-                              </p>
-                              <p>{getTypeDescription(score.sort)}</p>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      ))}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-medium text-gray-700">{score.sort}</div>
+                  <div className="font-bold text-indigo-600">
+                    {score.score} / {score.maxScore}
                   </div>
                 </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+                {score.sort === getTopScore().sort && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-2 text-sm text-gray-600"
+                  >
+                    <p className="font-semibold mb-1">당신의 주요 유형:</p>
+                    <p>{getTypeDescription(score.sort)}</p>
+                  </motion.div>
+                )}
+              </motion.div>
+            ))}
         </div>
-      </motion.div>
+      </div>
+    );
+  };
+
+  const clickReset = () => {
+    setStep(0);
+    setNameArr([]);
+    setScores(prevScores);
+    setSelectedAnswers([]);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center mt-16 sm:mt-0">
+      {step === 5 ? (
+        renderResult()
+      ) : (
+        <>
+          <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl flex flex-col">
+            <div className="bg-indigo-600 text-white p-6 rounded-t-lg">
+              <h2 className="text-subheading font-semibold">
+                {renderQustion()}
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-8 p-8 flex-grow">
+              <div
+                className={`grid grid-cols-2 sm:grid-cols-3 gap-8 ${
+                  step >= 1 ? "md:grid-cols-4" : "md:grid-cols-5"
+                }`}
+              >
+                {renderAnswers()}
+              </div>
+            </div>
+
+            <div className="text-end w-full p-8">
+              <span className="text-sm text-primary-gray">
+                테스트 무단 배포시 블라블라블라블라
+              </span>
+            </div>
+          </div>
+
+          {renderSidebar()}
+        </>
+      )}
     </div>
   );
 };
