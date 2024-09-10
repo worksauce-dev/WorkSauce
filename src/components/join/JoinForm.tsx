@@ -49,7 +49,7 @@ export const JoinForm = () => {
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 transition duration-150 ease-in-out hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring  focus:ring-blue-400  active:bg-blue-700"
             >
-              로그인
+              워크소스 가입하기
             </button>
           </span>
         </div>
