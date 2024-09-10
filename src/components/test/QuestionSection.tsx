@@ -43,7 +43,7 @@ export const QuestionSection = ({
             <p className="text-sm sm:text-subheading leading-relaxed mb-4 text-gray-700">
               {question.text}
             </p>
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-8 justify-between">
               {[1, 2, 3, 4, 5].map(score => (
                 <ScoreButton
                   key={score}
