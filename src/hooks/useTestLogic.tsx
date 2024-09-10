@@ -10,10 +10,21 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const handleAnswer = (questionIndex: number, score: number) => {
-    setAnswers(prev => ({
-      ...prev,
-      [`${currentCategoryIndex}-${questionIndex}`]: score,
-    }));
+    const key = `${currentCategoryIndex}-${questionIndex}`;
+
+    setAnswers(prev => {
+      // 이미 선택된 답변이 있을 경우
+      if (prev[key] === score) {
+        const { [key]: removed, ...rest } = prev;
+        return rest;
+      }
+
+      // 새로운 답변이 선택된 경우
+      return {
+        ...prev,
+        [key]: score,
+      };
+    });
   };
 
   const getCurrentProgress = () => {
