@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { auth } from "@/api/firebase/initFirebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 
 export default function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
+        console.log(user);
         // 유저가 로그인 되어 있을 때
         setUser(user);
       } else {
