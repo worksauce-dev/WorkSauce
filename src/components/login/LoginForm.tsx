@@ -1,14 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/api/firebase/initFirebase";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleLogin = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    console.log(email, password);
+    try {
+      // Firebase 로그인 함수 호출
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/"); // 로그인 성공 시 대시보드로 이동
+    } catch (error) {
+      throw new Error(getErrorMessage(error));
+    }
   };
 
   return (
@@ -45,7 +59,7 @@ export const LoginForm = () => {
         <div className="mt-6">
           <span className="block w-full rounded-md shadow-sm">
             <button
-              onClick={e => handleSubmit(e)}
+              onClick={e => handleLogin(e)}
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 transition duration-150 ease-in-out   hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring  focus:ring-blue-400  active:bg-blue-700"
             >
