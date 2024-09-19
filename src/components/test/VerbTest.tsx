@@ -522,7 +522,7 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
 
   const renderSidebar = () => {
     return (
-      <div className="w-full lg:w-1/4 sm:p-8 bg-white p-6 rounded-xl shadow-lg flex flex-col">
+      <div className="w-full lg:w-1/3 sm:p-8 bg-white p-6 rounded-xl shadow-lg flex flex-col">
         <div className="flex-grow">
           <h3 className="text-xl font-bold mb-6 text-gray-800">진행 상황</h3>
 
