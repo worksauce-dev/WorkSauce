@@ -1,11 +1,10 @@
-import { Join } from "@/components/join/Join";
+import { JoinContainer } from "@/components/join/JoinContainer";
 import { Header } from "@/components/landing/header/Header";
 
 export default function JoinPage() {
   return (
     <>
-      <Header />
-      <Join />
+      <JoinContainer />
     </>
   );
 }

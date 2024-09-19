@@ -4,13 +4,12 @@ import { TestContainer } from "@/components/test/TestContainer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "워크소스 - Sauce Test",
+  title: "소스테스트",
 };
 
 export default function TestPage() {
   return (
     <>
-      <Header />
       <TestContainer />
     </>
   );
