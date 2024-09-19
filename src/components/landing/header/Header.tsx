@@ -4,15 +4,65 @@ import { useState } from "react";
 import image from "../../../../public/_레이어_1.png";
 import Image from "next/image";
 
-export const Header = () => {
-  const [isOpen, setIsOpen] = useState(false);
+import { logOut } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
-  const menuItems = [
+import useAuth from "@/hooks/useAuth";
+
+export const Header = ({}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  const guestMenuItems = [
     { href: "test", label: "테스트하기" },
     { href: "email", label: "이메일 테스트" },
     { href: "doc", label: "도움말" },
     { href: "login", label: "로그인 / 회원가입" },
   ];
+
+  const userMenuItems = [
+    { href: "test", label: "테스트하기" },
+    { href: "email", label: "이메일 테스트" },
+    { href: "dashboard", label: "대시보드" },
+    {
+      label: "로그아웃",
+      onClick: async () => {
+        try {
+          await logOut();
+          router.push("/");
+        } catch (error) {
+          getErrorMessage(error);
+        }
+      },
+    },
+  ];
+
+  const renderMenu = () => {
+    if (user) {
+      return userMenuItems.map((item, index) => (
+        <a
+          key={index}
+          href={item.href}
+          onClick={item.onClick}
+          className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md hover:scale-105 transition"
+        >
+          {item.label}
+        </a>
+      ));
+    }
+
+    return guestMenuItems.map((item, index) => (
+      <a
+        key={index}
+        href={item.href}
+        className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md hover:scale-105 transition"
+      >
+        {item.label}
+      </a>
+    ));
+  };
 
   return (
     <header className="z-[99] bg-white w-full shadow fixed top-0">
@@ -24,17 +74,7 @@ export const Header = () => {
           <Image src={image} alt="logo" className="w-[48px]" />
           <span className="text-stroke text-4xl font-bold">worksauce</span>
         </a>
-        <div className="hidden md:flex space-x-1">
-          {menuItems.map((item, index) => (
-            <a
-              key={index}
-              href={item.href}
-              className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md hover:scale-105 transition"
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
+        <div className="hidden md:flex space-x-1">{renderMenu()}</div>
         <button
           className="md:hidden text-gray-600 hover:text-blue-600 "
           onClick={() => setIsOpen(!isOpen)}
@@ -55,19 +95,6 @@ export const Header = () => {
           </svg>
         </button>
       </nav>
-      {isOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-800 shadow-lg z-20 w-full fixed">
-          {menuItems.map((item, index) => (
-            <a
-              key={index}
-              href={item.href}
-              className="block text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900 px-4 py-2 transition duration-300"
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      )}
     </header>
   );
 };
