@@ -1,8 +1,14 @@
+"use client";
+
 import { FcGoogle } from "react-icons/fc";
-import { SiKakaotalk } from "react-icons/si";
 import { RiKakaoTalkFill } from "react-icons/ri";
+import { signIn } from "next-auth/react";
 
 export const Login = () => {
+  const handleLogin = async (provider: string) => {
+    await signIn(provider, { callbackUrl: "/" });
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -25,7 +31,10 @@ export const Login = () => {
             <div className="flex-1 border-t-2 border-border "></div>
           </div> */}
           <div className="w-full flex flex-col gap-4">
-            <button className="w-full shadow rounded-lg bg-white max-w-xs mx-auto flex justify-center py-2 items-center px-8 border hangug border-transparent font-medium  text-gray-700 transition duration-150 ease-in-out hover:opacity-75 focus:outline-none focus:border-gray-700 focus:shadow-outline-gray">
+            <button
+              onClick={() => handleLogin("kakao")}
+              className="w-full shadow rounded-lg bg-white max-w-xs mx-auto flex justify-center py-2 items-center px-8 border hangug border-transparent font-medium  text-gray-700 transition duration-150 ease-in-out hover:opacity-75 focus:outline-none focus:border-gray-700 focus:shadow-outline-gray"
+            >
               <RiKakaoTalkFill className="mr-2" size={30} color="#FFE300" />
               <span className="text-subheading">카카오톡 로그인</span>
             </button>

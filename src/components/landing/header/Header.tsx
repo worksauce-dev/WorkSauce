@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { logOut } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { getErrorMessage } from "@/utils/getErrorMessage";
-import useAuth from "@/hooks/useAuth";
 import { Logo } from "./logo";
+import { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 
 type MenuItem = {
   href?: string;
@@ -14,10 +14,13 @@ type MenuItem = {
   onClick?: () => Promise<void>;
 };
 
-export const Header = ({}) => {
+export const Header = ({ session }: { session: Session | null }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, loading } = useAuth();
   const router = useRouter();
+
+  const handleSignOut = async () => {
+    await signOut({ callbackUrl: "/" });
+  };
 
   const guestMenuItems: MenuItem[] = [
     { href: "test", label: "테스트하기" },
@@ -32,19 +35,12 @@ export const Header = ({}) => {
     { href: "dashboard", label: "대시보드" },
     {
       label: "로그아웃",
-      onClick: async () => {
-        try {
-          await logOut();
-          router.push("/");
-        } catch (error) {
-          getErrorMessage(error);
-        }
-      },
+      onClick: handleSignOut,
     },
   ];
 
   const renderMenu = () => {
-    const items = user ? userMenuItems : guestMenuItems;
+    const items = session ? userMenuItems : guestMenuItems;
     return items.map((item, index) => (
       <motion.a
         key={index}
