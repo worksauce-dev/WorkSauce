@@ -33,17 +33,17 @@ export const QuestionSection = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="gap-8 flex flex-col"
+        className="gap-16 sm:gap-8 flex flex-col"
       >
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+        {/* <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
           test님의 소스테스트
-        </h2>
+        </h2> */}
         {currentCategory.questions.map((question, questionIndex) => (
           <div key={questionIndex} className="gap-4 flex flex-col">
-            <p className="text-sm sm:text-subheading leading-relaxed mb-4 text-gray-700">
+            <p className="text-base sm:text-subheading leading-relaxed mb-4 text-gray-700 font-semibold">
               {question.text}
             </p>
-            <div className="flex items-center space-x-8 justify-between">
+            <div className="flex items-center sm:gap-8 w-full justify-between">
               {[1, 2, 3, 4, 5].map(score => (
                 <ScoreButton
                   key={score}
