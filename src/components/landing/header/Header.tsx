@@ -1,28 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import image from "../../../../public/_레이어_1.png";
-import Image from "next/image";
-
+import { motion, AnimatePresence } from "framer-motion";
 import { logOut } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { getErrorMessage } from "@/utils/getErrorMessage";
-
 import useAuth from "@/hooks/useAuth";
+import { Logo } from "./logo";
+
+type MenuItem = {
+  href?: string;
+  label: string;
+  onClick?: () => Promise<void>;
+};
 
 export const Header = ({}) => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  const guestMenuItems = [
+  const guestMenuItems: MenuItem[] = [
     { href: "test", label: "테스트하기" },
     { href: "email", label: "이메일 테스트" },
     { href: "doc", label: "도움말" },
     { href: "login", label: "로그인 / 회원가입" },
   ];
 
-  const userMenuItems = [
+  const userMenuItems: MenuItem[] = [
     { href: "test", label: "테스트하기" },
     { href: "email", label: "이메일 테스트" },
     { href: "dashboard", label: "대시보드" },
@@ -40,44 +44,31 @@ export const Header = ({}) => {
   ];
 
   const renderMenu = () => {
-    if (user) {
-      return userMenuItems.map((item, index) => (
-        <a
-          key={index}
-          href={item.href}
-          onClick={item.onClick}
-          className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md hover:scale-105 transition"
-        >
-          {item.label}
-        </a>
-      ));
-    }
-
-    return guestMenuItems.map((item, index) => (
-      <a
+    const items = user ? userMenuItems : guestMenuItems;
+    return items.map((item, index) => (
+      <motion.a
         key={index}
         href={item.href}
-        className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md hover:scale-105 transition"
+        onClick={item.onClick ? item.onClick : undefined}
+        className="block text-gray-800 hover:text-blue-600 py-2 px-4 rounded-md hover:bg-gray-100 transition-colors"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
         {item.label}
-      </a>
+      </motion.a>
     ));
   };
 
   return (
     <header className="z-[99] bg-white w-full shadow fixed top-0">
-      <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <a
-          href="/"
-          className="flex gap-2 justify-center items-center hover:scale-105 transition"
-        >
-          <Image src={image} alt="logo" className="w-[48px]" />
-          <span className="text-stroke text-4xl font-bold">worksauce</span>
-        </a>
+      <nav className="mx-auto px-6 py-4 flex justify-between items-center">
+        <Logo />
         <div className="hidden md:flex space-x-1">{renderMenu()}</div>
-        <button
-          className="md:hidden text-gray-600 hover:text-blue-600 "
+        <motion.button
+          className="md:hidden text-gray-600 hover:text-blue-600 p-2 rounded-md"
           onClick={() => setIsOpen(!isOpen)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           <svg
             className="w-6 h-6"
@@ -93,8 +84,21 @@ export const Header = ({}) => {
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
-        </button>
+        </motion.button>
       </nav>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden bg-white shadow-lg rounded-b-lg overflow-hidden"
+          >
+            <div className="px-4 py-2 space-y-1">{renderMenu()}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
