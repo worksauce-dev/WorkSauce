@@ -1,4 +1,5 @@
 import React from "react";
+import { Logo } from "../header/logo";
 
 type FooterSectionProps = {
   title: string;
@@ -74,7 +75,7 @@ export const Footer: React.FC = () => {
     <footer className="bg-secondary-blue">
       <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <div className="grid lg:grid-cols-2 gap-14 xl:col-span-2">
+          <div className="grid lg:grid-cols-2 gap-14 xl:col-span-2 sm:mb-0 mb-4">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div className="col-span-2 text-xs text-gray-500">
                 <FooterSection title="WORK SAUCE">
@@ -91,11 +92,7 @@ export const Footer: React.FC = () => {
               </FooterSection>
             </div>
           </div>
-          <div className="mt-8 flex flex-col items-center xl:mt-0">
-            <h1 className="text-body2 lg:text-heading2 text-primary-accent font-bold mb-4">
-              WORK SAUCE
-            </h1>
-          </div>
+          <Logo />
         </div>
         <div className="border-t border-border mt-8 pt-8 text-center text-primary-gray">
           <p>Copyright &copy; 2024 SAHARA All rights reserved</p>

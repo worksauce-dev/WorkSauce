@@ -33,10 +33,10 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="relative container mx-auto px-6 text-center"
         >
-          <h1 className="text-heading3 md:text-hero flex justify-center items-center font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+          <h1 className="text-heading2 md:text-hero flex justify-center items-center font-semibold sm:font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
             채용에 필요한 특별한 소스
           </h1>
-          <p className="text-heading1 md:text-heading1 mb-10 text-dark max-w-2xl mx-auto">
+          <p className="font-medium text-lg md:text-heading1 mb-10 text-primary-gray max-w-2xl mx-auto">
             당신의 팀에 딱 맞는 인재를 찾는 비법
           </p>
           <motion.a
@@ -52,7 +52,7 @@ export const Hero = () => {
 
       <section className="py-24 bg-white ">
         <div className="container mx-auto px-6">
-          <h2 className="text-heading2 font-bold text-center text-dark mb-12">
+          <h2 className="text-xl font-semibold text-center text-dark mb-12">
             고객 후기
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
