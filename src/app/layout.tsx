@@ -31,7 +31,9 @@ export default async function RootLayout({
     const userRef = doc(firestore, "users", session?.user.id);
     const data = await getDoc(userRef);
 
-    console.log(data.data());
+    if (data.exists()) {
+      console.log(data.data());
+    }
   }
 
   return (
