@@ -52,163 +52,38 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
   };
 
   const handleSelect = (target: TestItem, word: string) => {
-    if (step === 0 || step === 0.5) {
-      if (selectedAnswers.includes(target.start)) {
-        const copyAnswers = [...selectedAnswers];
-        copyAnswers.pop();
-        setSelectedAnswers(copyAnswers);
+    const isSelected = selectedAnswers.includes(word);
+    const scoreChange = isSelected ? -3 : 3;
+    const stepChange = isSelected ? -0.5 : 0.5;
 
-        const copyName = [...nameArr];
-        copyName.pop();
-        setNameArr(copyName);
-
-        setStep(prev => (prev -= 0.5));
-        setScores(prev =>
-          prev.map(score =>
-            score.sort === target.sort
-              ? { ...score, score: score.score - 3 }
-              : score
-          )
-        );
+    setSelectedAnswers(prev => {
+      const newAnswers = [...prev];
+      if (isSelected) {
+        newAnswers.pop();
       } else {
-        setNameArr(prev => [...prev, target.name]);
-        setSelectedAnswers(prev => [...prev, target.start]);
-        setStep(prev => (prev += 0.5));
-        setScores(prev =>
-          prev.map(score =>
-            score.sort === target.sort
-              ? { ...score, score: score.score + 3 }
-              : score
-          )
-        );
+        newAnswers.push(word);
       }
-    } else {
-      if (selectedAnswers.includes(word)) {
-        const copyAnswers = [...selectedAnswers];
-        copyAnswers.pop();
-        setSelectedAnswers(copyAnswers);
+      return newAnswers;
+    });
 
-        const copyName = [...nameArr];
-        copyName.pop();
-        setNameArr(copyName);
-
-        setStep(prev => (prev -= 0.5));
-        setScores(prev =>
-          prev.map(score =>
-            score.sort === target.sort
-              ? { ...score, score: score.score - 3 }
-              : score
-          )
-        );
+    setNameArr(prev => {
+      const newNames = [...prev];
+      if (isSelected) {
+        newNames.pop();
       } else {
-        setNameArr(prev => [...prev, target.name]);
-        setSelectedAnswers(prev => [...prev, word]);
-        setStep(prev => (prev += 0.5));
-        setScores(prev =>
-          prev.map(score =>
-            score.sort === target.sort
-              ? { ...score, score: score.score + 3 }
-              : score
-          )
-        );
+        newNames.push(target.name);
       }
-    }
-    // if (step === 1 || step === 1.5) {
+      return newNames;
+    });
 
-    // }
-    // if (step === 2 || step === 2.5) {
-    //   if (selectedAnswers.includes(word)) {
-    //     const copyAnswers = [...selectedAnswers];
-    //     copyAnswers.pop();
-    //     setSelectedAnswers(copyAnswers);
-
-    //     const copyName = [...nameArr];
-    //     copyName.pop();
-    //     setNameArr(copyName);
-
-    //     setStep(prev => (prev -= 0.5));
-    //     setScores(prev =>
-    //       prev.map(score =>
-    //         score.sort === target.sort
-    //           ? { ...score, score: score.score - 3 }
-    //           : score
-    //       )
-    //     );
-    //   } else {
-    //     setNameArr(prev => [...prev, target.name]);
-    //     setSelectedAnswers(prev => [...prev, word]);
-    //     setStep(prev => (prev += 0.5));
-    //     setScores(prev =>
-    //       prev.map(score =>
-    //         score.sort === target.sort
-    //           ? { ...score, score: score.score + 3 }
-    //           : score
-    //       )
-    //     );
-    //   }
-    // }
-    // if (step === 3 || step === 3.5) {
-    //   if (selectedAnswers.includes(word)) {
-    //     const copyAnswers = [...selectedAnswers];
-    //     copyAnswers.pop();
-    //     setSelectedAnswers(copyAnswers);
-
-    //     const copyName = [...nameArr];
-    //     copyName.pop();
-    //     setNameArr(copyName);
-
-    //     setStep(prev => (prev -= 0.5));
-    //     setScores(prev =>
-    //       prev.map(score =>
-    //         score.sort === target.sort
-    //           ? { ...score, score: score.score - 3 }
-    //           : score
-    //       )
-    //     );
-    //   } else {
-    //     setNameArr(prev => [...prev, target.name]);
-    //     setSelectedAnswers(prev => [...prev, word]);
-    //     setStep(prev => (prev += 0.5));
-    //     setScores(prev =>
-    //       prev.map(score =>
-    //         score.sort === target.sort
-    //           ? { ...score, score: score.score + 3 }
-    //           : score
-    //       )
-    //     );
-    //   }
-    // }
-    // if (step === 4 || step === 4.5) {
-    //   if (selectedAnswers.includes(word)) {
-    //     const copyAnswers = [...selectedAnswers];
-    //     copyAnswers.pop();
-    //     setSelectedAnswers(copyAnswers);
-
-    //     const copyName = [...nameArr];
-    //     copyName.pop();
-    //     setNameArr(copyName);
-
-    //     setStep(prev => (prev -= 0.5));
-    //     setScores(prev =>
-    //       prev.map(score =>
-    //         score.sort === target.sort
-    //           ? { ...score, score: score.score - 3 }
-    //           : score
-    //       )
-    //     );
-    //   } else {
-    //     setNameArr(prev => [...prev, target.name]);
-    //     setSelectedAnswers(prev => [...prev, word]);
-    //     setStep(prev => (prev += 0.5));
-    //     setScores(prev =>
-    //       prev.map(score =>
-    //         score.sort === target.sort
-    //           ? { ...score, score: score.score + 3 }
-    //           : score
-    //       )
-    //     );
-    //   }
-    // }
+    setStep(prev => prev + stepChange);
+    setScores(prev =>
+      prev.map(score =>
+        score.sort === target.sort
+          ? { ...score, score: score.score + scoreChange }
+          : score
+      )
+    );
   };
 
   const renderAnswers = () => {
@@ -599,8 +474,8 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
   const renderResult = () => {
     return (
       <div className="max-w-7xl">
-        <h3 className="text-2xl font-semibold mb-6 text-gray-800">
-          Your Results
+        <h3 className="text-subheading sm:text-2xl font-semibold mb-6 text-gray-800">
+          test님의 소스테스트 결과입니다
         </h3>
         <div className="space-y-6">
           {scores
@@ -631,7 +506,7 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
                     className="mt-2 text-sm text-gray-600"
                   >
                     <p className="font-semibold mb-1">당신의 주요 유형:</p>
-                    <p>{getTypeDescription(score.sort)}</p>
+                    <p className="text-sm">{getTypeDescription(score.sort)}</p>
                   </motion.div>
                 )}
               </motion.div>
@@ -649,14 +524,14 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center mt-16 sm:mt-0">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
       {step === 5 ? (
         renderResult()
       ) : (
         <>
           <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl flex flex-col">
             <div className="bg-indigo-600 text-white p-6 rounded-t-lg">
-              <h2 className="text-subheading font-semibold">
+              <h2 className="text-base sm:text-subheading font-semibold">
                 {renderQustion()}
               </h2>
             </div>

@@ -36,10 +36,10 @@ export const ScoreButton = ({
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="flex flex-col items-center gap-4"
+      className="flex flex-col items-center gap-4 min-w-[64px]"
     >
       <motion.button
-        className={`w-10 h-10 rounded-full font-semibold text-sm sm:text-base transition-colors ${
+        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full font-semibold text-sm sm:text-base transition-colors ${
           isSelected
             ? "bg-blue-600 text-white"
             : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -48,7 +48,9 @@ export const ScoreButton = ({
       >
         {score}
       </motion.button>
-      <span className="text-body1 font-medium">{scoreExplanation()}</span>
+      <span className="text-[10px] sm:text-body1 font-medium text-primary-gray">
+        {scoreExplanation()}
+      </span>
     </motion.div>
   );
 };
