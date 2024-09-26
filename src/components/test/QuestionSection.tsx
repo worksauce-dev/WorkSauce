@@ -11,6 +11,7 @@ interface QusetionSectionProps {
     [key: string]: number;
   };
   handleAnswer: (questionIndex: number, score: number) => void;
+  totalQuestionsBefore: number;
 }
 
 const answerArr = [
@@ -25,6 +26,7 @@ export const QuestionSection = ({
   currentCategory,
   answers,
   handleAnswer,
+  totalQuestionsBefore,
 }: QusetionSectionProps) => {
   return (
     <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl overflow-hidden p-4 sm:p-8">
@@ -41,7 +43,7 @@ export const QuestionSection = ({
         {currentCategory.questions.map((question, questionIndex) => (
           <div key={questionIndex} className="gap-4 flex flex-col">
             <p className="text-base sm:text-subheading leading-relaxed mb-4 text-gray-700 font-semibold">
-              {question.text}
+              {totalQuestionsBefore + questionIndex + 1}. {question.text}
             </p>
             <div className="flex items-center sm:gap-8 w-full justify-between">
               {[1, 2, 3, 4, 5].map(score => (

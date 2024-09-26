@@ -744,7 +744,7 @@ export const testArr = [
     advance: ["깨닫다", "기획하다"],
     utility: ["경영하다", "확장하다"],
     communicate: ["가르치다", "멘토링하다"],
-    expert: ["확장하다", "활발하게하다"],
+    expert: ["성장시키다", "활발하게하다"],
   },
   {
     sort: "도전 목표형",

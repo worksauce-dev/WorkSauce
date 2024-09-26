@@ -16,6 +16,7 @@ export const TestContainer = () => {
     getCurrentProgress,
     canProceed,
     calculateScores,
+    totalQuestionsBefore,
   } = useTestLogic();
 
   if (isCompleted) {
@@ -25,6 +26,7 @@ export const TestContainer = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
       <QuestionSection
+        totalQuestionsBefore={totalQuestionsBefore}
         currentCategory={currentCategory}
         answers={answers}
         handleAnswer={handleAnswer}
