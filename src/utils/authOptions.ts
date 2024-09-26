@@ -28,6 +28,8 @@ export const authOptions = {
             lastLoginAt: new Date(),
             type: "user",
             status: "active",
+            isFirstLogin: true,
+            isAdmin: false,
           });
         }
       }
