@@ -25,7 +25,7 @@ const config: Config = {
         "primary-green": "#14AE5C",
         "secondary-green": "#CFF7D3",
 
-        "primary-yellow": "#EEC800",
+        "primary-yellow": "#786500",
         "secondary-yellow": "#FFF1C2",
 
         "primary-accent": "#0F62FE",
