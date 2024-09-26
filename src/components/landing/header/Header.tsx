@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { getErrorMessage } from "@/utils/getErrorMessage";
-import { Logo } from "./logo";
+import { Logo } from "../../common/Logo";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 

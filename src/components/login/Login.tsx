@@ -6,7 +6,7 @@ import { signIn } from "next-auth/react";
 
 export const Login = () => {
   const handleLogin = async (provider: string) => {
-    await signIn(provider, { callbackUrl: "/" });
+    await signIn(provider, { callbackUrl: "/dashboard" });
   };
 
   return (
