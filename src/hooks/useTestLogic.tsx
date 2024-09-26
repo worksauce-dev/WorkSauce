@@ -3,11 +3,18 @@
 import { useState, useEffect } from "react";
 import { testArr } from "@/constant/test";
 import { useTestLogicReturnInterface } from "@/types/test";
+import { useMemo } from "react";
 
 export const useTestLogic = (): useTestLogicReturnInterface => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
   const [isCompleted, setIsCompleted] = useState(false);
+
+  const totalQuestionsBefore = useMemo(() => {
+    return testArr.slice(0, currentCategoryIndex).reduce((acc, category) => {
+      return acc + category.questions.length;
+    }, 0);
+  }, [currentCategoryIndex]);
 
   const handleAnswer = (questionIndex: number, score: number) => {
     const key = `${currentCategoryIndex}-${questionIndex}`;
@@ -89,5 +96,6 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
     getCurrentProgress,
     canProceed,
     calculateScores,
+    totalQuestionsBefore,
   };
 };

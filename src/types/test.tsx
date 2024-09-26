@@ -26,4 +26,5 @@ export interface useTestLogicReturnInterface {
   getCurrentProgress: () => number;
   canProceed: boolean;
   calculateScores: () => ScoreType[];
+  totalQuestionsBefore: number;
 }
