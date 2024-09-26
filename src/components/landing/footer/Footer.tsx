@@ -1,5 +1,5 @@
 import React from "react";
-import { Logo } from "../header/logo";
+import { Logo } from "../../common/Logo";
 
 type FooterSectionProps = {
   title: string;
