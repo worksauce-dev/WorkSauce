@@ -7,19 +7,25 @@ interface ProgressSectionProps {
   getCurrentProgress: () => number;
   canProceed: boolean;
   handleNextCategory: () => void;
+  handleNextHalf: () => void;
   handleSkip: () => void;
   currentCategoryIndex: number;
   totalCategories: number;
+  isFirstHalfCompleted: boolean;
 }
 
 export const ProgressSection = ({
   getCurrentProgress,
   canProceed,
   handleNextCategory,
+  handleNextHalf,
   handleSkip,
   currentCategoryIndex,
   totalCategories,
+  isFirstHalfCompleted,
 }: ProgressSectionProps) => {
+  const progress = getCurrentProgress();
+
   return (
     <div className="w-full lg:w-1/4 bg-gray-50 p-4 sm:p-8 mt-8 lg:mt-0 rounded-lg shadow-xl lg:sticky lg:top-32 lg:h-fit">
       <div className="mb-8">
@@ -28,15 +34,15 @@ export const ProgressSection = ({
           <motion.div
             className="bg-blue-600 h-full rounded-full"
             initial={{ width: 0 }}
-            animate={{ width: `${getCurrentProgress()}%` }}
+            animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}
           />
         </div>
         <p className="text-right mt-2 text-sm font-medium text-gray-600">
-          {Math.round(getCurrentProgress())}% 완료
+          {Math.round(progress)}% 완료
         </p>
         <p className="text-right text-sm text-gray-500">
-          (전체 진행도: {currentCategoryIndex + 1} / {totalCategories})
+          (전체 진행도: {currentCategoryIndex} / {totalCategories})
         </p>
       </div>
 
@@ -44,16 +50,18 @@ export const ProgressSection = ({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={`w-full py-3 sm:py-4 rounded-lg text-white font-bold mb-4 transition-colors ${
-          canProceed
+          getCurrentProgress() === 100
             ? "bg-green-500 hover:bg-green-600"
             : "bg-gray-300 cursor-not-allowed"
         }`}
-        onClick={handleNextCategory}
-        disabled={!canProceed}
+        onClick={isFirstHalfCompleted ? handleNextCategory : handleNextHalf}
+        disabled={getCurrentProgress() !== 100}
       >
-        {currentCategoryIndex < totalCategories - 1
-          ? "다음 유형으로"
-          : "설문 완료"}
+        {isFirstHalfCompleted
+          ? currentCategoryIndex < totalCategories - 1
+            ? "다음 유형으로"
+            : "설문 완료"
+          : "다음 문항으로"}
       </motion.button>
 
       <motion.button

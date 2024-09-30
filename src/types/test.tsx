@@ -27,4 +27,6 @@ export interface useTestLogicReturnInterface {
   canProceed: boolean;
   calculateScores: () => ScoreType[];
   totalQuestionsBefore: number;
+  isFirstHalfCompleted: boolean;
+  handleNextHalf: () => void;
 }

@@ -17,6 +17,8 @@ export const TestContainer = () => {
     canProceed,
     calculateScores,
     totalQuestionsBefore,
+    isFirstHalfCompleted,
+    handleNextHalf,
   } = useTestLogic();
 
   if (isCompleted) {
@@ -30,6 +32,7 @@ export const TestContainer = () => {
         currentCategory={currentCategory}
         answers={answers}
         handleAnswer={handleAnswer}
+        isFirstHalfCompleted={isFirstHalfCompleted}
       />
       <ProgressSection
         getCurrentProgress={getCurrentProgress}
@@ -38,6 +41,8 @@ export const TestContainer = () => {
         handleSkip={handleSkip}
         currentCategoryIndex={currentCategory.index}
         totalCategories={currentCategory.total}
+        isFirstHalfCompleted={isFirstHalfCompleted}
+        handleNextHalf={handleNextHalf}
       />
     </div>
   );
