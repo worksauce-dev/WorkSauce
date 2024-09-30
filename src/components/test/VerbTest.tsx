@@ -474,9 +474,9 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
   const renderResult = () => {
     return (
       <div className="max-w-7xl">
-        <h3 className="text-subheading sm:text-2xl font-semibold mb-6 text-gray-800">
+        {/* <h3 className="text-subheading sm:text-2xl font-semibold mb-6 text-gray-800">
           test님의 소스테스트 결과입니다
-        </h3>
+        </h3> */}
         <div className="space-y-6">
           {scores
             .sort((a, b) => b.score - a.score)

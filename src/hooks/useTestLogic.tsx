@@ -9,6 +9,7 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isFirstHalfCompleted, setIsFirstHalfCompleted] = useState(false);
 
   const totalQuestionsBefore = useMemo(() => {
     return testArr.slice(0, currentCategoryIndex).reduce((acc, category) => {
@@ -16,17 +17,36 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
     }, 0);
   }, [currentCategoryIndex]);
 
+  const currentCategoryQuestions = testArr[currentCategoryIndex].questions;
+  const halfQuestions = Math.floor(currentCategoryQuestions.length / 2);
+
+  useEffect(() => {
+    const answeredQuestions = currentCategoryQuestions.filter(
+      (_, index) => answers[`${currentCategoryIndex}-${index}`] !== undefined
+    ).length;
+
+    if (answeredQuestions >= halfQuestions && !isFirstHalfCompleted) {
+      setIsFirstHalfCompleted(true);
+    } else if (answeredQuestions < halfQuestions && isFirstHalfCompleted) {
+      setIsFirstHalfCompleted(false);
+    }
+  }, [
+    answers,
+    currentCategoryIndex,
+    halfQuestions,
+    isFirstHalfCompleted,
+    currentCategoryQuestions,
+  ]);
+
   const handleAnswer = (questionIndex: number, score: number) => {
     const key = `${currentCategoryIndex}-${questionIndex}`;
 
     setAnswers(prev => {
-      // 이미 선택된 답변이 있을 경우
       if (prev[key] === score) {
         const { [key]: removed, ...rest } = prev;
         return rest;
       }
 
-      // 새로운 답변이 선택된 경우
       return {
         ...prev,
         [key]: score,
@@ -34,15 +54,30 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
     });
   };
 
+  const handleNextHalf = () => {
+    setIsFirstHalfCompleted(true);
+  };
+
   const getCurrentProgress = () => {
     const currentCategory = testArr[currentCategoryIndex];
+    const totalQuestions = currentCategory.questions.length;
+    const halfQuestions = Math.ceil(totalQuestions / 2);
     const answeredQuestions = currentCategory.questions.filter(
       (_, index) => answers[`${currentCategoryIndex}-${index}`] !== undefined
     ).length;
-    return (answeredQuestions / currentCategory.questions.length) * 100;
+
+    if (!isFirstHalfCompleted) {
+      return (answeredQuestions / halfQuestions) * 100;
+    } else {
+      return (
+        ((answeredQuestions - halfQuestions) /
+          (totalQuestions - halfQuestions)) *
+        100
+      );
+    }
   };
 
-  const canProceed = getCurrentProgress() === 100;
+  const canProceed = isFirstHalfCompleted && getCurrentProgress() === 100;
 
   const handleNextCategory = () => {
     if (canProceed) {
@@ -90,6 +125,7 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
     },
     answers,
     isCompleted,
+    isFirstHalfCompleted,
     handleAnswer,
     handleNextCategory,
     handleSkip,
@@ -97,5 +133,6 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
     canProceed,
     calculateScores,
     totalQuestionsBefore,
+    handleNextHalf,
   };
 };
