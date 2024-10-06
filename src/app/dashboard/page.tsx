@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "대시보드",
 };
 
-export async function getUserData(userId: string): Promise<User | null> {
+async function getUserData(userId: string): Promise<User | null> {
   const userRef = doc(firestore, "users", userId);
   const userDoc = await getDoc(userRef);
 
