@@ -1,11 +1,14 @@
 interface DashboardTabsProps {
-  activeTab: "대시보드" | "전체 현황" | "설정";
-  setActiveTab: (tab: "대시보드" | "전체 현황" | "설정") => void;
+  activeTab: "대시보드" | "지원자 검색" | "설정" | "분석 및 통계";
+  setActiveTab: (
+    tab: "대시보드" | "지원자 검색" | "설정" | "분석 및 통계"
+  ) => void;
 }
 
 const tabs = [
   { id: "대시보드", label: "대시보드" },
-  { id: "전체 현황", label: "전체 현황" },
+  { id: "지원자 검색", label: "지원자 검색" },
+  { id: "분석 및 통계", label: "분석 및 통계" },
   { id: "설정", label: "설정" },
 ];
 
@@ -17,8 +20,10 @@ const DashboardTabs = ({ activeTab, setActiveTab }: DashboardTabsProps) => {
           <button
             key={tab.id}
             onClick={() =>
-              setActiveTab(tab.id as "대시보드" | "전체 현황" | "설정")
-            } // 타입 단언
+              setActiveTab(
+                tab.id as "대시보드" | "지원자 검색" | "설정" | "분석 및 통계"
+              )
+            }
             className={`${
               activeTab === tab.id
                 ? "text-blue-600 border-blue-600"
