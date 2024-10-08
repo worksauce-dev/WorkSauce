@@ -155,6 +155,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
   const handleSendEmails = async () => {
     setIsSending(true);
     // TODO: Implement email sending logic here
+
     console.log(
       `Sending emails for group: ${groupName}, Deadline: ${[deadline]}`
     );
@@ -222,7 +223,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
         <div className="flex flex-col lg:flex-row h-full">
           {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
           <div className="lg:w-1/2 p-8 space-y-8 flex flex-col">
-            <h2 className="text-2xl font-bold text-indigo-800 mb-6">
+            <h2 className="text-xl font-bold text-indigo-800 mb-6">
               지원자 관리
             </h2>
             <div className="grid grid-cols-2 gap-8">
@@ -271,7 +272,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
                 placeholder="example@email.com"
               />
               {emailError && (
-                <p className="text-sm text-red-500">{emailError}</p>
+                <p className="text-xs text-red-500">{emailError}</p>
               )}
               <button
                 type="button"
@@ -284,7 +285,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
             </div>
 
             <div className="mt-auto">
-              <h2 className="text-2xl font-bold text-indigo-800 mb-4">
+              <h2 className="text-xl font-bold text-indigo-800 mb-4">
                 엑셀 파일로 지원자 일괄 추가
               </h2>
               <div
