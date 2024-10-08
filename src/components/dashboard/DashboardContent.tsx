@@ -1,8 +1,63 @@
+import Link from "next/link";
+import { useState } from "react";
+
 interface DashboardContentProps {
-  activeTab: "대시보드" | "전체 현황" | "설정";
+  activeTab: "대시보드" | "지원자 검색" | "설정" | "분석 및 통계";
+}
+
+interface Applicant {
+  id: string;
+  name: string;
+  email: string;
+  testGroup: string;
+  status: string;
 }
 
 export default function DashboardContent({ activeTab }: DashboardContentProps) {
+  const [timeRange, setTimeRange] = useState("1개월");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTestGroup, setSelectedTestGroup] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [activeSettingTab, setActiveSettingTab] = useState("프로필");
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: false,
+    sms: false,
+  });
+
+  // 이 부분은 실제로는 API 호출이나 상태 관리 라이브러리에서 가져와야 합니다.
+  const mockApplicants: Applicant[] = [
+    {
+      id: "1",
+      name: "홍길동",
+      email: "hong@example.com",
+      testGroup: "2024년 개발자 채용",
+      status: "완료",
+    },
+    {
+      id: "2",
+      name: "김철수",
+      email: "kim@example.com",
+      testGroup: "2024년 마케팅 채용",
+      status: "진행 중",
+    },
+    {
+      id: "3",
+      name: "이영희",
+      email: "lee@example.com",
+      testGroup: "2024년 개발자 채용",
+      status: "미시작",
+    },
+  ];
+
+  const filteredApplicants = mockApplicants.filter(
+    applicant =>
+      (applicant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        applicant.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      (selectedTestGroup === "" || applicant.testGroup === selectedTestGroup) &&
+      (selectedStatus === "" || applicant.status === selectedStatus)
+  );
+
   switch (activeTab) {
     case "대시보드":
       return (
@@ -14,7 +69,10 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
             <ul className="flex flex-col gap-4">
               <li className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4">
                 <div className="flex justify-between items-center">
-                  <div className="flex flex-col gap-2">
+                  <Link
+                    href="/result?testId=123"
+                    className="flex flex-col gap-2"
+                  >
                     <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
                       2024년 8월 기획부서 채용
                     </h1>
@@ -26,7 +84,7 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
                         마감일: 2024-09-01
                       </span>
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex flex-col items-end gap-2">
                     <div className="flex items-center">
                       <svg
@@ -229,11 +287,386 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
         </div>
       );
 
-    case "전체 현황":
-      return <div>전체 현황</div>;
+    case "지원자 검색":
+      return (
+        <div className="flex flex-col gap-6 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+          <h1 className="text-2xl font-bold text-gray-800">지원자 검색</h1>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="text"
+              placeholder="이름 또는 이메일로 검색"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <select
+              value={selectedTestGroup}
+              onChange={e => setSelectedTestGroup(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">모든 테스트 그룹</option>
+              <option value="2024년 개발자 채용">2024년 개발자 채용</option>
+              <option value="2024년 마케팅 채용">2024년 마케팅 채용</option>
+            </select>
+            <select
+              value={selectedStatus}
+              onChange={e => setSelectedStatus(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">모든 상태</option>
+              <option value="완료">완료</option>
+              <option value="진행 중">진행 중</option>
+              <option value="미시작">미시작</option>
+            </select>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    이름
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    이메일
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    테스트 그룹
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    상태
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    액션
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredApplicants.map(applicant => (
+                  <tr key={applicant.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {applicant.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {applicant.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {applicant.testGroup}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        ${
+                          applicant.status === "완료"
+                            ? "bg-green-100 text-green-800"
+                            : applicant.status === "진행 중"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {applicant.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <a
+                        href="#"
+                        className="text-indigo-600 hover:text-indigo-900"
+                      >
+                        상세보기
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
 
     case "설정":
-      return <div>설정</div>;
+      return (
+        <div className="flex flex-col md:flex-row gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+          <div className="w-full md:w-1/4">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
+            <ul className="space-y-2">
+              {["프로필", "알림", "보안", "테스트 설정", "통합", "청구"].map(
+                tab => (
+                  <li key={tab}>
+                    <button
+                      onClick={() => setActiveSettingTab(tab)}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeSettingTab === tab
+                          ? "bg-blue-500 text-white"
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+          <div className="w-full md:w-3/4">
+            {activeSettingTab === "프로필" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">프로필 설정</h3>
+                <form className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      이름
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      이메일
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="company"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      회사명
+                    </label>
+                    <input
+                      type="text"
+                      id="company"
+                      name="company"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    변경사항 저장
+                  </button>
+                </form>
+              </div>
+            )}
+            {activeSettingTab === "알림" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">알림 설정</h3>
+                <div className="space-y-4">
+                  {Object.entries(notifications).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-sm font-medium text-gray-700 capitalize">
+                        {key} 알림
+                      </span>
+                      <label className="flex items-center cursor-pointer">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={value}
+                            onChange={() =>
+                              setNotifications(prev => ({
+                                ...prev,
+                                [key as keyof typeof prev]:
+                                  !prev[key as keyof typeof prev],
+                              }))
+                            }
+                          />
+                          <div className="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
+                          <div
+                            className={`absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
+                              value
+                                ? "transform translate-x-full bg-blue-500"
+                                : ""
+                            }`}
+                          ></div>
+                        </div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {activeSettingTab === "보안" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">보안 설정</h3>
+                <form className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="current-password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      현재 비밀번호
+                    </label>
+                    <input
+                      type="password"
+                      id="current-password"
+                      name="current-password"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="new-password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      새 비밀번호
+                    </label>
+                    <input
+                      type="password"
+                      id="new-password"
+                      name="new-password"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="confirm-password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      새 비밀번호 확인
+                    </label>
+                    <input
+                      type="password"
+                      id="confirm-password"
+                      name="confirm-password"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    비밀번호 변경
+                  </button>
+                </form>
+              </div>
+            )}
+            {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}
+          </div>
+        </div>
+      );
+
+    case "분석 및 통계":
+      return (
+        <div className="flex flex-col gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-800">분석 및 통계</h1>
+            <select
+              value={timeRange}
+              onChange={e => setTimeRange(e.target.value)}
+              className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option>1주일</option>
+              <option>1개월</option>
+              <option>3개월</option>
+              <option>6개월</option>
+              <option>1년</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-blue-50 p-6 rounded-lg">
+              <h2 className="text-lg font-semibold text-blue-700 mb-2">
+                총 테스트 수
+              </h2>
+              <p className="text-3xl font-bold text-blue-800">152</p>
+            </div>
+            <div className="bg-green-50 p-6 rounded-lg">
+              <h2 className="text-lg font-semibold text-green-700 mb-2">
+                평균 완료율
+              </h2>
+              <p className="text-3xl font-bold text-green-800">78.5%</p>
+            </div>
+            <div className="bg-yellow-50 p-6 rounded-lg">
+              <h2 className="text-lg font-semibold text-yellow-700 mb-2">
+                총 지원자 수
+              </h2>
+              <p className="text-3xl font-bold text-yellow-800">1,234</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                테스트 유형별 분포
+              </h2>
+              <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                {/* 여기에 실제 차트가 들어갑니다 */}
+                <p className="text-gray-500">파이 차트</p>
+              </div>
+            </div>
+            <div className="bg-white p-6 rounded-lg border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                월별 테스트 생성 추이
+              </h2>
+              <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                {/* 여기에 실제 차트가 들어갑니다 */}
+                <p className="text-gray-500">라인 차트</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-lg border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              부서별 테스트 성과
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      부서
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      테스트 수
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      평균 완료율
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      평균 점수
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap">개발팀</td>
+                    <td className="px-6 py-4 whitespace-nowrap">45</td>
+                    <td className="px-6 py-4 whitespace-nowrap">82%</td>
+                    <td className="px-6 py-4 whitespace-nowrap">76.5</td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap">마케팅팀</td>
+                    <td className="px-6 py-4 whitespace-nowrap">38</td>
+                    <td className="px-6 py-4 whitespace-nowrap">79%</td>
+                    <td className="px-6 py-4 whitespace-nowrap">72.3</td>
+                  </tr>
+                  {/* 더 많은 행을 추가할 수 있습니다 */}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
 
     default:
       return <div>잘못된 탭입니다.</div>;
