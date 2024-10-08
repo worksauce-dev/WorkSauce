@@ -100,6 +100,8 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
+const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
 export const SendingTest = ({ user }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
@@ -111,6 +113,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
   const [isSending, setIsSending] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isDragging, setIsDragging] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const totalPages = Math.max(
     1,
@@ -125,8 +128,14 @@ export const SendingTest = ({ user }: SendingTestProps) => {
 
   const handleAddApplicant = () => {
     if (currentApplicant.name && currentApplicant.email) {
+      if (!emailRegex.test(currentApplicant.email)) {
+        setEmailError("올바른 이메일 형식을 입력해주세요.");
+        return;
+      }
+
       setApplicants([...applicants, currentApplicant]);
       setCurrentApplicant({ name: "", email: "" });
+      setEmailError(""); // 에러 메시지 초기화
       if (applicants.length >= APPLICANTS_PER_PAGE) {
         setCurrentPage(
           Math.ceil((applicants.length + 1) / APPLICANTS_PER_PAGE)
@@ -147,7 +156,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
     setIsSending(true);
     // TODO: Implement email sending logic here
     console.log(
-      `Sending emails for group: ${groupName}, Deadline: ${deadline}`
+      `Sending emails for group: ${groupName}, Deadline: ${[deadline]}`
     );
     await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating API call
     setIsSending(false);
@@ -213,7 +222,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
         <div className="flex flex-col lg:flex-row h-full">
           {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
           <div className="lg:w-1/2 p-8 space-y-8 flex flex-col">
-            <h2 className="text-3xl font-bold text-indigo-800 mb-6">
+            <h2 className="text-2xl font-bold text-indigo-800 mb-6">
               지원자 관리
             </h2>
             <div className="grid grid-cols-2 gap-8">
@@ -261,6 +270,9 @@ export const SendingTest = ({ user }: SendingTestProps) => {
                 }
                 placeholder="example@email.com"
               />
+              {emailError && (
+                <p className="text-sm text-red-500">{emailError}</p>
+              )}
               <button
                 type="button"
                 onClick={handleAddApplicant}
