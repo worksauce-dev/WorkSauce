@@ -19,7 +19,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row">
-      <DashboardContainer user={user} />;
+      <DashboardContainer user={user} />
     </div>
   );
 }
