@@ -59,9 +59,9 @@ const LinkSection: React.FC = () => (
 const LegalSection: React.FC = () => (
   <ul className="text-primary-gray text-caption md:text-body2 space-y-2 flex flex-col">
     {[
-      { href: "policies/terms-and-conditions", text: "이용약관" },
-      { href: "policies/privacy-policy", text: "개인정보 취급방침" },
-      { href: "policies/refund-policy", text: "취소 및 환불정책" },
+      { href: "/terms-and-conditions", text: "이용약관" },
+      { href: "/privacy-policy", text: "개인정보 취급방침" },
+      { href: "/refund-policy", text: "취소 및 환불정책" },
     ].map(({ href, text }) => (
       <FooterLink key={href} href={href}>
         {text}
