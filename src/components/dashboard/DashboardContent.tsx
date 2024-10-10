@@ -70,7 +70,7 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
               <li className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <Link
-                    href="/result?testId=123"
+                    href="/result?groupId=123"
                     className="flex flex-col gap-2"
                   >
                     <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
