@@ -13,8 +13,12 @@ import {
   FiChevronRight,
   FiUpload,
   FiUser,
+  FiCheck,
+  FiChevronDown,
+  FiX,
 } from "react-icons/fi";
 import * as XLSX from "xlsx";
+import { applicantTypes } from "@/constant/test";
 
 interface SendingTestProps {
   user: User;
@@ -102,6 +106,8 @@ const InputField: React.FC<InputFieldProps> = ({
 
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
+const MAX_SELECTIONS = 3;
+
 export const SendingTest = ({ user }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
@@ -114,6 +120,8 @@ export const SendingTest = ({ user }: SendingTestProps) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isDragging, setIsDragging] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
 
   const totalPages = Math.max(
     1,
@@ -212,6 +220,20 @@ export const SendingTest = ({ user }: SendingTestProps) => {
     [handleFileUpload]
   );
 
+  const handleTypeSelection = (typeName: string) => {
+    setSelectedTypes(prev => {
+      if (prev.includes(typeName)) {
+        // 이미 선택된 유형이면 제거
+        return prev.filter(t => t !== typeName);
+      } else if (prev.length < MAX_SELECTIONS) {
+        // 선택된 유형이 3개 미만이면 추가
+        return [...prev, typeName];
+      }
+      // 이미 3개가 선택된 경우 변경 없음
+      return prev;
+    });
+  };
+
   const paginatedApplicants = applicants.slice(
     (currentPage - 1) * APPLICANTS_PER_PAGE,
     currentPage * APPLICANTS_PER_PAGE
@@ -222,10 +244,8 @@ export const SendingTest = ({ user }: SendingTestProps) => {
       <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-6xl">
         <div className="flex flex-col lg:flex-row h-full">
           {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
-          <div className="lg:w-1/2 p-8 space-y-8 flex flex-col">
-            <h2 className="text-xl font-bold text-indigo-800 mb-6">
-              지원자 관리
-            </h2>
+          <div className="lg:w-1/2 p-8 flex flex-col gap-8">
+            <h2 className="text-xl font-bold text-indigo-800">지원자 관리</h2>
             <div className="grid grid-cols-2 gap-8">
               <InputField
                 id="groupName"
@@ -243,7 +263,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
               />
             </div>
 
-            <div className="space-y-6 flex-grow">
+            <div className="flex flex-col gap-4">
               <InputField
                 id="applicantName"
                 label="지원자 이름"
@@ -283,6 +303,19 @@ export const SendingTest = ({ user }: SendingTestProps) => {
                 지원자 추가
               </button>
             </div>
+
+            {/* 지원자 유형 선택 버튼 */}
+            <button
+              onClick={() => setIsTypeModalOpen(true)}
+              className="w-full flex justify-between items-center px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <span>
+                {selectedTypes.length > 0
+                  ? selectedTypes.join(", ")
+                  : "지원자 유형 선택 (최대 3개)"}
+              </span>
+              <FiChevronDown className="ml-2" />
+            </button>
 
             <div className="mt-auto">
               <h2 className="text-xl font-bold text-indigo-800 mb-4">
@@ -432,6 +465,59 @@ export const SendingTest = ({ user }: SendingTestProps) => {
           </div>
         </div>
       </div>
+
+      {/* 지원자 유형 선택 모달 */}
+      {isTypeModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold">지원자 유형 선택 (최대 3개)</h3>
+              <button
+                onClick={() => setIsTypeModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <FiX className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              {applicantTypes.map(type => (
+                <div
+                  key={type.name}
+                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                    selectedTypes.includes(type.name)
+                      ? "bg-indigo-100 border-2 border-indigo-500"
+                      : "bg-gray-50 hover:bg-gray-100"
+                  } ${
+                    selectedTypes.length >= MAX_SELECTIONS &&
+                    !selectedTypes.includes(type.name)
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  onClick={() => handleTypeSelection(type.name)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{type.name}</span>
+                    {selectedTypes.includes(type.name) && (
+                      <FiCheck className="h-5 w-5 text-indigo-600" />
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {type.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setIsTypeModalOpen(false)}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-200"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
