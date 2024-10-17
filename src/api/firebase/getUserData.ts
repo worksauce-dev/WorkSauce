@@ -25,5 +25,6 @@ export async function getUserData(userId: string): Promise<User | null> {
     isAdmin: userData.isAdmin,
     provider: userData.provider,
     lastLoginAt: userData.lastLoginAt?.toDate().toISOString() ?? null,
+    groups: userData.groups,
   };
 }
