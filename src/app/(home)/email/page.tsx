@@ -1,10 +1,7 @@
 "use client";
 
-// 지원자에게 이메일 보내기
-// 지원자들의 이메일을 입력하는 인풋. 내용은 필요없음 보내기 버튼만 보내면 된다.
-//
-
 import { useState } from "react";
+import { sendEmail } from "@/utils/sendEmail";
 
 export default function EmailForm() {
   const [email, setEmail] = useState("");
@@ -14,25 +11,19 @@ export default function EmailForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const res = await fetch("/api/send-email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        to: email,
-        subject: subject,
-        text: message,
-      }),
+    const success = await sendEmail({
+      to: email,
+      subject: subject,
+      text: message,
     });
 
-    if (res.ok) {
-      alert("Email sent successfully!");
+    if (success) {
+      alert("이메일 전송 성공!");
       setEmail("");
       setSubject("");
       setMessage("");
     } else {
-      alert("Failed to send email. Please try again.");
+      alert("이메일 전송 실패. 다시 시도해주세요.");
     }
   };
 

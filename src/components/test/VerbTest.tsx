@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { testArr, typeDescriptions, verbQuestions } from "@/constant/test";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Send } from "lucide-react";
+import { ScoreType } from "@/types/test";
 
 interface VerbTestProps {
   prevScores: {
@@ -12,6 +13,15 @@ interface VerbTestProps {
     maxScore: number;
     color?: string;
   }[];
+  name: string;
+  email: string;
+  groupId: string;
+  submitTest: (
+    groupId: string,
+    email: string,
+    name: string,
+    testResult: ScoreType[]
+  ) => void;
 }
 
 interface TestItem {
@@ -24,11 +34,18 @@ interface TestItem {
   name: string;
 }
 
-export const VerbTest = ({ prevScores }: VerbTestProps) => {
+export const VerbTest = ({
+  prevScores,
+  name,
+  email,
+  groupId,
+  submitTest,
+}: VerbTestProps) => {
   const [step, setStep] = useState(0);
   const [nameArr, setNameArr] = useState<string[]>([]);
   const [scores, setScores] = useState(prevScores);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const renderQustion = () => {
     if (step === 0 || step === 0.5) {
@@ -389,6 +406,23 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
         </>
       );
     }
+
+    if (step === 5) {
+      return (
+        <div className="col-span-full text-center flex flex-col gap-4 justify-center items-center">
+          <h3 className="text-2xl font-semibold mb-4">테스트 완료!</h3>
+          <p className="text-lg mb-2">모든 질문에 답변해 주셔서 감사합니다.</p>
+          <p className="text-lg mb-6">
+            우측 하단의{" "}
+            <span className="font-semibold">&apos;제출하기&apos;</span> 버튼을
+            꼭 클릭해주세요.
+          </p>
+          <div className="text-sm text-gray-600">
+            제출 후에는 답변을 수정할 수 없으니 신중히 검토해 주세요.
+          </div>
+        </div>
+      );
+    }
   };
 
   const getCurrentProgress = () => {
@@ -455,66 +489,38 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
           <RefreshCw size={18} />
           소스테스트 다시하기
         </motion.button>
+
+        {
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`${
+              step !== 5
+                ? "bg-slate-300 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-600"
+            } w-full py-3 mt-4 rounded-lg text-white font-bold transition-colors flex items-center justify-center gap-2`}
+            onClick={() => step === 5 && handleSubmit()}
+            disabled={step !== 5}
+          >
+            <Send size={18} />
+            {isSubmitting ? "제출 중..." : "제출하기"}
+          </motion.button>
+        }
       </div>
     );
   };
 
-  const getTopScore = () => {
-    return scores.reduce((prev, current) =>
-      prev.score > current.score ? prev : current
-    );
-  };
+  // const getTopScore = () => {
+  //   return scores.reduce((prev, current) =>
+  //     prev.score > current.score ? prev : current
+  //   );
+  // };
 
-  const getTypeDescription = (sort: string) => {
-    return (
-      typeDescriptions[sort.replace(/\s/g, "")] || "설명이 제공되지 않았습니다."
-    );
-  };
-
-  const renderResult = () => {
-    return (
-      <div className="max-w-7xl">
-        {/* <h3 className="text-subheading sm:text-2xl font-semibold mb-6 text-gray-800">
-          test님의 소스테스트 결과입니다
-        </h3> */}
-        <div className="space-y-6">
-          {scores
-            .sort((a, b) => b.score - a.score)
-            .map((score, idx) => (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                key={idx}
-                className={`p-4 rounded-lg ${
-                  score.sort === getTopScore().sort
-                    ? "bg-indigo-100 border-2 border-indigo-500"
-                    : "bg-gray-100"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-gray-700">{score.sort}</div>
-                  <div className="font-bold text-indigo-600">
-                    {score.score} / {score.maxScore}
-                  </div>
-                </div>
-                {score.sort === getTopScore().sort && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-2 text-sm text-gray-600"
-                  >
-                    <p className="font-semibold mb-1">당신의 주요 유형:</p>
-                    <p className="text-sm">{getTypeDescription(score.sort)}</p>
-                  </motion.div>
-                )}
-              </motion.div>
-            ))}
-        </div>
-      </div>
-    );
-  };
+  // const getTypeDescription = (sort: string) => {
+  //   return (
+  //     typeDescriptions[sort.replace(/\s/g, "")] || "설명이 제공되지 않았습니다."
+  //   );
+  // };
 
   const clickReset = () => {
     setStep(0);
@@ -523,39 +529,45 @@ export const VerbTest = ({ prevScores }: VerbTestProps) => {
     setSelectedAnswers([]);
   };
 
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      submitTest(groupId, email, name, scores);
+    } catch (error) {
+      console.error("Failed to save test result:", error);
+      // Handle error (e.g., show an error message to the user)
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
-      {step === 5 ? (
-        renderResult()
-      ) : (
-        <>
-          <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl flex flex-col">
-            <div className="bg-indigo-600 text-white p-6 rounded-t-lg">
-              <h2 className="text-base sm:text-subheading font-semibold">
-                {renderQustion()}
-              </h2>
-            </div>
+      <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl flex flex-col">
+        <div className="bg-indigo-600 text-white p-6 rounded-t-lg">
+          <h2 className="text-base sm:text-lg font-semibold">
+            {renderQustion()}
+          </h2>
+        </div>
 
-            <div className="flex flex-col gap-8 p-8 flex-grow">
-              <div
-                className={`grid grid-cols-2 sm:grid-cols-3 gap-8 ${
-                  step >= 1 ? "md:grid-cols-4" : "md:grid-cols-5"
-                }`}
-              >
-                {renderAnswers()}
-              </div>
-            </div>
-
-            <div className="text-end w-full p-8">
-              <span className="text-sm text-primary-gray">
-                테스트 무단 배포시 블라블라블라블라
-              </span>
-            </div>
+        <div className="flex flex-col gap-8 p-8 flex-grow">
+          <div
+            className={`grid grid-cols-2 sm:grid-cols-3 gap-8 ${
+              step >= 1 ? "md:grid-cols-4" : "md:grid-cols-5"
+            }`}
+          >
+            {renderAnswers()}
           </div>
+        </div>
 
-          {renderSidebar()}
-        </>
-      )}
+        <div className="flex justify-between items-center w-full p-8">
+          <span className="text-sm text-primary-gray">
+            테스트 무단 배포시 블라블라블라블라
+          </span>
+        </div>
+      </div>
+
+      {renderSidebar()}
     </div>
   );
 };

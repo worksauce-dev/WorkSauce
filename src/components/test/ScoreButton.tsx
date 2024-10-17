@@ -48,7 +48,7 @@ export const ScoreButton = ({
       >
         {score}
       </motion.button>
-      <span className="text-[10px] sm:text-body1 text-primary-gray">
+      <span className="text-xs sm:text-sm text-primary-gray">
         {scoreExplanation()}
       </span>
     </motion.div>
