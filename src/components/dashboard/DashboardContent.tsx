@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
-import { Applicant, Group } from "@/types/group";
+import { Group } from "@/types/group";
 import { format } from "date-fns";
 
 interface DashboardContentProps {
