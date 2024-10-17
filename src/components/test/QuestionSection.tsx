@@ -48,7 +48,7 @@ export const QuestionSection = ({
 
       return (
         <div key={actualQuestionIndex} className="gap-4 flex flex-col">
-          <p className="text-base sm:text-subheading leading-relaxed mb-4 text-gray-700 font-medium">
+          <p className="text-base sm:text-lg leading-relaxed mb-4 text-gray-700 font-medium">
             {displayNumber}. {question.text}
           </p>
           <div className="flex items-center sm:gap-8 w-full justify-between">

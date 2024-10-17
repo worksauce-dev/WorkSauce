@@ -33,7 +33,7 @@ export const Hero = () => {
           transition={{ duration: 0.8 }}
           className="relative container mx-auto px-6 text-center"
         >
-          <h1 className="text-heading2 md:text-hero flex justify-center items-center font-semibold sm:font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+          <h1 className="text-heading2 md:text-hero flex justify-center items-center font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
             채용에 필요한 특별한 소스
           </h1>
           <p className="font-medium text-lg md:text-heading1 mb-10 text-primary-gray max-w-2xl mx-auto">

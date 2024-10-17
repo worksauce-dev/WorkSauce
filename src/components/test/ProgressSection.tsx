@@ -27,7 +27,7 @@ export const ProgressSection = ({
   const progress = getCurrentProgress();
 
   return (
-    <div className="w-full lg:w-1/4 bg-gray-50 p-4 sm:p-8 mt-8 lg:mt-0 rounded-lg shadow-xl lg:sticky lg:top-32 lg:h-fit">
+    <div className="w-full lg:w-1/4 bg-gray-50 p-4 sm:p-8 mt-8 lg:mt-0 rounded-lg shadow-xl lg:sticky lg:top-32 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4 text-gray-800">진행 상황</h3>
         <div className="bg-gray-200 h-3 rounded-full overflow-hidden">

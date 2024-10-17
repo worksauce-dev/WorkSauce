@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { MdDashboard, MdMail, MdSettings } from "react-icons/md";
+import { IoMdSettings } from "react-icons/io";
 import { Logo } from "@/components/common/Logo";
 import { User } from "@/types/user";
 
@@ -37,17 +38,17 @@ const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
   item,
   isActive,
 }) => (
-  <Link
-    href={item.href}
-    passHref
-    className={`flex items-center gap-3 text-md font-semibold p-3 px-4 rounded-full transition-all duration-200 ${
-      isActive
-        ? "bg-blue-500 text-white"
-        : "text-primary-gray hover:bg-secondary-blue hover:text-primary-blue"
-    }`}
-  >
-    <item.icon size={20} />
-    {item.label}
+  <Link href={item.href} passHref>
+    <button
+      className={`flex items-center gap-3 text-md font-semibold p-3 px-4 rounded-full transition-all duration-200 ${
+        isActive
+          ? "bg-blue-500 text-white"
+          : "text-primary-gray hover:bg-secondary-blue hover:text-primary-blue"
+      }`}
+    >
+      <item.icon size={20} />
+      {item.label}
+    </button>
   </Link>
 );
 
@@ -67,7 +68,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="min-w-[300px] h-full hidden flex-col gap-8 px-9 py-6 bg-white lg:flex">
+    <aside className="min-w-[300px] h-full hidden flex-col gap-6 px-9 py-6 bg-white lg:flex">
       <Logo />
       <UserInfo user={user} />
       <nav className="flex flex-col gap-4">
