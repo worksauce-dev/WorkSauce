@@ -11,4 +11,5 @@ export interface User {
   lastLoginAt: string;
   type: string;
   updatedAt: string;
+  groups: string[];
 }

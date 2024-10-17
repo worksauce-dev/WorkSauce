@@ -18,10 +18,14 @@ import {
   FiX,
 } from "react-icons/fi";
 import * as XLSX from "xlsx";
-import { applicantTypes } from "@/constant/test";
-
+import { keyword } from "@/constant/test";
+import Tooltip from "../common/Tooltip";
+import { Group } from "@/types/group";
+import { sendEmail } from "@/utils/sendEmail";
+import { useRouter } from "next/navigation";
 interface SendingTestProps {
   user: User;
+  createGroup: (group: Group, userId: string) => Promise<string>;
 }
 
 interface Applicant {
@@ -106,9 +110,7 @@ const InputField: React.FC<InputFieldProps> = ({
 
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-const MAX_SELECTIONS = 3;
-
-export const SendingTest = ({ user }: SendingTestProps) => {
+export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
   const [currentApplicant, setCurrentApplicant] = useState<Applicant>({
@@ -120,9 +122,14 @@ export const SendingTest = ({ user }: SendingTestProps) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isDragging, setIsDragging] = useState(false);
   const [emailError, setEmailError] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedKeywordGroups, setSelectedKeywordGroups] = useState<
+    {
+      name: string;
+      keyword: string[];
+    }[]
+  >([]);
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
-
+  const router = useRouter();
   const totalPages = Math.max(
     1,
     Math.ceil(applicants.length / APPLICANTS_PER_PAGE)
@@ -162,17 +169,50 @@ export const SendingTest = ({ user }: SendingTestProps) => {
 
   const handleSendEmails = async () => {
     setIsSending(true);
-    // TODO: Implement email sending logic here
 
-    console.log(
-      `Sending emails for group: ${groupName}, Deadline: ${[deadline]}`
+    const groupId = await createGroup(
+      {
+        name: groupName,
+        deadline: new Date(deadline).toISOString(),
+        keywords: selectedKeywordGroups.map(group => group.name.trim()),
+        applicants: applicants.map(applicant => ({
+          name: applicant.name.trim(),
+          email: applicant.email.trim().toLowerCase(),
+          groupId: "", // 서버에서 생성될 예정
+          testStatus: "pending",
+          completedAt: null, // 빈 문자열 대신 null 사용
+          testResult: [],
+          groupName: groupName,
+        })),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        createdBy: { id: user.id, name: user.name },
+        updatedBy: { id: user.id, name: user.name },
+        groupId: "",
+      },
+      user.id
     );
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating API call
+
+    for (const applicant of applicants) {
+      const success = await sendEmail({
+        to: applicant.email,
+        subject: "워크소스 테스트를 시작해주세요!",
+        userName: applicant.name,
+        groupId: groupId,
+      });
+
+      if (!success) {
+        alert("이메일 전송 실패. 다시 시도해주세요.");
+      }
+    }
+
     setIsSending(false);
     setGroupName("");
     setDeadline("");
     setApplicants([]);
     setCurrentPage(1);
+
+    router.push(`/result?groupId=${groupId}`);
   };
 
   const handleFileUpload = useCallback((file: File) => {
@@ -220,14 +260,23 @@ export const SendingTest = ({ user }: SendingTestProps) => {
     [handleFileUpload]
   );
 
-  const handleTypeSelection = (typeName: string) => {
-    setSelectedTypes(prev => {
-      if (prev.includes(typeName)) {
-        // 이미 선택된 유형이면 제거
-        return prev.filter(t => t !== typeName);
-      } else if (prev.length < MAX_SELECTIONS) {
-        // 선택된 유형이 3개 미만이면 추가
-        return [...prev, typeName];
+  const handleGroupSelection = (keywords: {
+    name: string;
+    keyword: string[];
+  }) => {
+    setSelectedKeywordGroups(prev => {
+      const groupIndex = prev.findIndex(
+        group =>
+          group.keyword.every(kw => keywords.keyword.includes(kw)) &&
+          keywords.keyword.every(kw => group.keyword.includes(kw))
+      );
+
+      if (groupIndex !== -1) {
+        // 이미 선택된 그룹이면 제거
+        return prev.filter((_, index) => index !== groupIndex);
+      } else if (prev.length < 3) {
+        // 새 그룹 추가 (최대 3개까지)
+        return [...prev, keywords];
       }
       // 이미 3개가 선택된 경우 변경 없음
       return prev;
@@ -240,7 +289,7 @@ export const SendingTest = ({ user }: SendingTestProps) => {
   );
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-9 py-8 bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen flex items-center justify-center">
+    <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-6xl">
         <div className="flex flex-col lg:flex-row h-full">
           {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
@@ -305,17 +354,69 @@ export const SendingTest = ({ user }: SendingTestProps) => {
             </div>
 
             {/* 지원자 유형 선택 버튼 */}
-            <button
-              onClick={() => setIsTypeModalOpen(true)}
-              className="w-full flex justify-between items-center px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <span>
-                {selectedTypes.length > 0
-                  ? selectedTypes.join(", ")
-                  : "지원자 유형 선택 (최대 3개)"}
-              </span>
-              <FiChevronDown className="ml-2" />
-            </button>
+            {selectedKeywordGroups.length > 0 ? (
+              <Tooltip
+                content={
+                  <div>
+                    {selectedKeywordGroups.map((group, index) => (
+                      <div key={index} className="mb-1 last:mb-0 text-sm">
+                        {group.keyword.join(", ")}
+                      </div>
+                    ))}
+                  </div>
+                }
+              >
+                <button
+                  onClick={() => setIsTypeModalOpen(true)}
+                  className="w-full flex items-center px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <div className="flex-grow truncate">
+                    {selectedKeywordGroups.length > 0 ? (
+                      <div>
+                        <span className="font-medium">
+                          {selectedKeywordGroups[0].keyword.join(", ")}
+                        </span>
+                        {selectedKeywordGroups.length > 1 && (
+                          <span className="text-gray-500 ml-2">
+                            외 {selectedKeywordGroups.length - 1}개 그룹
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">
+                        지원자 유형 선택 (최대 3개)
+                      </span>
+                    )}
+                  </div>
+                  <FiChevronDown className="ml-2 flex-shrink-0" />
+                </button>
+              </Tooltip>
+            ) : (
+              <button
+                onClick={() => setIsTypeModalOpen(true)}
+                className="w-full flex items-center px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <div className="flex-grow truncate">
+                  {selectedKeywordGroups.length > 0 ? (
+                    <div>
+                      <span className="font-medium">
+                        {selectedKeywordGroups[0].keyword.join(", ")}
+                      </span>
+                      {selectedKeywordGroups.length > 1 && (
+                        <span className="text-gray-500 ml-2">
+                          외 {selectedKeywordGroups.length - 1}개 그룹
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-gray-500">
+                      지원자 유형 선택 (최대 3개)
+                    </span>
+                  )}
+                </div>
+                <FiChevronDown className="ml-2 flex-shrink-0" />
+              </button>
+            )}
 
             <div className="mt-auto">
               <h2 className="text-xl font-bold text-indigo-800 mb-4">
@@ -469,43 +570,61 @@ export const SendingTest = ({ user }: SendingTestProps) => {
       {/* 지원자 유형 선택 모달 */}
       {isTypeModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold">지원자 유형 선택 (최대 3개)</h3>
+          <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                선호하는 지원자 유형 선택 (최대 3개)
+              </h3>
               <button
                 onClick={() => setIsTypeModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <FiX className="h-6 w-6" />
+                <FiX className="h-5 w-5" />
               </button>
             </div>
-            <div className="space-y-4">
-              {applicantTypes.map(type => (
-                <div
-                  key={type.name}
-                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
-                    selectedTypes.includes(type.name)
-                      ? "bg-indigo-100 border-2 border-indigo-500"
-                      : "bg-gray-50 hover:bg-gray-100"
-                  } ${
-                    selectedTypes.length >= MAX_SELECTIONS &&
-                    !selectedTypes.includes(type.name)
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                  onClick={() => handleTypeSelection(type.name)}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{type.name}</span>
-                    {selectedTypes.includes(type.name) && (
-                      <FiCheck className="h-5 w-5 text-indigo-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {keyword.map((group, index) => {
+                const isSelected = selectedKeywordGroups.some(
+                  selectedGroup =>
+                    selectedGroup.keyword.every(kw =>
+                      group.keyword.includes(kw)
+                    ) &&
+                    group.keyword.every(kw =>
+                      selectedGroup.keyword.includes(kw)
+                    )
+                );
+                return (
+                  <div
+                    key={index}
+                    className={`group p-4 rounded-lg transition-all duration-200 flex items-center justify-center ${
+                      isSelected
+                        ? "bg-indigo-100 border border-indigo-300"
+                        : "bg-gray-50 hover:bg-gray-100 border border-gray-200"
+                    } ${
+                      selectedKeywordGroups.length >= 3 && !isSelected
+                        ? "opacity-50 cursor-not-allowed"
+                        : "cursor-pointer"
+                    }`}
+                    onClick={() => handleGroupSelection(group)}
+                  >
+                    <div className="flex flex-wrap gap-2">
+                      {group.keyword.map((kw, kwIndex) => (
+                        <span
+                          key={kwIndex}
+                          className="px-2 py-1 bg-white text-indigo-600 rounded-full text-xs font-medium border border-indigo-200"
+                        >
+                          {kw}
+                        </span>
+                      ))}
+                    </div>
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 text-indigo-600">
+                        <FiCheck className="h-4 w-4" />
+                      </div>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    {type.description}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <div className="mt-6 flex justify-end">
               <button
