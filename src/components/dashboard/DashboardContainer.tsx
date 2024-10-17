@@ -5,17 +5,22 @@ import DashboardTabs from "./DashboardTabs";
 import DashboardContent from "./DashboardContent";
 import { useState } from "react";
 import { User } from "@/types/user";
+import { Group } from "@/types/group";
 
 interface DashboardContainerProps {
-  user: User;
+  userData: User;
+  groupData: Group[];
 }
 
-export default function DashboardContainer({ user }: DashboardContainerProps) {
+export default function DashboardContainer({
+  userData,
+  groupData,
+}: DashboardContainerProps) {
   const [activeTab, setActiveTab] = useState<
-    "대시보드" | "지원자 검색" | "설정" | "분석 및 통계"
+    "대시보드" | "지원자 검색" | "설정"
   >("대시보드");
 
-  const { name } = user;
+  const { name } = userData;
 
   return (
     <div className="flex flex-col h-screen w-full">
@@ -32,7 +37,7 @@ export default function DashboardContainer({ user }: DashboardContainerProps) {
 
         {/* Content */}
         <div className="flex-grow overflow-auto">
-          <DashboardContent activeTab={activeTab} />
+          <DashboardContent activeTab={activeTab} groupData={groupData} />
         </div>
       </div>
     </div>
