@@ -1,20 +1,17 @@
 import Link from "next/link";
 import { useState } from "react";
+import { Applicant, Group } from "@/types/group";
+import { format } from "date-fns";
 
 interface DashboardContentProps {
-  activeTab: "대시보드" | "지원자 검색" | "설정" | "분석 및 통계";
+  activeTab: "대시보드" | "지원자 검색" | "설정";
+  groupData: Group[];
 }
 
-interface Applicant {
-  id: string;
-  name: string;
-  email: string;
-  testGroup: string;
-  status: string;
-}
-
-export default function DashboardContent({ activeTab }: DashboardContentProps) {
-  const [timeRange, setTimeRange] = useState("1개월");
+export default function DashboardContent({
+  activeTab,
+  groupData,
+}: DashboardContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTestGroup, setSelectedTestGroup] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -25,38 +22,16 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
     sms: false,
   });
 
-  // 이 부분은 실제로는 API 호출이나 상태 관리 라이브러리에서 가져와야 합니다.
-  const mockApplicants: Applicant[] = [
-    {
-      id: "1",
-      name: "홍길동",
-      email: "hong@example.com",
-      testGroup: "2024년 개발자 채용",
-      status: "완료",
-    },
-    {
-      id: "2",
-      name: "김철수",
-      email: "kim@example.com",
-      testGroup: "2024년 마케팅 채용",
-      status: "진행 중",
-    },
-    {
-      id: "3",
-      name: "이영희",
-      email: "lee@example.com",
-      testGroup: "2024년 개발자 채용",
-      status: "미시작",
-    },
-  ];
-
-  const filteredApplicants = mockApplicants.filter(
-    applicant =>
-      (applicant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        applicant.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (selectedTestGroup === "" || applicant.testGroup === selectedTestGroup) &&
-      (selectedStatus === "" || applicant.status === selectedStatus)
-  );
+  const filteredApplicants = groupData
+    .map(group => group.applicants)
+    .flat()
+    .filter(
+      applicant =>
+        (applicant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          applicant.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (selectedTestGroup === "" || applicant.groupId === selectedTestGroup) &&
+        (selectedStatus === "" || applicant.testStatus === selectedStatus)
+    );
 
   switch (activeTab) {
     case "대시보드":
@@ -67,141 +42,75 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
               최근 워크소스 현황
             </h1>
             <ul className="flex flex-col gap-4">
-              <li className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <Link
-                    href="/result?groupId=123"
-                    className="flex flex-col gap-2"
+              {groupData.map(group => {
+                const completedApplicants = group.applicants.filter(
+                  applicant => applicant.completedAt !== null
+                );
+
+                return (
+                  <li
+                    key={group.groupId}
+                    className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4"
                   >
-                    <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
-                      2024년 8월 기획부서 채용
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      <span className="bg-blue-100 text-blue-800 text-xs md:text-sm font-medium p-1 md:px-2.5 md:py-0.5 rounded-full">
-                        지원자 10명
-                      </span>
-                      <span className="text-xs md:text-sm text-gray-500">
-                        마감일: 2024-09-01
-                      </span>
-                    </div>
-                  </Link>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center">
-                      <svg
-                        className="w-4 h-4 text-green-500 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+                    <div className="flex justify-between items-center">
+                      <Link
+                        href={`/group?groupId=${group.groupId}`}
+                        className="flex flex-col gap-2"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                      <span className="text-xs md:text-sm font-medium text-green-600">
-                        완료한 지원자: 8명
-                      </span>
+                        <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
+                          {group.name}
+                        </h1>
+                        <div className="flex items-center gap-2">
+                          <span className="bg-blue-100 text-blue-800 text-xs md:text-sm font-medium p-1 md:px-2.5 md:py-0.5 rounded-full">
+                            지원자 {group.applicants.length}명
+                          </span>
+                          <span className="text-xs md:text-sm text-gray-500">
+                            마감일:{" "}
+                            {format(new Date(group.deadline), "MM/dd/yyyy")}
+                          </span>
+                        </div>
+                      </Link>
+                      <div className="flex flex-col items-end gap-2">
+                        <div className="flex items-center">
+                          <svg
+                            className="w-4 h-4 text-green-500 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            ></path>
+                          </svg>
+                          <span className="text-xs md:text-sm font-medium text-green-600">
+                            완료한 지원자: {completedApplicants.length}
+                          </span>
+                        </div>
+                        <div className="w-16 md:w-32 bg-gray-200 rounded-full h-2.5">
+                          <div
+                            className="bg-blue-600 h-2.5 rounded-full"
+                            style={
+                              completedApplicants.length === 0
+                                ? { width: "0%" }
+                                : {
+                                    width: `${
+                                      (completedApplicants.length /
+                                        group.applicants.length) *
+                                      100
+                                    }%`,
+                                  }
+                            }
+                          ></div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="w-16 md:w-32 bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{ width: "80%" }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-col gap-2">
-                    <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
-                      2024년 8월 기획부서 채용
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      <span className="bg-blue-100 text-blue-800 text-xs md:text-sm font-medium p-1 md:px-2.5 md:py-0.5 rounded-full">
-                        지원자 10명
-                      </span>
-                      <span className="text-xs md:text-sm text-gray-500">
-                        마감일: 2024-09-01
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center">
-                      <svg
-                        className="w-4 h-4 text-green-500 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                      <span className="text-xs md:text-sm font-medium text-green-600">
-                        완료한 지원자: 8명
-                      </span>
-                    </div>
-                    <div className="w-16 md:w-32 bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{ width: "80%" }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-col gap-2">
-                    <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
-                      2024년 8월 기획부서 채용
-                    </h1>
-                    <div className="flex items-center gap-2">
-                      <span className="bg-blue-100 text-blue-800 text-xs md:text-sm font-medium p-1 md:px-2.5 md:py-0.5 rounded-full">
-                        지원자 10명
-                      </span>
-                      <span className="text-xs md:text-sm text-gray-500">
-                        마감일: 2024-09-01
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <div className="flex items-center">
-                      <svg
-                        className="w-4 h-4 text-green-500 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        ></path>
-                      </svg>
-                      <span className="text-xs md:text-sm font-medium text-green-600">
-                        완료한 지원자: 8명
-                      </span>
-                    </div>
-                    <div className="w-16 md:w-32 bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-blue-600 h-2.5 rounded-full"
-                        style={{ width: "80%" }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </li>
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <div className="flex flex-col gap-4 md:gap-8 bg-white p-4 md:p-8 rounded-lg w-full lg:w-2/5 shadow-md overflow-y-auto h-full">
@@ -306,8 +215,11 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
               className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">모든 테스트 그룹</option>
-              <option value="2024년 개발자 채용">2024년 개발자 채용</option>
-              <option value="2024년 마케팅 채용">2024년 마케팅 채용</option>
+              {groupData.map(group => (
+                <option key={group.groupId} value={group.name}>
+                  {group.name}
+                </option>
+              ))}
             </select>
             <select
               value={selectedStatus}
@@ -315,9 +227,9 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
               className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">모든 상태</option>
-              <option value="완료">완료</option>
-              <option value="진행 중">진행 중</option>
-              <option value="미시작">미시작</option>
+              <option value="completed">완료</option>
+              <option value="pending">진행 중</option>
+              <option value="expired">만료</option>
             </select>
           </div>
 
@@ -344,7 +256,7 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredApplicants.map(applicant => (
-                  <tr key={applicant.id}>
+                  <tr key={applicant.groupId}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {applicant.name}
                     </td>
@@ -352,25 +264,25 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
                       {applicant.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {applicant.testGroup}
+                      {applicant.groupName}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                         ${
-                          applicant.status === "완료"
+                          applicant.testStatus === "completed"
                             ? "bg-green-100 text-green-800"
-                            : applicant.status === "진행 중"
+                            : applicant.testStatus === "pending"
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {applicant.status}
+                        {applicant.testStatus}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <a
-                        href="#"
+                        href={`/group?groupId=${applicant.groupId}&name=${applicant.name}`}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         상세보기
@@ -565,108 +477,108 @@ export default function DashboardContent({ activeTab }: DashboardContentProps) {
         </div>
       );
 
-    case "분석 및 통계":
-      return (
-        <div className="flex flex-col gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-800">분석 및 통계</h1>
-            <select
-              value={timeRange}
-              onChange={e => setTimeRange(e.target.value)}
-              className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option>1주일</option>
-              <option>1개월</option>
-              <option>3개월</option>
-              <option>6개월</option>
-              <option>1년</option>
-            </select>
-          </div>
+    // case "분석 및 통계":
+    //   return (
+    //     <div className="flex flex-col gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+    //       <div className="flex justify-between items-center">
+    //         <h1 className="text-2xl font-bold text-gray-800">분석 및 통계</h1>
+    //         <select
+    //           value={timeRange}
+    //           onChange={e => setTimeRange(e.target.value)}
+    //           className="bg-white border border-gray-300 text-gray-700 py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //         >
+    //           <option>1주일</option>
+    //           <option>1개월</option>
+    //           <option>3개월</option>
+    //           <option>6개월</option>
+    //           <option>1년</option>
+    //         </select>
+    //       </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-blue-50 p-6 rounded-lg">
-              <h2 className="text-lg font-semibold text-blue-700 mb-2">
-                총 테스트 수
-              </h2>
-              <p className="text-3xl font-bold text-blue-800">152</p>
-            </div>
-            <div className="bg-green-50 p-6 rounded-lg">
-              <h2 className="text-lg font-semibold text-green-700 mb-2">
-                평균 완료율
-              </h2>
-              <p className="text-3xl font-bold text-green-800">78.5%</p>
-            </div>
-            <div className="bg-yellow-50 p-6 rounded-lg">
-              <h2 className="text-lg font-semibold text-yellow-700 mb-2">
-                총 지원자 수
-              </h2>
-              <p className="text-3xl font-bold text-yellow-800">1,234</p>
-            </div>
-          </div>
+    //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    //         <div className="bg-blue-50 p-6 rounded-lg">
+    //           <h2 className="text-lg font-semibold text-blue-700 mb-2">
+    //             총 테스트 수
+    //           </h2>
+    //           <p className="text-3xl font-bold text-blue-800">152</p>
+    //         </div>
+    //         <div className="bg-green-50 p-6 rounded-lg">
+    //           <h2 className="text-lg font-semibold text-green-700 mb-2">
+    //             평균 완료율
+    //           </h2>
+    //           <p className="text-3xl font-bold text-green-800">78.5%</p>
+    //         </div>
+    //         <div className="bg-yellow-50 p-6 rounded-lg">
+    //           <h2 className="text-lg font-semibold text-yellow-700 mb-2">
+    //             총 지원자 수
+    //           </h2>
+    //           <p className="text-3xl font-bold text-yellow-800">1,234</p>
+    //         </div>
+    //       </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-lg border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                테스트 유형별 분포
-              </h2>
-              <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-                {/* 여기에 실제 차트가 들어갑니다 */}
-                <p className="text-gray-500">파이 차트</p>
-              </div>
-            </div>
-            <div className="bg-white p-6 rounded-lg border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                월별 테스트 생성 추이
-              </h2>
-              <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-                {/* 여기에 실제 차트가 들어갑니다 */}
-                <p className="text-gray-500">라인 차트</p>
-              </div>
-            </div>
-          </div>
+    //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    //         <div className="bg-white p-6 rounded-lg border border-gray-200">
+    //           <h2 className="text-xl font-semibold text-gray-800 mb-4">
+    //             테스트 유형별 분포
+    //           </h2>
+    //           <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+    //             {/* 여기에 실제 차트가 들어갑니다 */}
+    //             <p className="text-gray-500">파이 차트</p>
+    //           </div>
+    //         </div>
+    //         <div className="bg-white p-6 rounded-lg border border-gray-200">
+    //           <h2 className="text-xl font-semibold text-gray-800 mb-4">
+    //             월별 테스트 생성 추이
+    //           </h2>
+    //           <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+    //             {/* 여기에 실제 차트가 들어갑니다 */}
+    //             <p className="text-gray-500">라인 차트</p>
+    //           </div>
+    //         </div>
+    //       </div>
 
-          <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              부서별 테스트 성과
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      부서
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      테스트 수
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      평균 완료율
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      평균 점수
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap">개발팀</td>
-                    <td className="px-6 py-4 whitespace-nowrap">45</td>
-                    <td className="px-6 py-4 whitespace-nowrap">82%</td>
-                    <td className="px-6 py-4 whitespace-nowrap">76.5</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 whitespace-nowrap">마케팅팀</td>
-                    <td className="px-6 py-4 whitespace-nowrap">38</td>
-                    <td className="px-6 py-4 whitespace-nowrap">79%</td>
-                    <td className="px-6 py-4 whitespace-nowrap">72.3</td>
-                  </tr>
-                  {/* 더 많은 행을 추가할 수 있습니다 */}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      );
+    //       <div className="bg-white p-6 rounded-lg border border-gray-200">
+    //         <h2 className="text-xl font-semibold text-gray-800 mb-4">
+    //           부서별 테스트 성과
+    //         </h2>
+    //         <div className="overflow-x-auto">
+    //           <table className="min-w-full divide-y divide-gray-200">
+    //             <thead className="bg-gray-50">
+    //               <tr>
+    //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                   부서
+    //                 </th>
+    //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                   테스트 수
+    //                 </th>
+    //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                   평균 완료율
+    //                 </th>
+    //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                   평균 점수
+    //                 </th>
+    //               </tr>
+    //             </thead>
+    //             <tbody className="bg-white divide-y divide-gray-200">
+    //               <tr>
+    //                 <td className="px-6 py-4 whitespace-nowrap">개발팀</td>
+    //                 <td className="px-6 py-4 whitespace-nowrap">45</td>
+    //                 <td className="px-6 py-4 whitespace-nowrap">82%</td>
+    //                 <td className="px-6 py-4 whitespace-nowrap">76.5</td>
+    //               </tr>
+    //               <tr>
+    //                 <td className="px-6 py-4 whitespace-nowrap">마케팅팀</td>
+    //                 <td className="px-6 py-4 whitespace-nowrap">38</td>
+    //                 <td className="px-6 py-4 whitespace-nowrap">79%</td>
+    //                 <td className="px-6 py-4 whitespace-nowrap">72.3</td>
+    //               </tr>
+    //               {/* 더 많은 행을 추가할 수 있습니다 */}
+    //             </tbody>
+    //           </table>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   );
 
     default:
       return <div>잘못된 탭입니다.</div>;
