@@ -39,6 +39,9 @@ function generateDefaultHTMLTemplate(
   userName: string = "",
   groupId: string = ""
 ): string {
+  const deployUrl = "https://work-sauce.vercel.app/";
+  const localUrl = "http://localhost:3000";
+
   return `
     <!DOCTYPE html>
     <html lang="ko">
@@ -132,7 +135,7 @@ function generateDefaultHTMLTemplate(
           <p>워크소스에 가입해 주셔서 진심으로 감사드립니다. 저희 서비스를 통해 당신의 업무 효율성을 높이고 성공적인 결과를 얻으실 수 있기를 바랍니다.</p>
           <p>지금 바로 워크소스를 시작해보세요:</p>
           <p style="text-align: center; margin-top: 30px; margin-bottom: 30px;">
-            <a href="http://localhost:3000/test?groupId=${groupId}" class="button">워크소스 시작하기</a>
+            <a href="${deployUrl}/test?groupId=${groupId}" class="button">워크소스 시작하기</a>
           </p>
           <p>궁금한 점이 있으시면 언제든지 문의해 주세요. 저희 팀이 항상 도와드릴 준비가 되어 있습니다.</p>
           <p>감사합니다.</p>
