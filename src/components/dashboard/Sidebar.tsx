@@ -2,7 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { MdDashboard, MdMail, MdSettings } from "react-icons/md";
+import {
+  MdDashboard,
+  MdMail,
+  MdSettings,
+  MdHelp,
+  MdBarChart,
+} from "react-icons/md";
 import { Logo } from "@/components/common/Logo";
 import { User } from "@/types/user";
 
@@ -79,6 +85,13 @@ export default function Sidebar({ user }: SidebarProps) {
           />
         ))}
       </nav>
+      <Link
+        href="/doc"
+        className="mt-auto flex items-center gap-2 text-sm text-primary-gray hover:text-primary-blue cursor-pointer"
+      >
+        <MdHelp />
+        <span>도움말</span>
+      </Link>
     </aside>
   );
 }

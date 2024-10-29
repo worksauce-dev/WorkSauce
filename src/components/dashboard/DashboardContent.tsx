@@ -54,7 +54,7 @@ export default function DashboardContent({
                   >
                     <div className="flex justify-between items-center">
                       <Link
-                        href={`/group?groupId=${group.groupId}`}
+                        href={`/group/${group.groupId}`}
                         className="flex flex-col gap-2"
                       >
                         <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
@@ -256,7 +256,7 @@ export default function DashboardContent({
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredApplicants.map(applicant => (
-                  <tr key={applicant.groupId}>
+                  <tr key={`${applicant.groupId}-${applicant.email}`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {applicant.name}
                     </td>
@@ -281,12 +281,12 @@ export default function DashboardContent({
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <a
-                        href={`/group?groupId=${applicant.groupId}&name=${applicant.name}`}
+                      <Link
+                        href={`/group/${applicant.groupId}/${applicant.name}`}
                         className="text-indigo-600 hover:text-indigo-900"
                       >
                         상세보기
-                      </a>
+                      </Link>
                     </td>
                   </tr>
                 ))}
