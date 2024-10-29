@@ -46,6 +46,9 @@ export const VerbTest = ({
   const [scores, setScores] = useState(prevScores);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const renderQustion = () => {
     if (step === 0 || step === 0.5) {
@@ -531,14 +534,71 @@ export const VerbTest = ({
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitStatus("loading");
+
     try {
-      submitTest(groupId, email, name, scores);
+      await submitTest(groupId, email, name, scores);
+      setSubmitStatus("success");
+
+      // 3초 후 자동으로 창 닫기
+      setTimeout(() => {
+        window.close();
+      }, 3000);
     } catch (error) {
       console.error("Failed to save test result:", error);
-      // Handle error (e.g., show an error message to the user)
+      setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const renderSubmitFeedback = () => {
+    if (submitStatus === "success") {
+      return (
+        <div className="col-span-full text-center flex flex-col gap-4 justify-center items-center">
+          <h3 className="text-2xl font-semibold text-green-600 mb-4">
+            제출 완료!
+          </h3>
+          <p className="text-lg mb-2">
+            테스트 결과가 성공적으로 제출되었습니다.
+          </p>
+          <p className="text-gray-600">
+            결과는 담당자 검토 후 이메일로 안내드릴 예정입니다.
+          </p>
+          <p className="text-sm text-gray-500 mt-4">
+            3초 후 자동으로 창이 닫힙니다...
+          </p>
+          <button
+            onClick={() => window.close()}
+            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            창 닫기
+          </button>
+        </div>
+      );
+    }
+
+    if (submitStatus === "error") {
+      return (
+        <div className="col-span-full text-center flex flex-col gap-4 justify-center items-center">
+          <h3 className="text-2xl font-semibold text-red-600 mb-4">
+            제출 실패
+          </h3>
+          <p className="text-lg mb-2">테스트 제출 중 문제가 발생했습니다.</p>
+          <p className="text-gray-600">
+            잠시 후 다시 시도해주시거나, 담당자에게 문의해주세요.
+          </p>
+          <button
+            onClick={() => setSubmitStatus("idle")}
+            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            다시 시도
+          </button>
+        </div>
+      );
+    }
+
+    return renderAnswers();
   };
 
   return (
@@ -556,7 +616,7 @@ export const VerbTest = ({
               step >= 1 ? "md:grid-cols-4" : "md:grid-cols-5"
             }`}
           >
-            {renderAnswers()}
+            {renderSubmitFeedback()}
           </div>
         </div>
 
