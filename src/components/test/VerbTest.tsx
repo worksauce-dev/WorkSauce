@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { testArr, typeDescriptions, verbQuestions } from "@/constant/test";
+import { testArr, verbQuestions } from "@/constant/test";
 import { RefreshCw, Send } from "lucide-react";
 import { ScoreType } from "@/types/test";
 

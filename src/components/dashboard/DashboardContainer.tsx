@@ -24,7 +24,7 @@ export default function DashboardContainer({
 
   return (
     <div className="flex flex-col h-screen w-full">
-      <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-slate-100 flex flex-col flex-grow overflow-hidden gap-4">
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col flex-grow overflow-hidden gap-4">
         {/* Header */}
         <div className="flex-shrink-0">
           <DashboardHeader name={name} />

@@ -1,6 +1,6 @@
 export const testArr = [
   {
-    sort: "기준 윤리형",
+    sort: "기준윤리형",
     name: "기준형",
     questions: [
       {
@@ -83,7 +83,7 @@ export const testArr = [
     expert: ["개선하다", "완수하다"],
   },
   {
-    sort: "기준 심미형",
+    sort: "기준심미형",
     name: "기준형",
     questions: [
       {
@@ -166,7 +166,7 @@ export const testArr = [
     expert: ["감동시키다", "유지하다"],
   },
   {
-    sort: "예술 느낌형",
+    sort: "예술느낌형",
     name: "예술형",
     questions: [
       {
@@ -249,7 +249,7 @@ export const testArr = [
     expert: ["꿈구다", "살다"],
   },
   {
-    sort: "예술 융합형",
+    sort: "예술융합형",
     name: "예술형",
     questions: [
       {
@@ -332,7 +332,7 @@ export const testArr = [
     expert: ["흥분시키다", "즐겁게하다"],
   },
   {
-    sort: "이해 관리형",
+    sort: "이해관리형",
     name: "이해형",
     questions: [
       {
@@ -415,7 +415,7 @@ export const testArr = [
     expert: ["해결하다", "안정화시키다"],
   },
   {
-    sort: "이해 연구형",
+    sort: "이해연구형",
     name: "이해형",
     questions: [
       {
@@ -498,7 +498,7 @@ export const testArr = [
     expert: ["향상시키다", "정립하다"],
   },
   {
-    sort: "소통 도움형",
+    sort: "소통도움형",
     name: "소통형",
     questions: [
       {
@@ -581,7 +581,7 @@ export const testArr = [
     expert: ["영향을 미치다", "회복시키다"],
   },
   {
-    sort: "소통 조화형",
+    sort: "소통조화형",
     name: "소통형",
     questions: [
       {
@@ -664,7 +664,7 @@ export const testArr = [
     expert: ["웃게하다", "조화롭게하다"],
   },
   {
-    sort: "도전 확장형",
+    sort: "도전확장형",
     name: "도전형",
     questions: [
       {
@@ -747,7 +747,7 @@ export const testArr = [
     expert: ["성장시키다", "활발하게하다"],
   },
   {
-    sort: "도전 목표형",
+    sort: "도전목표형",
     name: "도전형",
     questions: [
       {
