@@ -212,7 +212,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
     setApplicants([]);
     setCurrentPage(1);
 
-    router.push(`/result?groupId=${groupId}`);
+    router.push(`/group/${groupId}`);
   };
 
   const handleFileUpload = useCallback((file: File) => {
