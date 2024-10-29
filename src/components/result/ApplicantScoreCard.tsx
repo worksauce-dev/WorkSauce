@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Applicant } from "@/types/group";
-import { getStatusColor } from "@/utils/getStatusColor";
 import { determineApplicantType } from "@/utils/applicantAnalysis";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
@@ -54,8 +53,6 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   const topResults = [...applicant.testResult]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
-
-  console.log(topResults);
 
   const applicantType = determineApplicantType(topResults);
 
