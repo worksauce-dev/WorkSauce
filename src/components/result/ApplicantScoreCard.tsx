@@ -33,6 +33,9 @@ const TopResultCard: React.FC<{
       </div>
       <div>
         <h4 className="font-semibold text-gray-900 text-sm">{sort}</h4>
+        <p className="text-sm text-gray-500">
+          {((score / 120) * 100).toFixed(1)}%
+        </p>
       </div>
     </div>
   </motion.div>
@@ -46,12 +49,15 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   applicant,
 }) => {
   const [activeTab, setActiveTab] = React.useState<string>("characteristics");
-  const applicantType = determineApplicantType(applicant.testResult);
 
   // 점수 기준으로 정렬하여 상위 3개 추출
   const topResults = [...applicant.testResult]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
+
+  console.log(topResults);
+
+  const applicantType = determineApplicantType(topResults);
 
   const totalScore = applicant.testResult.reduce(
     (sum, result) => sum + result.score,
