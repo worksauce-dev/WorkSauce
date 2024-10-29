@@ -41,83 +41,114 @@ export default function DashboardContent({
             <h1 className="text-lg md:text-2xl font-bold text-gray-800">
               최근 워크소스 현황
             </h1>
-            <ul className="flex flex-col gap-4">
-              {groupData
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .map(group => {
-                  const completedApplicants = group.applicants.filter(
-                    applicant => applicant.completedAt !== null
-                  );
+            {groupData.length === 0 ? (
+              <div className="my-auto flex flex-col items-center justify-center py-12 text-center">
+                <svg
+                  className="w-16 h-16 text-gray-400 mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  아직 생성된 워크소스가 없습니다
+                </h3>
+                <p className="text-sm text-gray-500 mb-6">
+                  새로운 워크소스를 생성하여 지원자들을 관리해보세요
+                </p>
+                <Link
+                  href="/sending-test"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  워크소스 생성하기
+                </Link>
+              </div>
+            ) : (
+              <ul className="flex flex-col gap-4">
+                {groupData
+                  .sort(
+                    (a, b) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime()
+                  )
+                  .map(group => {
+                    const completedApplicants = group.applicants.filter(
+                      applicant => applicant.completedAt !== null
+                    );
 
-                  return (
-                    <li
-                      key={group.groupId}
-                      className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4"
-                    >
-                      <div className="flex justify-between items-center">
-                        <Link
-                          href={`/group/${group.groupId}`}
-                          className="flex flex-col gap-2"
-                        >
-                          <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
-                            {group.name}
-                          </h1>
-                          <div className="flex items-center gap-2">
-                            <span className="bg-blue-100 text-blue-800 text-xs md:text-sm font-medium p-1 md:px-2.5 md:py-0.5 rounded-full">
-                              지원자 {group.applicants.length}명
-                            </span>
-                            <span className="text-xs md:text-sm text-gray-500">
-                              마감일:{" "}
-                              {format(new Date(group.deadline), "MM/dd/yyyy")}
-                            </span>
-                          </div>
-                        </Link>
-                        <div className="flex flex-col items-end gap-2">
-                          <div className="flex items-center">
-                            <svg
-                              className="w-4 h-4 text-green-500 mr-1"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M5 13l4 4L19 7"
-                              ></path>
-                            </svg>
-                            <span className="text-xs md:text-sm font-medium text-green-600">
-                              완료한 지원자: {completedApplicants.length}
-                            </span>
-                          </div>
-                          <div className="w-16 md:w-32 bg-gray-200 rounded-full h-2.5">
-                            <div
-                              className="bg-blue-600 h-2.5 rounded-full"
-                              style={
-                                completedApplicants.length === 0
-                                  ? { width: "0%" }
-                                  : {
-                                      width: `${
-                                        (completedApplicants.length /
-                                          group.applicants.length) *
-                                        100
-                                      }%`,
-                                    }
-                              }
-                            ></div>
+                    return (
+                      <li
+                        key={group.groupId}
+                        className="border-b border-gray-200 pb-4 hover:bg-gray-50 transition rounded-lg p-4"
+                      >
+                        <div className="flex justify-between items-center">
+                          <Link
+                            href={`/group/${group.groupId}`}
+                            className="flex flex-col gap-2"
+                          >
+                            <h1 className="text-sm md:text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors duration-300">
+                              {group.name}
+                            </h1>
+                            <div className="flex items-center gap-2">
+                              <span className="bg-blue-100 text-blue-800 text-xs md:text-sm font-medium p-1 md:px-2.5 md:py-0.5 rounded-full">
+                                지원자 {group.applicants.length}명
+                              </span>
+                              <span className="text-xs md:text-sm text-gray-500">
+                                마감일:{" "}
+                                {format(new Date(group.deadline), "MM/dd/yyyy")}
+                              </span>
+                            </div>
+                          </Link>
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="flex items-center">
+                              <svg
+                                className="w-4 h-4 text-green-500 mr-1"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 13l4 4L19 7"
+                                ></path>
+                              </svg>
+                              <span className="text-xs md:text-sm font-medium text-green-600">
+                                완료한 지원자: {completedApplicants.length}
+                              </span>
+                            </div>
+                            <div className="w-16 md:w-32 bg-gray-200 rounded-full h-2.5">
+                              <div
+                                className="bg-blue-600 h-2.5 rounded-full"
+                                style={
+                                  completedApplicants.length === 0
+                                    ? { width: "0%" }
+                                    : {
+                                        width: `${
+                                          (completedApplicants.length /
+                                            group.applicants.length) *
+                                          100
+                                        }%`,
+                                      }
+                                }
+                              ></div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </li>
-                  );
-                })}
-            </ul>
+                      </li>
+                    );
+                  })}
+              </ul>
+            )}
           </div>
           <div className="flex flex-col gap-4 md:gap-8 bg-white p-4 md:p-8 rounded-lg w-full lg:w-2/5 shadow-md overflow-y-auto h-full">
             <h1 className="text-lg md:text-2xl font-bold text-gray-800">
@@ -532,7 +563,7 @@ export default function DashboardContent({
     //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
     //         <div className="bg-white p-6 rounded-lg border border-gray-200">
     //           <h2 className="text-xl font-semibold text-gray-800 mb-4">
-    //             테스트 유형별 분포
+    //             테스�� 유형별 분포
     //           </h2>
     //           <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
     //             {/* 여기에 실제 차트가 들어갑니다 */}
