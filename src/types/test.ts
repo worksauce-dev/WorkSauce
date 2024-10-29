@@ -1,6 +1,5 @@
 export interface QuestionType {
   text: string;
-  // Add other properties of a question if needed
 }
 
 export interface CategoryType {
@@ -13,7 +12,6 @@ export interface CategoryType {
 export interface ScoreType {
   sort: string;
   score: number;
-  maxScore: number;
 }
 
 export interface useTestLogicReturnInterface {

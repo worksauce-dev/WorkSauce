@@ -18,14 +18,6 @@ export const determineApplicantType = (
   testResults: TestResult[]
 ): ApplicantType => {
   // 가장 높은 점수 비율을 가진 테스트 결과 찾기
-  const highestScore = testResults.reduce((prev, curr) => {
-    const prevRatio = (prev.score / prev.maxScore) * 100;
-    const currRatio = (curr.score / curr.maxScore) * 100;
-    return prevRatio > currRatio ? prev : curr;
-  });
-
-  // 점수 비율 계산
-  const scoreRatio = (highestScore.score / highestScore.maxScore) * 100;
 
   // 테스트 유형에 따른 결과 매핑
   const typeMap: Record<string, ApplicantType> = {
@@ -181,5 +173,5 @@ export const determineApplicantType = (
     },
   };
 
-  return typeMap[highestScore.sort];
+  return typeMap[testResults[0].sort];
 };
