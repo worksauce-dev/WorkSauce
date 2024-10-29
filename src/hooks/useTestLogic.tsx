@@ -108,7 +108,6 @@ export const useTestLogic = (): useTestLogicReturnInterface => {
       return {
         sort: category.sort,
         score: totalScore,
-        maxScore: category.questions.length * 5,
       };
     });
   };
