@@ -10,7 +10,6 @@ interface VerbTestProps {
   prevScores: {
     sort: string;
     score: number;
-    maxScore: number;
     color?: string;
   }[];
   name: string;
