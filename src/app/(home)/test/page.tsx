@@ -3,7 +3,7 @@ import { submitTest } from "@/api/firebase/submitTest";
 import { AuthCheck } from "@/components/test/TestContainer";
 import { Group } from "@/types/group";
 import { Metadata } from "next";
-
+import { ExpiredTest } from "@/components/test/ExpiredTest";
 export const metadata: Metadata = {
   title: "소스테스트",
 };
@@ -24,6 +24,10 @@ export default async function TestPage({
   const groupId = searchParams.groupId;
 
   const groupData = (await getGroup(groupId)) as Group;
+
+  if (groupData.deadline && new Date(groupData.deadline) < new Date()) {
+    return <ExpiredTest deadline={groupData.deadline} />;
+  }
 
   return (
     <>
