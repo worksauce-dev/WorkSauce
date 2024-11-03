@@ -23,15 +23,12 @@ export const Header = ({ session }: { session: Session | null }) => {
   };
 
   const guestMenuItems: MenuItem[] = [
-    { href: "test", label: "테스트하기" },
-    { href: "email", label: "이메일 테스트" },
     { href: "doc", label: "도움말" },
     { href: "login", label: "로그인 / 회원가입" },
   ];
 
   const userMenuItems: MenuItem[] = [
-    { href: "test", label: "테스트하기" },
-    { href: "email", label: "이메일 테스트" },
+    { href: "doc", label: "도움말" },
     { href: "dashboard", label: "대시보드" },
     {
       label: "로그아웃",
