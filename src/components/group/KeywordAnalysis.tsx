@@ -40,15 +40,15 @@ export default function KeywordAnalysis({
     .sort((a, b) => b.count - a.count);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 h-full">
       <h2 className="text-lg font-semibold text-indigo-600 mb-3">
         키워드 매칭 분석
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3 max-w-xl">
         {keywordMatchAnalysis.map(analysis => (
           <div
             key={analysis.keyword}
-            className="border border-indigo-100 rounded-lg p-4 hover:bg-indigo-50 transition-colors"
+            className="w-full border border-indigo-100 rounded-lg p-4 hover:bg-indigo-50 transition-colors"
           >
             <div className="flex justify-between items-center mb-2">
               <span className="font-medium text-indigo-700">
