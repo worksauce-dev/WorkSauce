@@ -12,7 +12,9 @@ export default function GroupHeader({ group }: GroupHeaderProps) {
         {group.name} 대시보드
       </h1>
       <div className="text-sm text-gray-500">
-        마감까지 {getRemainingDays(group.deadline)}일 남음
+        {new Date(group.deadline) > new Date()
+          ? `마감까지 ${getRemainingDays(group.deadline)}일 남음`
+          : "마감 완료"}
       </div>
     </div>
   );
