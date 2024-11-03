@@ -199,6 +199,8 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
         subject: "워크소스 테스트를 시작해주세요!",
         userName: applicant.name,
         groupId: groupId,
+        companyName: groupName,
+        deadline: deadline,
       });
 
       if (!success) {

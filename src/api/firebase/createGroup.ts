@@ -15,28 +15,33 @@ export async function createGroup(group: Group, userId: string) {
   const { applicants, ...groupWithoutApplicants } = group;
 
   try {
-    // 그룹을 생성하고 생성된 문서의 참조를 받습니다.
-    const groupDoc = await addDoc(groupRef, groupWithoutApplicants);
-
-    // 생성된 그룹의 ID를 이용하여 groupId 필드를 추가하고 applicants를 업데이트합니다.
-    const groupId = groupDoc.id;
-    const updatedGroup = {
+    // 처음부터 완성된 데이터로 그룹을 생성합니다
+    const groupDoc = await addDoc(groupRef, {
       ...groupWithoutApplicants,
-      groupId,
+      groupId: null, // 임시 ID
       applicants: applicants.map(applicant => ({
         ...applicant,
-        groupId,
+        groupId: null, // 임시 ID
       })),
-    };
-
-    // 업데이트된 그룹 정보로 그룹 문서를 업데이트합니다.
-    await updateDoc(groupDoc, updatedGroup);
-
-    // 각 지원자의 사용자 문서의 groups 배열에 새 그룹 ID를 추가합니다.
-    const userDocRef = doc(firestore, "users", userId);
-    await updateDoc(userDocRef, {
-      groups: arrayUnion(groupId),
     });
+
+    const groupId = groupDoc.id;
+
+    // 병렬로 업데이트 작업을 수행합니다
+    await Promise.all([
+      // groupId 업데이트
+      updateDoc(groupDoc, {
+        groupId,
+        applicants: applicants.map(applicant => ({
+          ...applicant,
+          groupId,
+        })),
+      }),
+      // 사용자 문서 업데이트
+      updateDoc(doc(firestore, "users", userId), {
+        groups: arrayUnion(groupId),
+      }),
+    ]);
 
     return groupId;
   } catch (error) {

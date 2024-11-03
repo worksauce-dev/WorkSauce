@@ -1,19 +1,15 @@
 interface EmailOptions {
   to: string;
   subject: string;
-  html?: string;
-  text?: string;
-  userName?: string;
-  groupId?: string;
-  companyName?: string;
-  deadline?: string;
+  userName: string;
+  groupId: string;
+  companyName: string;
+  deadline: string;
 }
 
 export async function sendEmail({
   to,
   subject,
-  html,
-  text,
   userName,
   groupId,
   companyName,
@@ -28,10 +24,12 @@ export async function sendEmail({
       body: JSON.stringify({
         to,
         subject,
-        html:
-          html ||
-          generateDefaultHTMLTemplate(userName, groupId, companyName, deadline),
-        text,
+        html: generateDefaultHTMLTemplate(
+          userName,
+          groupId,
+          companyName,
+          deadline
+        ),
       }),
     });
     return res.ok;
