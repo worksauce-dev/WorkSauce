@@ -134,6 +134,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
     1,
     Math.ceil(applicants.length / APPLICANTS_PER_PAGE)
   );
+  const [deadlineError, setDeadlineError] = useState<string>("");
 
   useEffect(() => {
     if (applicants.length > APPLICANTS_PER_PAGE && currentPage > totalPages) {
@@ -167,7 +168,30 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
     }
   };
 
+  const handleDeadlineChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = new Date(e.target.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // 시간을 제외한 날짜만 비교하기 위해
+
+    if (selectedDate < today) {
+      setDeadlineError("마감기한은 현재 날짜보다 이후여야 합니다.");
+    } else {
+      setDeadlineError("");
+    }
+    setDeadline(e.target.value);
+  };
+
   const handleSendEmails = async () => {
+    // 마감기한 유효성 검사
+    const selectedDate = new Date(deadline);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      setDeadlineError("마감기한은 현재 날짜보다 이후여야 합니다.");
+      return;
+    }
+
     setIsSending(true);
 
     const groupId = await createGroup(
@@ -290,6 +314,18 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
     currentPage * APPLICANTS_PER_PAGE
   );
 
+  // 버튼 활성화 조건을 확인하는 함수 추가
+  const isSubmitDisabled = () => {
+    return (
+      isSending ||
+      !groupName ||
+      !deadline ||
+      applicants.length === 0 ||
+      selectedKeywordGroups.length !== 3 ||
+      deadlineError !== ""
+    );
+  };
+
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-6xl">
@@ -305,13 +341,18 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                 onChange={e => setGroupName(e.target.value)}
                 placeholder="예) 24년 08월 개발자 채용"
               />
-              <InputField
-                id="deadline"
-                label="마감기한"
-                type="date"
-                value={deadline}
-                onChange={e => setDeadline(e.target.value)}
-              />
+              <div className="flex flex-col">
+                <InputField
+                  id="deadline"
+                  label="마감기한"
+                  type="date"
+                  value={deadline}
+                  onChange={handleDeadlineChange}
+                />
+                {deadlineError && (
+                  <p className="text-xs text-red-500 mt-1">{deadlineError}</p>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -525,14 +566,12 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
             <button
               type="button"
               className={`w-full flex justify-center items-center px-6 py-3 border border-transparent text-lg font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ${
-                isSending || !groupName || !deadline || applicants.length === 0
+                isSubmitDisabled()
                   ? "opacity-50 cursor-not-allowed"
                   : "shadow-lg hover:shadow-xl"
               }`}
               onClick={handleSendEmails}
-              disabled={
-                isSending || !groupName || !deadline || applicants.length === 0
-              }
+              disabled={isSubmitDisabled()}
             >
               {isSending ? (
                 <>
@@ -561,7 +600,9 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
               ) : (
                 <>
                   <FiSend className="mr-2" />
-                  이메일 전송하고 그룹 생성
+                  {selectedKeywordGroups.length !== 3
+                    ? "키워드 3개를 선택해주세요"
+                    : "이메일 전송하고 그룹 생성"}
                 </>
               )}
             </button>
