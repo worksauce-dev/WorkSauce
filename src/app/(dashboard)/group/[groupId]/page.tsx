@@ -1,14 +1,9 @@
 import { getGroup } from "@/api/firebase/getGroup";
 import { Group } from "@/types/group";
-import { authOptions } from "@/utils/authOptions";
 import { Metadata } from "next";
-import { getServerSession } from "next-auth";
-import { User } from "@/types/user";
-import ApplicantScoreCard from "@/components/result/ApplicantScoreCard";
-import ApplicantTable from "@/components/group/ApplicantTable";
 import GroupHeader from "@/components/group/GroupHeader";
 import StatisticsSection from "@/components/group/StatisticsSection";
-import KeywordAnalysis from "@/components/group/KeywordAnalysis";
+import GroupContent from "@/components/group/GroupContent";
 
 export const metadata: Metadata = {
   title: "그룹 진행 현황",
@@ -45,14 +40,7 @@ export default async function GroupPage({
       <div className="max-w-7xl mx-auto flex flex-col h-full">
         <GroupHeader group={group} />
         <StatisticsSection stats={stats} />
-        <div className="flex flex-row gap-4">
-          <div className="w-1/3 h-full">
-            <KeywordAnalysis group={group} stats={stats} />
-          </div>
-          <div className="w-2/3 h-full">
-            <ApplicantTable group={group} groupId={groupId} />
-          </div>
-        </div>
+        <GroupContent group={group} stats={stats} groupId={groupId} />
       </div>
     </div>
   );

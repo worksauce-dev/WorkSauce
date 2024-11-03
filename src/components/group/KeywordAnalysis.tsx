@@ -1,4 +1,5 @@
 import { Group } from "@/types/group";
+import { useMemo } from "react";
 
 interface Stats {
   completedTests: number;
@@ -7,37 +8,65 @@ interface Stats {
 interface KeywordAnalysisProps {
   group: Group;
   stats: Stats;
+  onKeywordSelect: (keyword: string) => void;
+  selectedKeyword: string | null;
 }
 
 export default function KeywordAnalysis({
   group,
   stats,
+  onKeywordSelect,
+  selectedKeyword,
 }: KeywordAnalysisProps) {
-  const keywordMatchAnalysis = group.keywords
-    .map(keyword => {
-      const matchedApplicants = group.applicants.filter(applicant => {
-        if (applicant.testStatus !== "completed" || !applicant.testResult) {
-          return false;
-        }
-        const highestScoreResult = applicant.testResult.reduce(
-          (prev, current) => (current.score > prev.score ? current : prev)
-        );
-        return highestScoreResult.sort.trim() === keyword.trim();
-      });
+  const keywordMatchAnalysis = useMemo(() => {
+    return group.keywords
+      .map(keyword => {
+        const matchedApplicants = group.applicants.filter(applicant => {
+          if (applicant.testStatus !== "completed" || !applicant.testResult) {
+            return false;
+          }
+          const sortedResults = applicant.testResult.sort(
+            (a, b) => b.score - a.score
+          );
 
-      return {
-        keyword,
-        count: matchedApplicants.length,
-        applicants: matchedApplicants,
-        percentage:
-          stats.completedTests > 0
-            ? Math.round(
-                (matchedApplicants.length / stats.completedTests) * 100
-              )
-            : 0,
-      };
-    })
-    .sort((a, b) => b.count - a.count);
+          const topTwoResults = sortedResults.slice(0, 2);
+          return topTwoResults.some(
+            result => result.sort.trim() === keyword.trim()
+          );
+        });
+
+        const mainMatches = group.applicants.filter(applicant => {
+          if (applicant.testStatus !== "completed" || !applicant.testResult) {
+            return false;
+          }
+          const highestResult = applicant.testResult.sort(
+            (a, b) => b.score - a.score
+          )[0];
+          return highestResult.sort.trim() === keyword.trim();
+        });
+
+        const subMatches = matchedApplicants.filter(
+          applicant => !mainMatches.includes(applicant)
+        );
+
+        return {
+          keyword,
+          count: matchedApplicants.length,
+          applicants: matchedApplicants,
+          mainCount: mainMatches.length,
+          subCount: subMatches.length,
+          mainPercentage:
+            stats.completedTests > 0
+              ? Math.round((mainMatches.length / stats.completedTests) * 100)
+              : 0,
+          subPercentage:
+            stats.completedTests > 0
+              ? Math.round((subMatches.length / stats.completedTests) * 100)
+              : 0,
+        };
+      })
+      .sort((a, b) => b.count - a.count);
+  }, [group.keywords, group.applicants, stats.completedTests]);
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6 h-full">
@@ -46,26 +75,39 @@ export default function KeywordAnalysis({
       </h2>
       <div className="flex flex-col gap-3 max-w-xl">
         {keywordMatchAnalysis.map(analysis => (
-          <div
+          <button
+            onClick={() => onKeywordSelect(analysis.keyword)}
             key={analysis.keyword}
-            className="w-full border border-indigo-100 rounded-lg p-4 hover:bg-indigo-50 transition-colors"
+            className={`w-full border border-indigo-100 rounded-lg p-4 hover:bg-indigo-50 transition-colors ${
+              selectedKeyword === analysis.keyword ? "bg-indigo-50" : "bg-white"
+            }`}
           >
             <div className="flex justify-between items-center mb-2">
               <span className="font-medium text-indigo-700">
                 {analysis.keyword}
               </span>
               <span className="text-sm text-gray-500">
-                {analysis.percentage}%
+                {analysis.mainPercentage + analysis.subPercentage}%
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-indigo-600 h-2 rounded-full"
-                style={{ width: `${analysis.percentage}%` }}
+                className="bg-indigo-600 h-2 float-left"
+                style={{ width: `${analysis.mainPercentage}%` }}
+              />
+              <div
+                className="bg-indigo-300 h-2 float-left"
+                style={{ width: `${analysis.subPercentage}%` }}
               />
             </div>
-            <div className="mt-2 text-sm text-gray-600">
-              매칭된 지원자: {analysis.count}명
+            <div className="mt-2 text-sm">
+              <span className="text-indigo-700">
+                메인: {analysis.mainCount}명
+              </span>
+              <span className="mx-2 text-gray-300">|</span>
+              <span className="text-indigo-400">
+                서브: {analysis.subCount}명
+              </span>
             </div>
             <div className="mt-2">
               {analysis.applicants.slice(0, 3).map((applicant, idx) => (
@@ -82,7 +124,7 @@ export default function KeywordAnalysis({
                 </span>
               )}
             </div>
-          </div>
+          </button>
         ))}
       </div>
     </div>
