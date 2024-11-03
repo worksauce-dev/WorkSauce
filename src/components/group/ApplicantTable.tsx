@@ -13,7 +13,7 @@ export default function ApplicantTable({
   groupId,
 }: ApplicantTableProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col flex-1 min-h-0">
+    <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col flex-1 min-h-0 h-full">
       <div className="flex justify-between items-center mb-3">
         <h2 className="text-lg font-semibold text-indigo-600">지원자 현황</h2>
         <select className="border rounded-lg px-3 py-2 text-sm">

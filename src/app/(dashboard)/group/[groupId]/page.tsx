@@ -42,11 +42,17 @@ export default async function GroupPage({
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mx-auto px-4 sm:px-6 lg:px-9 py-4 sm:py-6">
-      <div className="max-w-7xl mx-auto h-full flex flex-col">
+      <div className="max-w-7xl mx-auto flex flex-col h-full">
         <GroupHeader group={group} />
         <StatisticsSection stats={stats} />
-        <KeywordAnalysis group={group} stats={stats} />
-        <ApplicantTable group={group} groupId={groupId} />
+        <div className="flex flex-row gap-4">
+          <div className="w-1/3 h-full">
+            <KeywordAnalysis group={group} stats={stats} />
+          </div>
+          <div className="w-2/3 h-full">
+            <ApplicantTable group={group} groupId={groupId} />
+          </div>
+        </div>
       </div>
     </div>
   );
