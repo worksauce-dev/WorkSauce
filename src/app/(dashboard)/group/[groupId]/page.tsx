@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import GroupHeader from "@/components/group/GroupHeader";
 import StatisticsSection from "@/components/group/StatisticsSection";
 import GroupContent from "@/components/group/GroupContent";
+import { deleteGroup } from "@/api/firebase/deleteGroup";
 
 export const metadata: Metadata = {
   title: "그룹 진행 현황",
@@ -38,7 +39,7 @@ export default async function GroupPage({
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mx-auto px-4 sm:px-6 lg:px-9 py-4 sm:py-6">
       <div className="max-w-7xl mx-auto flex flex-col h-full">
-        <GroupHeader group={group} />
+        <GroupHeader group={group} deleteGroup={deleteGroup} />
         <StatisticsSection stats={stats} />
         <GroupContent group={group} stats={stats} groupId={groupId} />
       </div>
