@@ -43,7 +43,7 @@ export const Header = ({ session }: { session: Session | null }) => {
         key={index}
         href={item.href}
         onClick={item.onClick ? item.onClick : undefined}
-        className="block text-gray-800 hover:text-blue-600 py-2 px-4 rounded-md hover:bg-gray-100 transition-colors"
+        className="block text-gray-800 hover:text-orange-500 py-2 px-4 rounded-md hover:bg-orange-50 transition-colors"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -53,12 +53,12 @@ export const Header = ({ session }: { session: Session | null }) => {
   };
 
   return (
-    <header className="z-[99] bg-white w-full shadow fixed top-0">
-      <nav className="mx-auto px-6 py-4 flex justify-between items-center">
+    <header className="z-[99] bg-white w-full shadow fixed top-0 ">
+      <nav className="mx-auto px-6 py-4 flex justify-between items-center container">
         <Logo />
         <div className="hidden md:flex space-x-1">{renderMenu()}</div>
         <motion.button
-          className="md:hidden text-gray-600 hover:text-blue-600 p-2 rounded-md"
+          className="md:hidden text-gray-600 hover:text-orange-500 p-2 rounded-md"
           onClick={() => setIsOpen(!isOpen)}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}

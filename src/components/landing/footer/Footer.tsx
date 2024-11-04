@@ -19,13 +19,13 @@ type FooterLinkProps = {
 };
 
 const FooterLink: React.FC<FooterLinkProps> = ({ href, children }) => (
-  <a href={href} className="hover:text-primary-accent">
+  <a href={href} className="hover:text-gray-600">
     {children}
   </a>
 );
 
 const CompanyInfo: React.FC = () => (
-  <ul className="text-primary-gray text-caption space-y-2">
+  <ul className="text-gray-500 text-caption space-y-2">
     {[
       "사하라 웍스",
       "대표: 나요한",
@@ -42,7 +42,7 @@ const CompanyInfo: React.FC = () => (
 );
 
 const LinkSection: React.FC = () => (
-  <ul className="text-primary-gray text-caption md:text-body2 space-y-2 flex flex-col">
+  <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
     {[
       { href: "/", text: "홈" },
       { href: "product", text: "제품" },
@@ -57,7 +57,7 @@ const LinkSection: React.FC = () => (
 );
 
 const LegalSection: React.FC = () => (
-  <ul className="text-primary-gray text-caption md:text-body2 space-y-2 flex flex-col">
+  <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
     {[
       { href: "/terms-and-conditions", text: "이용약관" },
       { href: "/privacy-policy", text: "개인정보 취급방침" },
@@ -72,7 +72,7 @@ const LegalSection: React.FC = () => (
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="bg-secondary-blue">
+    <footer className="bg-gray-100">
       <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="grid lg:grid-cols-2 gap-14 xl:col-span-2 sm:mb-0 mb-4">
@@ -94,8 +94,8 @@ export const Footer: React.FC = () => {
           </div>
           <Logo />
         </div>
-        <div className="border-t border-border mt-8 pt-8 text-center text-primary-gray">
-          <p>Copyright &copy; 2024 SAHARA All rights reserved</p>
+        <div className="border-t border-gray-200 mt-8 pt-8 text-center text-gray-500">
+          <p>Copyright &copy; 2024 worksauce All rights reserved</p>
         </div>
       </div>
     </footer>
