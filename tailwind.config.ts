@@ -28,7 +28,7 @@ const config: Config = {
         "primary-yellow": "#786500",
         "secondary-yellow": "#FFF1C2",
 
-        "primary-accent": "#0F62FE",
+        "primary-accent": "#F97316",
         "secondary-accent": "#ffd2d6",
       },
       fontSize: {
@@ -55,6 +55,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar")({ nocompatible: true })],
 };
 export default config;

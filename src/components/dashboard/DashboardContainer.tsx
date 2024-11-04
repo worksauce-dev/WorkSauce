@@ -23,20 +23,20 @@ export default function DashboardContainer({
   const { name } = userData;
 
   return (
-    <div className="flex flex-col h-screen w-full">
-      <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col flex-grow overflow-hidden gap-4">
+    <div className="flex flex-col min-h-screen w-full bg-[#F7F7F9]">
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-screen gap-4">
         {/* Header */}
         <div className="flex-shrink-0">
           <DashboardHeader name={name} />
         </div>
 
         {/* Tabs */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-100">
           <DashboardTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
 
         {/* Content */}
-        <div className="flex-grow overflow-auto">
+        <div className="flex-1 overflow-y-auto">
           <DashboardContent activeTab={activeTab} groupData={groupData} />
         </div>
       </div>
