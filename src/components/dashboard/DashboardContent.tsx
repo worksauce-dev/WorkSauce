@@ -287,7 +287,7 @@ export default function DashboardContent({
                     상태
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">
-                    액션
+                    결과
                   </th>
                 </tr>
               </thead>
