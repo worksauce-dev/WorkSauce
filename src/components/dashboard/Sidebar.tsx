@@ -7,10 +7,11 @@ import {
   MdMail,
   MdSettings,
   MdHelp,
-  MdBarChart,
+  MdLogout,
 } from "react-icons/md";
 import { Logo } from "@/components/common/Logo";
 import { User } from "@/types/user";
+import { signOut } from "next-auth/react";
 
 interface SidebarProps {
   user: User;
@@ -48,8 +49,8 @@ const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
     passHref
     className={`flex items-center gap-3 text-md font-semibold p-3 px-4 rounded-full transition-all duration-200 ${
       isActive
-        ? "bg-blue-500 text-white"
-        : "text-primary-gray hover:bg-secondary-blue hover:text-primary-blue"
+        ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-100"
+        : "text-primary-gray hover:bg-orange-50 hover:text-orange-500"
     }`}
   >
     <item.icon size={20} />
@@ -58,14 +59,18 @@ const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
 );
 
 const UserInfo: React.FC<{ user: User }> = ({ user }) => (
-  <div className="flex justify-between ">
+  <div className="flex justify-between items-center w-full px-4">
     <div className="flex flex-col gap-2 text-primary-gray">
       <h6 className="text-base">안녕하세요 {user.name}님!</h6>
       <h6 className="text-base">{user.email}</h6>
     </div>
-    {/* <button className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">
-      <IoMdSettings size={24} className="text-primary-gray" />
-    </button> */}
+    <button
+      onClick={() => signOut()}
+      className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+      title="로그아웃"
+    >
+      <MdLogout size={24} className="text-primary-gray hover:text-red-500" />
+    </button>
   </div>
 );
 
@@ -73,10 +78,10 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="min-w-[300px] h-full hidden flex-col gap-8 px-9 py-6 bg-white lg:flex">
+    <aside className="min-w-[300px] h-full hidden flex-col gap-8 px-9 py-6 bg-white lg:flex drop-shadow">
       <Logo />
       <UserInfo user={user} />
-      <nav className="flex flex-col gap-4">
+      <nav className="flex flex-col gap-8 border-t border-gray-200 pt-8">
         {menuItems.map(item => (
           <MenuItem
             key={item.id}
