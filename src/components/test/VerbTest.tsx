@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { testArr, verbQuestions } from "@/constant/test";
+import { verbQuestions } from "@/constant/test";
 import { RefreshCw, Send } from "lucide-react";
-import { ScoreType } from "@/types/test";
+import { ScoreType, VerbType } from "@/types/test";
 
 interface VerbTestProps {
   prevScores: {
@@ -21,6 +21,7 @@ interface VerbTestProps {
     name: string,
     testResult: ScoreType[]
   ) => void;
+  verbTestData: VerbType[];
 }
 
 interface TestItem {
@@ -39,6 +40,7 @@ export const VerbTest = ({
   email,
   groupId,
   submitTest,
+  verbTestData,
 }: VerbTestProps) => {
   const [step, setStep] = useState(0);
   const [nameArr, setNameArr] = useState<string[]>([]);
@@ -48,6 +50,32 @@ export const VerbTest = ({
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
+
+  const SCORE_WEIGHTS = {
+    start: 100, // 시작 동사 (2개 선택)
+    advance: 150, // 발전된 동사 (2개 선택)
+    utility: 200, // 실용적 동사 (2개 선택)
+    communicate: 250, // 소통 동사 (2개 선택)
+    expert: 300, // 전문적 동사 (2개 선택)
+  };
+
+  // step에 따른 타입 반환 함수
+  const getStepType = (step: number): keyof typeof SCORE_WEIGHTS => {
+    switch (Math.floor(step)) {
+      case 0:
+        return "start";
+      case 1:
+        return "advance";
+      case 2:
+        return "utility";
+      case 3:
+        return "communicate";
+      case 4:
+        return "expert";
+      default:
+        return "start";
+    }
+  };
 
   const renderQustion = () => {
     if (step === 0 || step === 0.5) {
@@ -72,8 +100,19 @@ export const VerbTest = ({
 
   const handleSelect = (target: TestItem, word: string) => {
     const isSelected = selectedAnswers.includes(word);
-    const scoreChange = isSelected ? -3 : 3;
-    const stepChange = isSelected ? -0.5 : 0.5;
+    const stepType = getStepType(step);
+    const currentStepAnswers = selectedAnswers.filter(
+      (_, index) => Math.floor(index / 2) === Math.floor(step)
+    );
+
+    // 이미 2개 선택했고, 새로운 선택을 시도할 경우 중단
+    if (!isSelected && currentStepAnswers.length >= 2) {
+      return;
+    }
+
+    const scoreChange = isSelected
+      ? -SCORE_WEIGHTS[stepType]
+      : SCORE_WEIGHTS[stepType];
 
     setSelectedAnswers(prev => {
       const newAnswers = [...prev];
@@ -95,7 +134,7 @@ export const VerbTest = ({
       return newNames;
     });
 
-    setStep(prev => prev + stepChange);
+    setStep(prev => prev + 0.5);
     setScores(prev =>
       prev.map(score =>
         score.sort === target.sort
@@ -109,7 +148,7 @@ export const VerbTest = ({
     if (step === 0 || step === 0.5) {
       return (
         <>
-          {testArr.map(el => (
+          {verbTestData.map(el => (
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -117,7 +156,7 @@ export const VerbTest = ({
               key={el.sort}
               className={`py-3 px-6 rounded-lg border border-gray-300 shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
                 ${
-                  selectedAnswers.includes(el.start || "")
+                  selectedAnswers.includes(el.start)
                     ? "bg-indigo-100 border-indigo-500 text-indigo-700"
                     : ""
                 }`}
@@ -129,8 +168,8 @@ export const VerbTest = ({
       );
     }
     if (step === 1 || step === 1.5) {
-      const arr1 = testArr.filter(el => el.name === nameArr[0]);
-      const arr2 = testArr.filter(el => el.name === nameArr[1]);
+      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
+      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
 
       if (nameArr[0] === nameArr[1]) {
         return (
@@ -199,8 +238,8 @@ export const VerbTest = ({
       );
     }
     if (step === 2 || step === 2.5) {
-      const arr1 = testArr.filter(el => el.name === nameArr[0]);
-      const arr2 = testArr.filter(el => el.name === nameArr[1]);
+      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
+      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
 
       if (nameArr[0] === nameArr[1]) {
         return (
@@ -269,8 +308,8 @@ export const VerbTest = ({
       );
     }
     if (step === 3 || step === 3.5) {
-      const arr1 = testArr.filter(el => el.name === nameArr[0]);
-      const arr2 = testArr.filter(el => el.name === nameArr[1]);
+      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
+      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
 
       if (nameArr[0] === nameArr[1]) {
         return (
@@ -339,8 +378,8 @@ export const VerbTest = ({
       );
     }
     if (step === 4 || step === 4.5) {
-      const arr1 = testArr.filter(el => el.name === nameArr[0]);
-      const arr2 = testArr.filter(el => el.name === nameArr[1]);
+      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
+      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
 
       if (nameArr[0] === nameArr[1]) {
         return (
@@ -536,7 +575,7 @@ export const VerbTest = ({
     setSubmitStatus("loading");
 
     try {
-      await submitTest(groupId, email, name, scores);
+      submitTest(groupId, email, name, scores);
       setSubmitStatus("success");
 
       // 3초 후 자동으로 창 닫기
@@ -621,7 +660,9 @@ export const VerbTest = ({
 
         <div className="flex justify-between items-center w-full p-8">
           <span className="text-sm text-primary-gray">
-            테스트 무단 배포시 블라블라블라블라
+            &quot;소스테스트&quot;는 (주)워크소스의 자산으로, 캡처, 복사 등 무단
+            배포 및 전송을 엄격히 금지합니다. 이를 위반할 경우 법적 책임이 따를
+            수 있습니다.
           </span>
         </div>
       </div>
