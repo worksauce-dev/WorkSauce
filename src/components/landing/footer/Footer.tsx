@@ -1,5 +1,6 @@
 import React from "react";
 import { Logo } from "../../common/Logo";
+import { MdEmail } from "react-icons/md";
 
 type FooterSectionProps = {
   title: string;
@@ -25,28 +26,33 @@ const FooterLink: React.FC<FooterLinkProps> = ({ href, children }) => (
 );
 
 const CompanyInfo: React.FC = () => (
-  <ul className="text-gray-500 text-caption space-y-2">
-    {[
-      "사하라 웍스",
-      "대표: 나요한",
-      "사업자번호: 000-000-00000",
-      "통신판매업 신고번호: 000-000-00000",
-      "주소: 000-000-00000",
-      "-",
-      "이메일: info@company.com",
-      "전화번호: 02-1234-5678",
-    ].map((item, index) => (
-      <li key={index}>{item}</li>
-    ))}
-  </ul>
+  // <ul className="text-gray-500 text-caption space-y-2">
+  //   {[
+  //     "워크소스",
+  //     "대표: 나요한",
+  //     "사업자번호: 000-000-00000",
+  //     "통신판매업 신고번호: 000-000-00000",
+  //     "주소: 000-000-00000",
+  //     "-",
+  //     "이메일: info@worksauce.kr",
+  //     "전화번호: 02-1234-5678",
+  //   ].map((item, index) => (
+  //     <li key={index}>{item}</li>
+  //   ))}
+  // </ul>
+
+  <span className="flex items-center gap-2 text-gray-500 text-caption md:text-body2">
+    <MdEmail className="text-lg" />
+    worksauce.info@gmail.com
+  </span>
 );
 
 const LinkSection: React.FC = () => (
   <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
     {[
       { href: "/", text: "홈" },
-      { href: "product", text: "제품" },
-      { href: "partners", text: "파트너십" },
+      // { href: "product", text: "제품" },
+      // { href: "partners", text: "파트너십" },
       {
         href:
           process.env.NEXT_PUBLIC_DOCUMENTATION_URL ||
@@ -62,15 +68,26 @@ const LinkSection: React.FC = () => (
 );
 
 const LegalSection: React.FC = () => (
+  // <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
+  //   {[
+  //     { href: "/terms-and-conditions", text: "이용약관" },
+  //     { href: "/privacy-policy", text: "개인정보 취급방침" },
+  //     { href: "/refund-policy", text: "취소 및 환불정책" },
+  //   ].map(({ href, text }) => (
+  //     <FooterLink key={href} href={href}>
+  //       {text}
+  //     </FooterLink>
+  //   ))}
+  // </ul>
   <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
     {[
-      { href: "/terms-and-conditions", text: "이용약관" },
-      { href: "/privacy-policy", text: "개인정보 취급방침" },
-      { href: "/refund-policy", text: "취소 및 환불정책" },
-    ].map(({ href, text }) => (
-      <FooterLink key={href} href={href}>
+      { text: "이용약관" },
+      { text: "개인정보 취급방침" },
+      { text: "취소 및 환불정책" },
+    ].map(({ text }, index) => (
+      <li key={index} className="cursor-not-allowed opacity-50">
         {text}
-      </FooterLink>
+      </li>
     ))}
   </ul>
 );
@@ -79,15 +96,11 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-100">
       <div className="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-          <div className="grid lg:grid-cols-2 gap-14 xl:col-span-2 sm:mb-0 mb-4">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div className="col-span-2 text-xs text-gray-500">
-                <FooterSection title="WORK SAUCE">
-                  <CompanyInfo />
-                </FooterSection>
-              </div>
-            </div>
+        <div className="grid xl:grid-cols-3 xl:gap-8">
+          <div className="grid lg:grid-cols-2 gap-8 xl:col-span-2">
+            <FooterSection title="WORK SAUCE">
+              <CompanyInfo />
+            </FooterSection>
             <div className="grid grid-cols-2 gap-8">
               <FooterSection title="LINK">
                 <LinkSection />
