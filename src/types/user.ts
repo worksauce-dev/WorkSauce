@@ -12,5 +12,7 @@ export interface User {
   type: string;
   updatedAt: string;
   groups: string[];
-  companyInfo: string;
+  companyName: string;
+  address: string;
+  plan: string;
 }
