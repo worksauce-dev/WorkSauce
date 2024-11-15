@@ -6,6 +6,8 @@ import { determineApplicantType } from "@/utils/applicantAnalysis";
 import { formatDate } from "@/utils/formatDate";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { MdArrowBack } from "react-icons/md";
+import { typeDescriptions } from "@/constant/test";
 
 // 새로운 컴포넌트 추가
 const TopResultCard: React.FC<{
@@ -13,27 +15,40 @@ const TopResultCard: React.FC<{
   score: number;
   rank: number;
   total: number;
-}> = ({ sort, score, rank, total }) => (
+  isKeywordMatch: boolean;
+}> = ({ sort, score, rank, total, isKeywordMatch }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: rank * 0.1 }}
-    className="bg-white border border-indigo-100 rounded-lg p-4 flex items-center justify-between hover:shadow-lg transition-shadow"
+    className={`rounded-lg p-2.5 flex items-center justify-between ${
+      isKeywordMatch ? "bg-orange-50" : "bg-white"
+    }`}
   >
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center gap-2">
       <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center ${
+        className={`w-7 h-7 rounded-full flex items-center justify-center ${
           rank === 1
-            ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
-            : "bg-gray-100 text-gray-600"
+            ? "bg-orange-500 text-white"
+            : "bg-orange-100 text-orange-500"
         }`}
       >
-        <span className="text-base font-bold">{rank}</span>
+        <span className="text-sm font-semibold">{rank}</span>
       </div>
       <div>
-        <h4 className="font-semibold text-gray-900 text-sm">{sort}</h4>
+        <div className="flex items-center gap-2">
+          <h4 className="font-medium text-gray-900">{sort}</h4>
+          {isKeywordMatch && (
+            <div className="flex items-center gap-1">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
+              <span className="text-xs font-medium text-orange-500">
+                키워드 매칭
+              </span>
+            </div>
+          )}
+        </div>
         <p className="text-sm text-gray-500">
-          {((score / 120) * 100).toFixed(1)}%
+          {((score / total) * 100).toFixed(1)}%
         </p>
       </div>
     </div>
@@ -42,188 +57,210 @@ const TopResultCard: React.FC<{
 
 interface ApplicantScoreCardProps {
   applicant: Applicant;
+  keywords: string[];
 }
 
 const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   applicant,
+  keywords,
 }) => {
   const [activeTab, setActiveTab] = React.useState<string>("characteristics");
-
-  // 점수 기준으로 정렬하여 상위 3개 추출
   const topResults = [...applicant.testResult]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
-
   const applicantType = determineApplicantType(topResults);
 
-  const totalScore = applicant.testResult.reduce(
-    (sum, result) => sum + result.score,
-    0
-  );
-
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-8 h-full">
-      <div className="flex flex-col lg:flex-row gap-8 h-full">
-        {/* 좌측: 기본 정보 및 상위 테스트 결과 */}
-        <div className="lg:w-2/5">
-          <h2 className="text-3xl font-bold mb-6 text-indigo-700">
-            {applicant.name}님의 소스테스트 결과
-          </h2>
+    <div className="flex flex-col h-full space-y-4">
+      {/* 헤더 섹션 */}
+      <div className="flex items-center justify-between rounded-xl p-6 shadow-sm border border-gray-100 bg-white min-h-[98px]">
+        <h1 className="text-xl font-semibold md:text-2xl text-gray-900">
+          {applicant.name}님의 소스테스트 결과
+        </h1>
 
-          <div className="grid grid-cols-1 gap-4 mb-8">
-            <Link
-              href={`/group/${applicant.groupId}`}
-              className="bg-indigo-50 p-4 rounded-lg hover:bg-indigo-100"
-            >
-              <span className="font-semibold text-indigo-700">그룹:</span>
-              <span className="ml-2">{applicant.groupName}</span>
-            </Link>
-            <div className="bg-indigo-50 p-4 rounded-lg">
-              <span className="font-semibold text-indigo-700">이메일:</span>
-              <span className="ml-2">{applicant.email}</span>
-            </div>
-            <div className="bg-indigo-50 p-4 rounded-lg">
-              <span className="font-semibold text-indigo-700">완료일:</span>
-              <span className="ml-2">
-                {applicant.completedAt
-                  ? formatDate(applicant.completedAt)
-                  : "-"}
-              </span>
-            </div>
+        <div className="flex items-center divide-gray-200 gap-4">
+          <div className="pr-4">
+            <span className="text-sm text-gray-500">그룹</span>
+            <p className="text-sm font-medium text-gray-900">
+              {applicant.groupName}
+            </p>
           </div>
+          <div className="px-4">
+            <span className="text-sm text-gray-500">이메일</span>
+            <p className="text-sm font-medium text-gray-900">
+              {applicant.email}
+            </p>
+          </div>
+          <div className="px-4">
+            <span className="text-sm text-gray-500">완료일</span>
+            <p className="text-sm font-medium text-gray-900">
+              {applicant.completedAt ? formatDate(applicant.completedAt) : "-"}
+            </p>
+          </div>
+          <Link
+            href={`/group/${applicant.groupId}`}
+            className="px-4 py-2 text-sm font-medium text-primary-accent flex items-center gap-1 hover:bg-orange-50 hover:rounded-lg transition"
+          >
+            <MdArrowBack className="text-lg" />
+            그룹으로 돌아가기
+          </Link>
+        </div>
+      </div>
 
-          <h3 className="text-xl font-semibold mb-4 text-indigo-600">
+      <div className="grid grid-cols-12 gap-4">
+        {/* 좌측: 주요 테스트 결과 (3/12) */}
+        <div className="col-span-3 bg-white rounded-xl shadow-lg p-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">
             주요 테스트 결과
-          </h3>
-          <div className="space-y-4">
+          </h2>
+          <div className="space-y-2">
             {topResults.map((result, index) => (
               <TopResultCard
                 key={index}
                 sort={result.sort}
                 score={result.score}
                 rank={index + 1}
-                total={totalScore}
+                total={4700}
+                isKeywordMatch={keywords.includes(result.sort)}
               />
             ))}
           </div>
         </div>
 
-        {/* 우측: 지원자 분석 */}
-        <div className="lg:w-3/5 lg:border-l lg:pl-8">
-          <h3 className="text-2xl font-semibold mb-6 text-indigo-600">
-            지원자 분석
-          </h3>
-
-          <div className="bg-indigo-50 rounded-xl p-6 mb-8">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-sm text-indigo-600 font-semibold">
-                    지원자 유형
-                  </span>
-                  <h4 className="text-2xl font-bold text-gray-900">
-                    {applicantType.title}
-                  </h4>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {applicantType.keywords.map((keyword, index) => (
-                    <span
-                      key={index}
-                      className="bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold"
-                    >
-                      {keyword}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <p className="text-gray-600">{applicantType.description}</p>
+        {/* 우측: 지원자 유형 (9/12) */}
+        <div className="col-span-9 bg-white rounded-xl shadow-lg p-4">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                지원자 유형
+              </h2>
+              <p className="text-xl font-bold text-primary-accent mt-1">
+                {applicantType.title}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {applicantType.keywords.map((keyword, index) => (
+                <span
+                  key={index}
+                  className="bg-orange-100 text-orange-500 px-2 py-0.5 rounded-full text-sm font-medium"
+                >
+                  {keyword}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* 탭 네비게이션 */}
-          <div className="flex space-x-4 border-b mb-6">
+          <div className="space-y-4">
+            {/* 요약 설명 */}
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <span className="text-orange-500 text-lg">✦</span>
+                </div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {applicant.name}님은{" "}
+                  {typeDescriptions[applicantType.title.replace(/\s+/g, "")]}
+                </p>
+              </div>
+            </div>
+
+            {/* 상세 설명 */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  <span className="text-gray-600 text-lg">✤</span>
+                </div>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {applicantType.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 bg-white rounded-xl shadow-lg p-4">
+        <div className="border-b border-gray-200 mb-4">
+          <div className="flex space-x-6">
             {["characteristics", "interview", "onboarding"].map(tab => (
-              <motion.button
+              <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-2 px-6 relative ${
+                className={`pb-3 px-2 relative ${
                   activeTab === tab
-                    ? "text-indigo-600 font-semibold"
-                    : "text-gray-500"
+                    ? "text-gray-900 font-semibold"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
                 {activeTab === tab && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500"
                   />
                 )}
                 {tab === "characteristics" && "특성 분석"}
                 {tab === "interview" && "면접 가이드"}
                 {tab === "onboarding" && "온보딩 제안"}
-              </motion.button>
+              </button>
             ))}
           </div>
-
-          {/* 탭 컨텐츠 */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-6"
-            >
-              {activeTab === "characteristics" && (
-                <div className="space-y-6">
-                  <CharacteristicsCard
-                    title="개선점"
-                    points={[applicantType.weaknesses]}
-                    className="bg-gradient-to-r from-orange-50 to-pink-50"
-                  />
-                </div>
-              )}
-
-              {activeTab === "interview" && (
-                <div className="space-y-4">
-                  {applicantType.interviewQuestions.map((question, index) => (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      key={index}
-                      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
-                    >
-                      <div className="flex items-start">
-                        <span className="flex-shrink-0 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
-                          Q{index + 1}
-                        </span>
-                        <p className="ml-4 text-gray-700 text-sm">{question}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-
-              {activeTab === "onboarding" && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-8"
-                >
-                  <h5 className="font-semibold text-xl mb-6 text-indigo-700">
-                    추천 온보딩 프로세스
-                  </h5>
-                  <div className="text-gray-700 prose prose-indigo">
-                    <p>{applicantType.onboardingSteps}</p>
-                  </div>
-                </motion.div>
-              )}
-            </motion.div>
-          </AnimatePresence>
         </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+          >
+            {activeTab === "characteristics" && (
+              <div className="space-y-6">
+                <CharacteristicsCard
+                  title="개선점"
+                  points={[applicantType.weaknesses]}
+                  className="bg-gradient-to-r from-orange-50 to-pink-50"
+                />
+              </div>
+            )}
+
+            {activeTab === "interview" && (
+              <div className="space-y-4">
+                {applicantType.interviewQuestions.map((question, index) => (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    key={index}
+                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-start">
+                      <span className="flex-shrink-0 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
+                        Q{index + 1}
+                      </span>
+                      <p className="ml-4 text-gray-700 text-sm">{question}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === "onboarding" && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-8"
+              >
+                <h5 className="font-semibold text-xl mb-6 text-gray-900">
+                  추천 온보딩 프로세스
+                </h5>
+                <div className="text-gray-700 prose prose-orange">
+                  <p>{applicantType.onboardingSteps}</p>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
