@@ -1,6 +1,3 @@
-import imagelogo from "../../../public/_레이어_2.png";
-import Image from "next/image";
-import textlogo from "../../../public/textlogo.png";
 import { Droplet } from "lucide-react";
 
 export const Logo = () => {
