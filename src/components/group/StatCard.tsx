@@ -7,7 +7,7 @@ interface StatCardProps {
 
 export default function StatCard({ title, value, icon, color }: StatCardProps) {
   const colorClasses = {
-    indigo: "bg-indigo-100 text-indigo-600",
+    orange: "bg-orange-100 text-orange-500",
     green: "bg-green-100 text-green-600",
     yellow: "bg-yellow-100 text-yellow-600",
     blue: "bg-blue-100 text-blue-600",

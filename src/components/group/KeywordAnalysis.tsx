@@ -70,7 +70,7 @@ export default function KeywordAnalysis({
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6 h-full">
-      <h2 className="text-lg font-semibold text-indigo-600 mb-3">
+      <h2 className="text-lg font-semibold text-gray-900 mb-3">
         키워드 매칭 분석
       </h2>
       <div className="flex flex-col gap-3 max-w-xl">
@@ -78,12 +78,12 @@ export default function KeywordAnalysis({
           <button
             onClick={() => onKeywordSelect(analysis.keyword)}
             key={analysis.keyword}
-            className={`w-full border border-indigo-100 rounded-lg p-4 hover:bg-indigo-50 transition-colors ${
-              selectedKeyword === analysis.keyword ? "bg-indigo-50" : "bg-white"
+            className={`w-full border border-orange-100 rounded-lg p-4 hover:bg-orange-50 transition-colors ${
+              selectedKeyword === analysis.keyword ? "bg-orange-50" : "bg-white"
             }`}
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="font-medium text-indigo-700">
+              <span className="font-medium text-gray-900">
                 {analysis.keyword}
               </span>
               <span className="text-sm text-gray-500">
@@ -92,24 +92,24 @@ export default function KeywordAnalysis({
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-indigo-600 h-2 float-left"
+                className="bg-orange-500 h-2 float-left"
                 style={{ width: `${analysis.mainPercentage}%` }}
               />
               <div
-                className="bg-indigo-300 h-2 float-left"
+                className="bg-orange-300 h-2 float-left"
                 style={{ width: `${analysis.subPercentage}%` }}
               />
             </div>
             <div className="mt-2 text-sm">
-              <span className="text-indigo-700">
+              <span className="text-orange-500">
                 메인: {analysis.mainCount}명
               </span>
               <span className="mx-2 text-gray-300">|</span>
-              <span className="text-indigo-400">
+              <span className="text-orange-400">
                 서브: {analysis.subCount}명
               </span>
             </div>
-            <div className="mt-2">
+            {/* <div className="mt-2">
               {analysis.applicants.slice(0, 3).map((applicant, idx) => (
                 <span
                   key={idx}
@@ -123,7 +123,7 @@ export default function KeywordAnalysis({
                   +{analysis.applicants.length - 3}명
                 </span>
               )}
-            </div>
+            </div> */}
           </button>
         ))}
       </div>
