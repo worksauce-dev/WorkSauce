@@ -29,6 +29,7 @@ const config: Config = {
         "secondary-yellow": "#FFF1C2",
 
         "primary-accent": "#F97316",
+        "primary-accent-hover": "#EA580C",
         "secondary-accent": "#ffd2d6",
       },
       fontSize: {
