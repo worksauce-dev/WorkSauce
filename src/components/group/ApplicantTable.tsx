@@ -72,7 +72,11 @@ const ApplicantRow = memo(
         </td>
         <td className="border-b border-orange-200 px-6 py-4">
           <Link href={href} className="block w-full">
-            {applicant.completedAt ? formatDate(applicant.completedAt) : "-"}
+            {applicant.completedAt
+              ? `${new Date(applicant.completedAt).getMonth() + 1}월 ${new Date(
+                  applicant.completedAt
+                ).getDate()}일`
+              : "-"}
             {applicant.testStatus === "completed" && (
               <span className="ml-2 text-xs text-orange-500">(결과 보기)</span>
             )}
