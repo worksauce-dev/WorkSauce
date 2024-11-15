@@ -1,7 +1,7 @@
 // 클라이언트 컴포넌트로 분리
 "use client";
 import { useState } from "react";
-import { TestDBType, CategoryData } from "@/types/test";
+import { TestDBType, CategoryData, CategoryType } from "@/types/test";
 import { MdSave, MdSync } from "react-icons/md";
 
 interface TestDBEditorProps {
@@ -27,7 +27,7 @@ function TestDBEditor({ initialData, updateTestDB }: TestDBEditorProps) {
         ...editedData,
         updatedAt: currentTime,
         [activeSort]: {
-          ...(editedData[activeSort] as CategoryData),
+          ...(editedData[activeSort] as CategoryType),
           updatedAt: currentTime,
         },
       };
