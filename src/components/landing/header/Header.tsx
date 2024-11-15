@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { getErrorMessage } from "@/utils/getErrorMessage";
 import { Logo } from "../../common/Logo";
-import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import { User } from "@/types/user";
 
 type MenuItem = {
   href?: string;
@@ -14,22 +12,32 @@ type MenuItem = {
   onClick?: () => Promise<void>;
 };
 
-export const Header = ({ session }: { session: Session | null }) => {
+export const Header = ({ user }: { user: User | null }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
 
   const handleSignOut = async () => {
     await signOut({ callbackUrl: "/" });
   };
 
   const guestMenuItems: MenuItem[] = [
-    { href: "doc", label: "도움말" },
+    {
+      href:
+        process.env.NEXT_PUBLIC_DOCUMENTATION_URL ||
+        "https://worksauce.gitbook.io/infomation",
+      label: "도움말",
+    },
     { href: "login", label: "로그인 / 회원가입" },
   ];
 
   const userMenuItems: MenuItem[] = [
-    { href: "doc", label: "도움말" },
+    {
+      href:
+        process.env.NEXT_PUBLIC_DOCUMENTATION_URL ||
+        "https://worksauce.gitbook.io/infomation",
+      label: "도움말",
+    },
     { href: "dashboard", label: "대시보드" },
+    ...(user?.isAdmin ? [{ href: "admin", label: "관리자 페이지" }] : []),
     {
       label: "로그아웃",
       onClick: handleSignOut,
@@ -37,7 +45,7 @@ export const Header = ({ session }: { session: Session | null }) => {
   ];
 
   const renderMenu = () => {
-    const items = session ? userMenuItems : guestMenuItems;
+    const items = user ? userMenuItems : guestMenuItems;
     return items.map((item, index) => (
       <motion.a
         key={index}
