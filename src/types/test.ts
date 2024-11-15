@@ -1,12 +1,32 @@
 export interface QuestionType {
   text: string;
+  score: number;
 }
 
-export interface CategoryType {
+export interface VerbType {
   sort: string;
-  questions: QuestionType[];
+  name: string;
+  start: string;
+  advance: string[];
+  expert: string[];
+  utility: string[];
+  communicate: string[];
+}
+
+export interface CategoryType extends CategoryData {
   index: number;
   total: number;
+}
+
+export interface CategoryData {
+  sort: string;
+  name: string;
+  questions: QuestionType[];
+  start: string;
+  advance: string[];
+  expert: string[];
+  utility: string[];
+  communicate: string[];
 }
 
 export interface ScoreType {
@@ -14,17 +34,35 @@ export interface ScoreType {
   score: number;
 }
 
+export interface Progress {
+  sectionProgress: number;
+  totalProgress: number;
+  categoryInfo: {
+    current: number;
+    total: number;
+    sectionName: string;
+    isFirstHalf: boolean;
+  };
+}
+// 하나의 통합된 인터페이스만 유지
 export interface useTestLogicReturnInterface {
-  currentCategory: CategoryType;
-  answers: { [key: string]: number };
-  isCompleted: boolean;
+  verbTestData: VerbType[];
+  currentCategoryData: CategoryType;
+  selectedAnswers: { [key: number]: number };
   handleAnswer: (questionIndex: number, score: number) => void;
-  handleNextCategory: () => void;
-  handleSkip: () => void;
-  getCurrentProgress: () => number;
-  canProceed: boolean;
-  calculateScores: () => ScoreType[];
-  totalQuestionsBefore: number;
   isFirstHalfCompleted: boolean;
   handleNextHalf: () => void;
+  canProceedToNext: boolean;
+  calculateFinalScore: (questionIndex: number) => number;
+  progress: Progress;
+  handleSkip: () => void;
+  isTestCompleted: boolean;
+  getFinalScores: () => ScoreType[];
+}
+
+// FireStore 데이터 타입
+export interface TestDBType {
+  createdAt: string;
+  updatedAt: string;
+  [key: string]: CategoryType | string;
 }
