@@ -17,12 +17,12 @@ interface StatisticsSectionProps {
 
 export default function StatisticsSection({ stats }: StatisticsSectionProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
         title="전체 지원자"
         value={stats.totalApplicants}
         icon={<FaUserGraduate />}
-        color="indigo"
+        color="orange"
       />
       <StatCard
         title="테스트 완료"

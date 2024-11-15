@@ -14,11 +14,8 @@ export default function GroupHeader({ group, deleteGroup }: GroupHeaderProps) {
   const router = useRouter();
   return (
     <div className="flex justify-between items-center mb-6">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-bold text-indigo-700">
-          {group.name} 대시보드
-        </h1>
-      </div>
+      <h1 className="text-xl font-bold text-gray-900">{group.name} 대시보드</h1>
+
       <div className="flex items-center gap-4">
         <div className="text-sm text-gray-500">
           {new Date(group.deadline) > new Date()

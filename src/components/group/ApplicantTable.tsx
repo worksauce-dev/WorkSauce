@@ -32,18 +32,18 @@ const ApplicantRow = memo(
 
     return (
       <tr
-        className={`${index % 2 === 0 ? "bg-white" : "bg-indigo-50"} ${
+        className={`${index % 2 === 0 ? "bg-white" : "bg-orange-50"} ${
           isCompleted
-            ? "cursor-pointer hover:bg-indigo-100 transition-colors"
+            ? "cursor-pointer hover:bg-orange-100 transition-colors"
             : ""
         }`}
       >
-        <td className="border-b border-indigo-200 px-6 py-4">
+        <td className="border-b border-orange-200 px-6 py-4">
           <Link href={href} className="block w-full">
             {applicant.name}
           </Link>
         </td>
-        <td className="border-b border-indigo-200 px-6 py-4">
+        <td className="border-b border-orange-200 px-6 py-4">
           <Link href={href} className="block w-full">
             {!types.main ? (
               "-"
@@ -59,7 +59,7 @@ const ApplicantRow = memo(
             )}
           </Link>
         </td>
-        <td className="border-b border-indigo-200 px-6 py-4">
+        <td className="border-b border-orange-200 px-6 py-4">
           <Link href={href} className="block w-full">
             <span
               className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
@@ -70,11 +70,11 @@ const ApplicantRow = memo(
             </span>
           </Link>
         </td>
-        <td className="border-b border-indigo-200 px-6 py-4">
+        <td className="border-b border-orange-200 px-6 py-4">
           <Link href={href} className="block w-full">
             {applicant.completedAt ? formatDate(applicant.completedAt) : "-"}
             {applicant.testStatus === "completed" && (
-              <span className="ml-2 text-xs text-indigo-600">(결과 보기)</span>
+              <span className="ml-2 text-xs text-orange-500">(결과 보기)</span>
             )}
           </Link>
         </td>
@@ -108,7 +108,7 @@ export default function ApplicantTable({
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col flex-1 min-h-0 h-full">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-lg font-semibold text-indigo-600">
+        <h2 className="text-lg font-semibold text-gray-900">
           {`${selectedKeyword} 지원자 현황`}
         </h2>
         <button
@@ -122,7 +122,7 @@ export default function ApplicantTable({
       <div className="overflow-x-auto flex-1">
         <table className="w-full table-auto">
           <thead>
-            <tr className="bg-indigo-100 text-indigo-700">
+            <tr className="bg-orange-100 text-gray-900">
               <th className="px-6 py-3 text-left">이름</th>
               <th className="px-6 py-3 text-left">유형</th>
               <th className="px-6 py-3 text-left">상태</th>
