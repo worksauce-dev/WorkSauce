@@ -16,9 +16,9 @@ export default function DashboardContainer({
   userData,
   groupData,
 }: DashboardContainerProps) {
-  const [activeTab, setActiveTab] = useState<
-    "대시보드" | "지원자 검색" | "설정"
-  >("대시보드");
+  const [activeTab, setActiveTab] = useState<"대시보드" | "지원자 검색">(
+    "대시보드"
+  );
 
   const { name } = userData;
 

@@ -12,7 +12,7 @@ import {
 } from "react-icons/md";
 
 interface DashboardContentProps {
-  activeTab: "대시보드" | "지원자 검색" | "설정";
+  activeTab: "대시보드" | "지원자 검색";
   groupData: Group[];
 }
 
@@ -305,186 +305,186 @@ export default function DashboardContent({
         </div>
       );
 
-    case "설정":
-      return (
-        <div className="flex flex-col md:flex-row gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
-          <div className="w-full md:w-1/4">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
-            <ul className="space-y-2">
-              {["프로필", "알림", "보안", "테스트 설정", "통합", "청구"].map(
-                tab => (
-                  <li key={tab}>
-                    <button
-                      onClick={() => setActiveSettingTab(tab)}
-                      className={`w-full text-left px-4 py-2 rounded-md ${
-                        activeSettingTab === tab
-                          ? "bg-orange-500 text-white"
-                          : "text-gray-600 hover:bg-orange-50"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
-          <div className="w-full md:w-3/4">
-            {activeSettingTab === "프로필" && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">프로필 설정</h3>
-                <form className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      이름
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      이메일
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="company"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      회사명
-                    </label>
-                    <input
-                      type="text"
-                      id="company"
-                      name="company"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                  >
-                    변경사항 저장
-                  </button>
-                </form>
-              </div>
-            )}
-            {activeSettingTab === "알림" && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">알림 설정</h3>
-                <div className="space-y-4">
-                  {Object.entries(notifications).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-sm font-medium text-gray-700 capitalize">
-                        {key} 알림
-                      </span>
-                      <label className="flex items-center cursor-pointer">
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            className="sr-only"
-                            checked={value}
-                            onChange={() =>
-                              setNotifications(prev => ({
-                                ...prev,
-                                [key as keyof typeof prev]:
-                                  !prev[key as keyof typeof prev],
-                              }))
-                            }
-                          />
-                          <div className="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
-                          <div
-                            className={`absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
-                              value
-                                ? "transform translate-x-full bg-orange-500"
-                                : ""
-                            }`}
-                          ></div>
-                        </div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {activeSettingTab === "보안" && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">보안 설정</h3>
-                <form className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="current-password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      현재 비밀번호
-                    </label>
-                    <input
-                      type="password"
-                      id="current-password"
-                      name="current-password"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="new-password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      새 비밀번호
-                    </label>
-                    <input
-                      type="password"
-                      id="new-password"
-                      name="new-password"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="confirm-password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      새 비밀번호 확인
-                    </label>
-                    <input
-                      type="password"
-                      id="confirm-password"
-                      name="confirm-password"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                  >
-                    비밀번호 변경
-                  </button>
-                </form>
-              </div>
-            )}
-            {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}
-          </div>
-        </div>
-      );
+    // case "설정":
+    //   return (
+    //     <div className="flex flex-col md:flex-row gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+    //       <div className="w-full md:w-1/4">
+    //         <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
+    //         <ul className="space-y-2">
+    //           {["프로필", "알림", "보안", "테스트 설정", "통합", "청구"].map(
+    //             tab => (
+    //               <li key={tab}>
+    //                 <button
+    //                   onClick={() => setActiveSettingTab(tab)}
+    //                   className={`w-full text-left px-4 py-2 rounded-md ${
+    //                     activeSettingTab === tab
+    //                       ? "bg-orange-500 text-white"
+    //                       : "text-gray-600 hover:bg-orange-50"
+    //                   }`}
+    //                 >
+    //                   {tab}
+    //                 </button>
+    //               </li>
+    //             )
+    //           )}
+    //         </ul>
+    //       </div>
+    //       <div className="w-full md:w-3/4">
+    //         {activeSettingTab === "프로필" && (
+    //           <div>
+    //             <h3 className="text-lg font-semibold mb-4">프로필 설정</h3>
+    //             <form className="space-y-4">
+    //               <div>
+    //                 <label
+    //                   htmlFor="name"
+    //                   className="block text-sm font-medium text-gray-700"
+    //                 >
+    //                   이름
+    //                 </label>
+    //                 <input
+    //                   type="text"
+    //                   id="name"
+    //                   name="name"
+    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    //                 />
+    //               </div>
+    //               <div>
+    //                 <label
+    //                   htmlFor="email"
+    //                   className="block text-sm font-medium text-gray-700"
+    //                 >
+    //                   이메일
+    //                 </label>
+    //                 <input
+    //                   type="email"
+    //                   id="email"
+    //                   name="email"
+    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    //                 />
+    //               </div>
+    //               <div>
+    //                 <label
+    //                   htmlFor="company"
+    //                   className="block text-sm font-medium text-gray-700"
+    //                 >
+    //                   회사명
+    //                 </label>
+    //                 <input
+    //                   type="text"
+    //                   id="company"
+    //                   name="company"
+    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    //                 />
+    //               </div>
+    //               <button
+    //                 type="submit"
+    //                 className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+    //               >
+    //                 변경사항 저장
+    //               </button>
+    //             </form>
+    //           </div>
+    //         )}
+    //         {activeSettingTab === "알림" && (
+    //           <div>
+    //             <h3 className="text-lg font-semibold mb-4">알림 설정</h3>
+    //             <div className="space-y-4">
+    //               {Object.entries(notifications).map(([key, value]) => (
+    //                 <div
+    //                   key={key}
+    //                   className="flex items-center justify-between"
+    //                 >
+    //                   <span className="text-sm font-medium text-gray-700 capitalize">
+    //                     {key} 알림
+    //                   </span>
+    //                   <label className="flex items-center cursor-pointer">
+    //                     <div className="relative">
+    //                       <input
+    //                         type="checkbox"
+    //                         className="sr-only"
+    //                         checked={value}
+    //                         onChange={() =>
+    //                           setNotifications(prev => ({
+    //                             ...prev,
+    //                             [key as keyof typeof prev]:
+    //                               !prev[key as keyof typeof prev],
+    //                           }))
+    //                         }
+    //                       />
+    //                       <div className="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
+    //                       <div
+    //                         className={`absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
+    //                           value
+    //                             ? "transform translate-x-full bg-orange-500"
+    //                             : ""
+    //                         }`}
+    //                       ></div>
+    //                     </div>
+    //                   </label>
+    //                 </div>
+    //               ))}
+    //             </div>
+    //           </div>
+    //         )}
+    //         {activeSettingTab === "보안" && (
+    //           <div>
+    //             <h3 className="text-lg font-semibold mb-4">보안 설정</h3>
+    //             <form className="space-y-4">
+    //               <div>
+    //                 <label
+    //                   htmlFor="current-password"
+    //                   className="block text-sm font-medium text-gray-700"
+    //                 >
+    //                   현재 비밀번호
+    //                 </label>
+    //                 <input
+    //                   type="password"
+    //                   id="current-password"
+    //                   name="current-password"
+    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    //                 />
+    //               </div>
+    //               <div>
+    //                 <label
+    //                   htmlFor="new-password"
+    //                   className="block text-sm font-medium text-gray-700"
+    //                 >
+    //                   새 비밀번호
+    //                 </label>
+    //                 <input
+    //                   type="password"
+    //                   id="new-password"
+    //                   name="new-password"
+    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    //                 />
+    //               </div>
+    //               <div>
+    //                 <label
+    //                   htmlFor="confirm-password"
+    //                   className="block text-sm font-medium text-gray-700"
+    //                 >
+    //                   새 비밀번호 확인
+    //                 </label>
+    //                 <input
+    //                   type="password"
+    //                   id="confirm-password"
+    //                   name="confirm-password"
+    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+    //                 />
+    //               </div>
+    //               <button
+    //                 type="submit"
+    //                 className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+    //               >
+    //                 비밀번호 변경
+    //               </button>
+    //             </form>
+    //           </div>
+    //         )}
+    //         {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}
+    //       </div>
+    //     </div>
+    //   );
 
     // case "분석 및 통계":
     //   return (
