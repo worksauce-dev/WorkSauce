@@ -131,18 +131,18 @@ export default function DashboardContent({
               공지사항
             </h1>
             <div className="space-y-4">
-              {/* <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 transition-all duration-200 hover:shadow-sm border border-blue-100">
+              <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 transition-all duration-200 hover:shadow-sm border border-blue-100">
                 <div className="flex items-center gap-3 mb-2">
                   <MdInfo className="w-5 h-5 text-blue-500" />
                   <h6 className="text-sm md:text-lg font-semibold text-blue-700 group-hover:text-blue-800 transition-colors duration-200">
-                    시스템 업데이트 일정
+                    결제 안내
                   </h6>
                 </div>
                 <p className="text-xs md:text-sm text-blue-600">
-                  2024년 10월 01일 오전 2시부터 6시까지 시스템 점검이 있을
-                  예정입니다
+                  현재 워크소스는 배타버전으로 운영하고 있습니다. 따라서 결제
+                  시스템은 현재 준비중입니다.
                 </p>
-              </div> */}
+              </div>
               <div className="bg-gradient-to-br from-emerald-50 to-white rounded-lg p-4 transition-all duration-200 hover:shadow-sm border border-emerald-100">
                 <div className="flex items-center gap-3 mb-2">
                   <MdCheckCircle className="w-5 h-5 text-emerald-400" />
