@@ -1,27 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import Lottie from "react-lottie-player";
 import heroAnimation from "../../../../public/heroPick2.json";
-
-const mockRecommendation = [
-  {
-    name: "김철수",
-    role: "CEO",
-    text: "이 서비스를 사용한 후 우리 회사의 생산성이 30% 향상되었습니다.",
-  },
-  {
-    name: "이영희",
-    role: "마케팅 매니저",
-    text: "고객 관리가 훨씬 쉬워졌어요. 정말 추천합니다!",
-  },
-  {
-    name: "박지성",
-    role: "데이터 분석가",
-    text: "데이터 분석 기능이 정말 뛰어납니다. 덕분에 매출이 증가했어요.",
-  },
-];
 
 export const Hero = () => {
   return (

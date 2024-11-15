@@ -47,7 +47,12 @@ const LinkSection: React.FC = () => (
       { href: "/", text: "홈" },
       { href: "product", text: "제품" },
       { href: "partners", text: "파트너십" },
-      { href: "doc", text: "도움말" },
+      {
+        href:
+          process.env.NEXT_PUBLIC_DOCUMENTATION_URL ||
+          "https://worksauce.gitbook.io/infomation",
+        text: "도움말",
+      },
     ].map(({ href, text }) => (
       <FooterLink key={href} href={href}>
         {text}
