@@ -4,6 +4,9 @@ import { AuthCheck } from "@/components/test/TestContainer";
 import { Group } from "@/types/group";
 import { Metadata } from "next";
 import { ExpiredTest } from "@/components/test/ExpiredTest";
+import { getTestDB } from "@/api/firebase/getTestDB";
+import { TestDBType } from "@/types/test";
+
 export const metadata: Metadata = {
   title: "소스테스트",
 };
@@ -24,6 +27,15 @@ export default async function TestPage({
   const groupId = searchParams.groupId;
 
   const groupData = (await getGroup(groupId)) as Group;
+  const testData = await getTestDB("saucetest");
+
+  if (!testData) {
+    return (
+      <div className="text-center text-2xl font-bold mt-40 h-screen">
+        테스트 데이터를 찾을 수 없습니다.
+      </div>
+    );
+  }
 
   if (groupData.deadline && new Date(groupData.deadline) < new Date()) {
     return <ExpiredTest deadline={groupData.deadline} />;
@@ -31,7 +43,11 @@ export default async function TestPage({
 
   return (
     <>
-      <AuthCheck groupData={groupData} submitTest={submitTest} />
+      <AuthCheck
+        groupData={groupData}
+        submitTest={submitTest}
+        testData={testData as TestDBType}
+      />
     </>
   );
 }
