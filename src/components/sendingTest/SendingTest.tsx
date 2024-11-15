@@ -68,9 +68,9 @@ const InputField: React.FC<InputFieldProps> = ({
         </label>
         <div className="flex items-center">
           {id === "groupName" ? (
-            <FiTag className="mr-2 text-indigo-500" />
+            <FiTag className="mr-2 text-[#F97316]" />
           ) : (
-            <FiCalendar className="mr-2 text-indigo-500" />
+            <FiCalendar className="mr-2 text-[#F97316]" />
           )}
           <input
             type={type}
@@ -94,7 +94,7 @@ const InputField: React.FC<InputFieldProps> = ({
         {label}
       </label>
       <div className="flex items-center">
-        {icon && <div className="mr-2 text-indigo-500">{icon}</div>}
+        {icon && <div className="mr-2 text-[#F97316]">{icon}</div>}
         <input
           type={type}
           id={id}
@@ -223,7 +223,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
         subject: "워크소스 테스트를 시작해주세요!",
         userName: applicant.name,
         groupId: groupId,
-        companyName: groupName,
+        companyName: user.companyName,
         deadline: deadline,
       });
 
@@ -327,12 +327,12 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
   };
 
   return (
-    <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen flex items-center justify-center">
+    <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-[#F7F7F9] min-h-screen flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-6xl">
         <div className="flex flex-col lg:flex-row h-full">
           {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
           <div className="lg:w-1/2 p-8 flex flex-col gap-8">
-            <h2 className="text-xl font-bold text-indigo-800">지원자 관리</h2>
+            <h2 className="text-xl font-bold text-gray-800">지원자 관리</h2>
             <div className="grid grid-cols-2 gap-8">
               <InputField
                 id="groupName"
@@ -389,7 +389,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
               <button
                 type="button"
                 onClick={handleAddApplicant}
-                className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-md hover:shadow-lg"
+                className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#F97316] hover:bg-[#EA580C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F97316] transition-all duration-200 shadow-md hover:shadow-lg"
               >
                 <FiPlus className="mr-2 -ml-1 h-5 w-5" aria-hidden="true" />
                 지원자 추가
@@ -411,7 +411,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
               >
                 <button
                   onClick={() => setIsTypeModalOpen(true)}
-                  className="w-full flex items-center px-4 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full flex items-center px-4 py-2 text-left bg-white border border-[#FDA172] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F97316] focus:border-[#F97316]"
                 >
                   <div className="flex-grow truncate">
                     {selectedKeywordGroups.length > 0 ? (
@@ -431,7 +431,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                       </span>
                     )}
                   </div>
-                  <FiChevronDown className="ml-2 flex-shrink-0" />
+                  <FiChevronDown className="ml-2 flex-shrink-0 text-gray-400" />
                 </button>
               </Tooltip>
             ) : (
@@ -462,15 +462,15 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
             )}
 
             <div className="mt-auto">
-              <h2 className="text-xl font-bold text-indigo-800 mb-4">
+              <h2 className="text-xl font-bold mb-4">
                 엑셀 파일로 지원자 일괄 추가
               </h2>
               <div
                 className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg ${
                   isDragging
-                    ? "border-indigo-500 bg-indigo-50"
+                    ? "border-[#F97316] bg-[#FFF1E7]"
                     : "border-gray-300"
-                } cursor-pointer transition-all duration-200 hover:border-indigo-400 hover:bg-indigo-50`}
+                } cursor-pointer transition-all duration-200 hover:border-[#FDA172] hover:bg-[#FFF1E7]`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -479,11 +479,11 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                 <div className="space-y-1 text-center">
                   <FiUpload
                     className={`mx-auto h-12 w-12 ${
-                      isDragging ? "text-indigo-500" : "text-gray-400"
+                      isDragging ? "text-[#F97316]" : "text-gray-400"
                     } transition-colors duration-200`}
                   />
                   <div className="flex text-sm text-gray-600 justify-center">
-                    <span className="font-medium text-indigo-600 hover:text-indigo-500">
+                    <span className="font-medium hover:text-[#EA580C]">
                       엑셀 파일 업로드
                     </span>
                   </div>
@@ -507,8 +507,8 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
           </div>
 
           {/* 오른쪽 섹션: 추가된 지원자 목록 */}
-          <div className="lg:w-1/2 bg-indigo-50 p-8 flex flex-col h-[calc(100vh-4rem)]">
-            <h2 className="text-2xl font-bold text-indigo-800 mb-6">
+          <div className="lg:w-1/2 bg-[#F7F7F9] p-8 flex flex-col h-[calc(100vh-4rem)]">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
               추가된 지원자 목록
             </h2>
             <div className="flex-grow overflow-hidden flex flex-col">
@@ -519,12 +519,10 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                     className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     <div>
-                      <p className="font-medium text-indigo-900">
+                      <p className="font-medium text-gray-800">
                         {applicant.name}
                       </p>
-                      <p className="text-sm text-indigo-600">
-                        {applicant.email}
-                      </p>
+                      <p className="text-sm text-gray-600">{applicant.email}</p>
                     </div>
                     <button
                       onClick={() =>
@@ -532,7 +530,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                           index + (currentPage - 1) * APPLICANTS_PER_PAGE
                         )
                       }
-                      className="text-red-500 hover:text-red-700 transition-colors duration-200 p-2 rounded-full hover:bg-red-100"
+                      className="text-gray-400 hover:text-red-500 transition-colors duration-200 p-2 rounded-full hover:bg-red-50"
                     >
                       <FiTrash2 className="h-5 w-5" />
                     </button>
@@ -545,9 +543,9 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-md bg-indigo-100 text-indigo-600 disabled:opacity-50 transition-all duration-200 hover:bg-indigo-200"
+                  className="px-4 py-2 rounded-md bg-[#FFF1E7] text-[#F97316] disabled:opacity-50 transition-all duration-200 hover:bg-[#FFE4D4]"
                 >
-                  <FiChevronLeft />
+                  <FiChevronLeft className="text-[#F97316]" />
                 </button>
                 <span className="text-indigo-800 font-medium">
                   {currentPage} / {totalPages}
@@ -559,13 +557,13 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                   disabled={currentPage === totalPages}
                   className="px-4 py-2 rounded-md bg-indigo-100 text-indigo-600 disabled:opacity-50 transition-all duration-200 hover:bg-indigo-200"
                 >
-                  <FiChevronRight />
+                  <FiChevronRight className="text-[#F97316]" />
                 </button>
               </div>
             )}
             <button
               type="button"
-              className={`w-full flex justify-center items-center px-6 py-3 border border-transparent text-lg font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 ${
+              className={`w-full flex justify-center items-center px-6 py-3 border border-transparent text-lg font-medium rounded-lg text-white bg-[#F97316] hover:bg-[#EA580C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F97316] transition-all duration-200 ${
                 isSubmitDisabled()
                   ? "opacity-50 cursor-not-allowed"
                   : "shadow-lg hover:shadow-xl"
@@ -599,7 +597,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                 </>
               ) : (
                 <>
-                  <FiSend className="mr-2" />
+                  <FiSend className="mr-2 text-white" />
                   {selectedKeywordGroups.length !== 3
                     ? "키워드 3개를 선택해주세요"
                     : "이메일 전송하고 그룹 생성"}
@@ -641,7 +639,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                     key={index}
                     className={`group p-4 rounded-lg transition-all duration-200 flex items-center justify-center ${
                       isSelected
-                        ? "bg-indigo-100 border border-indigo-300"
+                        ? "bg-[#FFF1E7] border border-[#FDA172]"
                         : "bg-gray-50 hover:bg-gray-100 border border-gray-200"
                     } ${
                       selectedKeywordGroups.length >= 3 && !isSelected
@@ -654,14 +652,14 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                       {group.keyword.map((kw, kwIndex) => (
                         <span
                           key={kwIndex}
-                          className="px-2 py-1 bg-white text-indigo-600 rounded-full text-xs font-medium border border-indigo-200"
+                          className="px-2 py-1 bg-white text-[#F97316] rounded-full text-xs font-medium border border-[#FDA172]"
                         >
                           {kw}
                         </span>
                       ))}
                     </div>
                     {isSelected && (
-                      <div className="absolute top-2 right-2 text-indigo-600">
+                      <div className="absolute top-2 right-2 text-[#F97316]">
                         <FiCheck className="h-4 w-4" />
                       </div>
                     )}
@@ -672,7 +670,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
             <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setIsTypeModalOpen(false)}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors duration-200"
+                className="px-4 py-2 bg-[#F97316] text-white rounded-md hover:bg-[#EA580C] transition-colors duration-200"
               >
                 확인
               </button>
