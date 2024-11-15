@@ -82,7 +82,7 @@ export default function DashboardContent({
                       <Link
                         href={`/group/${group.groupId}`}
                         key={group.groupId}
-                        className="block group border border-gray-100 hover:border-gray-200 hover:bg-orange-50 rounded-lg p-4 transition-all duration-200 hover:shadow-sm"
+                        className="block group border border-gray-100 rounded-lg p-4 hover:border-gray-200 hover:bg-orange-50 transition-all duration-200 hover:shadow-sm"
                       >
                         <div className="flex justify-between items-center">
                           <div className="flex flex-col gap-2">
@@ -173,44 +173,42 @@ export default function DashboardContent({
     case "지원자 검색":
       return (
         <div className="flex flex-col gap-6 bg-white rounded-xl shadow-sm border border-gray-100 h-full p-6 md:p-8">
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-grow relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MdSearch className="w-5 h-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="이름 또는 이메일로 검색"
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                />
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-grow relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <MdSearch className="w-5 h-5 text-gray-400" />
               </div>
-              <div className="flex flex-col md:flex-row gap-4 md:w-auto">
-                <select
-                  value={selectedTestGroup}
-                  onChange={e => setSelectedTestGroup(e.target.value)}
-                  className="px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-w-[200px]"
-                >
-                  <option value="">모든 테스트 그룹</option>
-                  {groupData.map(group => (
-                    <option key={group.groupId} value={group.groupId}>
-                      {group.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={selectedStatus}
-                  onChange={e => setSelectedStatus(e.target.value)}
-                  className="px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
-                >
-                  <option value="">모든 상태</option>
-                  <option value="completed">완료</option>
-                  <option value="pending">진행 중</option>
-                  <option value="expired">만료</option>
-                </select>
-              </div>
+              <input
+                type="text"
+                placeholder="이름 또는 이메일로 검색"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="pl-10 w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 md:w-auto">
+              <select
+                value={selectedTestGroup}
+                onChange={e => setSelectedTestGroup(e.target.value)}
+                className="px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 min-w-[200px]"
+              >
+                <option value="">모든 테스트 그룹</option>
+                {groupData.map(group => (
+                  <option key={group.groupId} value={group.groupId}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value)}
+                className="px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">모든 상태</option>
+                <option value="completed">완료</option>
+                <option value="pending">진행 중</option>
+                <option value="expired">만료</option>
+              </select>
             </div>
           </div>
 
