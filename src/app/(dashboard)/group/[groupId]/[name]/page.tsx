@@ -23,12 +23,14 @@ export default async function ApplicantPage({
     return <div>권한이 없습니다.</div>;
   }
 
+  const { keywords, applicants } = group;
+
   // 디코딩된 이름으로 검색
-  const applicant = group.applicants.find(a => a.name === decodedName);
+  const applicant = applicants.find(a => a.name === decodedName);
   if (applicant) {
     return (
-      <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 mx-auto px-4 sm:px-6 lg:px-9 py-4 sm:py-6">
-        <ApplicantScoreCard applicant={applicant} />
+      <div className="w-full bg-[#F7F7F9] px-4 sm:px-6 sm:py-6 mx-auto lg:px-8 py-6 flex flex-col h-screen gap-4">
+        <ApplicantScoreCard applicant={applicant} keywords={keywords} />
       </div>
     );
   }
