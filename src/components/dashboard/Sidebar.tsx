@@ -91,7 +91,10 @@ export default function Sidebar({ user }: SidebarProps) {
         ))}
       </nav>
       <Link
-        href="/doc"
+        href={
+          process.env.NEXT_PUBLIC_DOCUMENTATION_URL ||
+          "https://worksauce.gitbook.io/infomation"
+        }
         className="mt-auto flex items-center gap-2 text-sm text-primary-gray hover:text-primary-blue cursor-pointer"
       >
         <MdHelp />
