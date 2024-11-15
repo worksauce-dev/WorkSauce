@@ -45,7 +45,8 @@ function generateDefaultHTMLTemplate(
   companyName: string = "",
   deadline: string = ""
 ): string {
-  const deployUrl = "https://work-sauce.vercel.app/";
+  const deployUrl =
+    process.env.NEXT_PUBLIC_DEPLOY_URL || "https://worksauce.kr/";
 
   return `
     <!DOCTYPE html>
@@ -57,8 +58,13 @@ function generateDefaultHTMLTemplate(
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background-color: #ffffff; color: #2d3748; line-height: 1.6;">
       <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-        <div style="margin-bottom: 30px;">
-          <img src="https://firebasestorage.googleapis.com/v0/b/worksauce-eee8c.appspot.com/o/%E1%84%8B%E1%85%AF%E1%84%8F%E1%85%B3%E1%84%89%E1%85%A9%E1%84%89%E1%85%B3_BI_2%201.png?alt=media&token=2b9db92a-85e6-4778-8476-57f263f81f10" alt="워크소스 로고" style="width: 360px; height: auto;">
+        <div style="margin-bottom: 30px; display: flex; justify-content: center; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmOTczMTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMi42OWw1LjY2IDUuNjZhOCA4IDAgMSAxLTExLjMxIDB6Ij48L3BhdGg+PC9zdmc+" alt="Droplet Icon" style="width: 40px; height: 40px;" />
+            <span style="font-size: 36px; font-weight: bold; color: #111827;">
+              Work<span style="font-style: italic; color: #f97316; font-family: serif;">Sauce</span>
+            </span>
+          </div>
         </div>
         
         <div style="background-color: #ffffff; padding: 0 10px;">
