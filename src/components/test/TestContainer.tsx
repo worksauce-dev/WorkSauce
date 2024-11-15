@@ -6,17 +6,19 @@ import { ProgressSection } from "./ProgressSection";
 import { VerbTest } from "./VerbTest";
 import { useState } from "react";
 import { Group } from "@/types/group";
-import { ScoreType } from "@/types/test";
+import { ScoreType, TestDBType } from "@/types/test";
 
 const TestContainer = ({
   name,
   email,
   groupId,
   submitTest,
+  testData,
 }: {
   name: string;
   email: string;
   groupId: string;
+  testData: TestDBType;
   submitTest: (
     groupId: string,
     email: string,
@@ -25,28 +27,28 @@ const TestContainer = ({
   ) => void;
 }) => {
   const {
-    currentCategory,
-    answers,
-    isCompleted,
     handleAnswer,
-    handleNextCategory,
-    handleSkip,
-    getCurrentProgress,
-    canProceed,
-    calculateScores,
-    totalQuestionsBefore,
+    selectedAnswers,
+    currentCategoryData,
     isFirstHalfCompleted,
+    progress,
     handleNextHalf,
-  } = useTestLogic();
+    handleSkip,
+    canProceedToNext,
+    isTestCompleted,
+    getFinalScores,
+    verbTestData,
+  } = useTestLogic(testData);
 
-  if (isCompleted) {
+  if (isTestCompleted) {
     return (
       <VerbTest
-        prevScores={calculateScores()}
+        prevScores={getFinalScores()}
         name={name}
         email={email}
         groupId={groupId}
         submitTest={submitTest}
+        verbTestData={verbTestData}
       />
     );
   }
@@ -54,21 +56,16 @@ const TestContainer = ({
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
       <QuestionSection
-        totalQuestionsBefore={totalQuestionsBefore}
-        currentCategory={currentCategory}
-        answers={answers}
+        categoryData={currentCategoryData}
         handleAnswer={handleAnswer}
+        selectedAnswers={selectedAnswers}
         isFirstHalfCompleted={isFirstHalfCompleted}
       />
       <ProgressSection
-        getCurrentProgress={getCurrentProgress}
-        canProceed={canProceed}
-        handleNextCategory={handleNextCategory}
-        handleSkip={handleSkip}
-        currentCategoryIndex={currentCategory.index}
-        totalCategories={currentCategory.total}
-        isFirstHalfCompleted={isFirstHalfCompleted}
+        progress={progress}
         handleNextHalf={handleNextHalf}
+        handleSkip={handleSkip}
+        canProceedToNext={canProceedToNext}
       />
     </div>
   );
@@ -77,6 +74,7 @@ const TestContainer = ({
 export function AuthCheck({
   groupData,
   submitTest,
+  testData,
 }: {
   groupData: Group;
   submitTest: (
@@ -85,6 +83,7 @@ export function AuthCheck({
     name: string,
     testResult: ScoreType[]
   ) => void;
+  testData: TestDBType;
 }) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -116,12 +115,13 @@ export function AuthCheck({
         email={email}
         groupId={groupData.groupId}
         submitTest={submitTest}
+        testData={testData}
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
           지원자 확인
@@ -161,7 +161,7 @@ export function AuthCheck({
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-primary-accent text-white py-3 rounded-md font-medium hover:bg-primary-accent-hover transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             확인
           </button>
