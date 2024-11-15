@@ -20,6 +20,8 @@ export async function sendEmail({
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        From: `"WorkSauce" <noreply@worksauce.kr>`,
+        "Message-ID": `<${Date.now()}@worksauce.kr>`,
       },
       body: JSON.stringify({
         to,
