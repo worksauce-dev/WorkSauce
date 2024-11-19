@@ -79,22 +79,22 @@ export const VerbTest = ({
 
   const renderQustion = () => {
     if (step === 0 || step === 0.5) {
-      return "Q. " + verbQuestions[0];
+      return "Q. " + verbQuestions[0] + " (2개를 선택해주세요.)";
     }
 
     if (step === 1 || step === 1.5) {
-      return "Q. " + verbQuestions[1];
+      return "Q. " + verbQuestions[1] + " (2개를 선택해주세요.)";
     }
 
     if (step === 2 || step === 2.5) {
-      return "Q. " + verbQuestions[2];
+      return "Q. " + verbQuestions[2] + " (2개를 선택해주세요.)";
     }
 
     if (step === 3 || step === 3.5) {
-      return "Q. " + verbQuestions[3];
+      return "Q. " + verbQuestions[3] + " (2개를 선택해주세요.)";
     }
     if (step === 4 || step === 4.5) {
-      return "Q. " + verbQuestions[4];
+      return "Q. " + verbQuestions[4] + " (2개를 선택해주세요.)";
     }
   };
 
