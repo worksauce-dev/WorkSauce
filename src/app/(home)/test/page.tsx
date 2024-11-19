@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import { ExpiredTest } from "@/components/test/ExpiredTest";
 import { getTestDB } from "@/api/firebase/getTestDB";
 import { TestDBType } from "@/types/test";
+import { ErrorPage } from "@/components/common/ErrorPage";
 
 export const metadata: Metadata = {
   title: "소스테스트",
@@ -18,22 +19,33 @@ export default async function TestPage({
 }) {
   if (Object.keys(searchParams).length === 0) {
     return (
-      <div className="text-center text-2xl font-bold mt-40 h-screen">
-        그룹을 찾을 수 없습니다.
-      </div>
+      <ErrorPage
+        title="그룹을 찾을 수 없습니다"
+        message="삭제되거나 존재하지 않는 그룹입니다."
+      />
     );
   }
 
   const groupId = searchParams.groupId;
-
   const groupData = (await getGroup(groupId)) as Group;
+
+  if (!groupData) {
+    return (
+      <ErrorPage
+        title="존재하지 않는 그룹입니다"
+        message="삭제되거나 존재하지 않는 그룹입니다."
+      />
+    );
+  }
+
   const testData = await getTestDB("saucetest");
 
   if (!testData) {
     return (
-      <div className="text-center text-2xl font-bold mt-40 h-screen">
-        테스트 데이터를 찾을 수 없습니다.
-      </div>
+      <ErrorPage
+        title="테스트를 찾을 수 없습니다"
+        message="요청하신 테스트가 삭제되었거나 존재하지 않습니다. 관리자에게 문의해 주세요."
+      />
     );
   }
 
