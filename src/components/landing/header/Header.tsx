@@ -54,6 +54,7 @@ export const Header = ({ user }: { user: User | null }) => {
         className="block text-gray-800 hover:text-orange-500 py-2 px-4 rounded-md hover:bg-orange-50 transition-colors"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        target={item.href === "login" ? undefined : "_blank"}
       >
         {item.label}
       </motion.a>
