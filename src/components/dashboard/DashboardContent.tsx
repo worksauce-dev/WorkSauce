@@ -10,15 +10,26 @@ import {
   MdWarning,
   MdCheck,
 } from "react-icons/md";
+import { User } from "@/types/user";
+import { signOut } from "next-auth/react";
 
 interface DashboardContentProps {
-  activeTab: "대시보드" | "지원자 검색";
+  activeTab: "대시보드" | "지원자 검색" | "설정";
   groupData: Group[];
+  userData: User;
+  optoutUser: (
+    userId: string,
+    accessToken: string
+  ) => Promise<{ success: boolean }>;
+  accessToken: string;
 }
 
 export default function DashboardContent({
   activeTab,
   groupData,
+  userData,
+  optoutUser,
+  accessToken,
 }: DashboardContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTestGroup, setSelectedTestGroup] = useState("");
@@ -152,7 +163,7 @@ export default function DashboardContent({
                 </div>
                 <p className="text-xs md:text-sm text-emerald-600">
                   worksauce.info@gmail.com로 버그 및 개선사항을 제안해주시면
-                  더욱 좋은 서비스로 발전할 수 있도록 노력하겠습니다.
+                  더욱 좋은 서비스로 전할 수 있도록 노력하겠습니다.
                 </p>
               </div>
               <div className="bg-gradient-to-br from-amber-50 to-white rounded-lg p-4 transition-all duration-200 hover:shadow-sm border border-amber-100">
@@ -305,186 +316,219 @@ export default function DashboardContent({
         </div>
       );
 
-    // case "설정":
-    //   return (
-    //     <div className="flex flex-col md:flex-row gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
-    //       <div className="w-full md:w-1/4">
-    //         <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
-    //         <ul className="space-y-2">
-    //           {["프로필", "알림", "보안", "테스트 설정", "통합", "청구"].map(
-    //             tab => (
-    //               <li key={tab}>
-    //                 <button
-    //                   onClick={() => setActiveSettingTab(tab)}
-    //                   className={`w-full text-left px-4 py-2 rounded-md ${
-    //                     activeSettingTab === tab
-    //                       ? "bg-orange-500 text-white"
-    //                       : "text-gray-600 hover:bg-orange-50"
-    //                   }`}
-    //                 >
-    //                   {tab}
-    //                 </button>
-    //               </li>
-    //             )
-    //           )}
-    //         </ul>
-    //       </div>
-    //       <div className="w-full md:w-3/4">
-    //         {activeSettingTab === "프로필" && (
-    //           <div>
-    //             <h3 className="text-lg font-semibold mb-4">프로필 설정</h3>
-    //             <form className="space-y-4">
-    //               <div>
-    //                 <label
-    //                   htmlFor="name"
-    //                   className="block text-sm font-medium text-gray-700"
-    //                 >
-    //                   이름
-    //                 </label>
-    //                 <input
-    //                   type="text"
-    //                   id="name"
-    //                   name="name"
-    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    //                 />
-    //               </div>
-    //               <div>
-    //                 <label
-    //                   htmlFor="email"
-    //                   className="block text-sm font-medium text-gray-700"
-    //                 >
-    //                   이메일
-    //                 </label>
-    //                 <input
-    //                   type="email"
-    //                   id="email"
-    //                   name="email"
-    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    //                 />
-    //               </div>
-    //               <div>
-    //                 <label
-    //                   htmlFor="company"
-    //                   className="block text-sm font-medium text-gray-700"
-    //                 >
-    //                   회사명
-    //                 </label>
-    //                 <input
-    //                   type="text"
-    //                   id="company"
-    //                   name="company"
-    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    //                 />
-    //               </div>
-    //               <button
-    //                 type="submit"
-    //                 className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-    //               >
-    //                 변경사항 저장
-    //               </button>
-    //             </form>
-    //           </div>
-    //         )}
-    //         {activeSettingTab === "알림" && (
-    //           <div>
-    //             <h3 className="text-lg font-semibold mb-4">알림 설정</h3>
-    //             <div className="space-y-4">
-    //               {Object.entries(notifications).map(([key, value]) => (
-    //                 <div
-    //                   key={key}
-    //                   className="flex items-center justify-between"
-    //                 >
-    //                   <span className="text-sm font-medium text-gray-700 capitalize">
-    //                     {key} 알림
-    //                   </span>
-    //                   <label className="flex items-center cursor-pointer">
-    //                     <div className="relative">
-    //                       <input
-    //                         type="checkbox"
-    //                         className="sr-only"
-    //                         checked={value}
-    //                         onChange={() =>
-    //                           setNotifications(prev => ({
-    //                             ...prev,
-    //                             [key as keyof typeof prev]:
-    //                               !prev[key as keyof typeof prev],
-    //                           }))
-    //                         }
-    //                       />
-    //                       <div className="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
-    //                       <div
-    //                         className={`absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
-    //                           value
-    //                             ? "transform translate-x-full bg-orange-500"
-    //                             : ""
-    //                         }`}
-    //                       ></div>
-    //                     </div>
-    //                   </label>
-    //                 </div>
-    //               ))}
-    //             </div>
-    //           </div>
-    //         )}
-    //         {activeSettingTab === "보안" && (
-    //           <div>
-    //             <h3 className="text-lg font-semibold mb-4">보안 설정</h3>
-    //             <form className="space-y-4">
-    //               <div>
-    //                 <label
-    //                   htmlFor="current-password"
-    //                   className="block text-sm font-medium text-gray-700"
-    //                 >
-    //                   현재 비밀번호
-    //                 </label>
-    //                 <input
-    //                   type="password"
-    //                   id="current-password"
-    //                   name="current-password"
-    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    //                 />
-    //               </div>
-    //               <div>
-    //                 <label
-    //                   htmlFor="new-password"
-    //                   className="block text-sm font-medium text-gray-700"
-    //                 >
-    //                   새 비밀번호
-    //                 </label>
-    //                 <input
-    //                   type="password"
-    //                   id="new-password"
-    //                   name="new-password"
-    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    //                 />
-    //               </div>
-    //               <div>
-    //                 <label
-    //                   htmlFor="confirm-password"
-    //                   className="block text-sm font-medium text-gray-700"
-    //                 >
-    //                   새 비밀번호 확인
-    //                 </label>
-    //                 <input
-    //                   type="password"
-    //                   id="confirm-password"
-    //                   name="confirm-password"
-    //                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-    //                 />
-    //               </div>
-    //               <button
-    //                 type="submit"
-    //                 className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-    //               >
-    //                 비밀번호 변경
-    //               </button>
-    //             </form>
-    //           </div>
-    //         )}
-    //         {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}
-    //       </div>
-    //     </div>
-    //   );
+    case "설정":
+      return (
+        <div className="flex flex-col md:flex-row gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+          <div className="w-full md:w-1/4">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
+            <ul className="space-y-2">
+              {["프로필", "알림", "보안", "테스트 설정", "통합", "청구"].map(
+                tab => (
+                  <li key={tab}>
+                    <button
+                      onClick={() => setActiveSettingTab(tab)}
+                      className={`w-full text-left px-4 py-2 rounded-md ${
+                        activeSettingTab === tab
+                          ? "bg-orange-500 text-white"
+                          : "text-gray-600 hover:bg-orange-50"
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+          <div className="w-full md:w-3/4">
+            {activeSettingTab === "프로필" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">프로필 설정</h3>
+                <form className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      이름
+                    </label>
+                    <input
+                      placeholder={userData.name}
+                      type="text"
+                      id="name"
+                      name="name"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      이메일
+                    </label>
+                    <input
+                      placeholder={userData.email}
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="company"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      회사명
+                    </label>
+                    <input
+                      placeholder={userData.companyName}
+                      type="text"
+                      id="company"
+                      name="company"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                  >
+                    변경사항 저장
+                  </button>
+                </form>
+              </div>
+            )}
+            {activeSettingTab === "알림" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">알림 설정</h3>
+                <div className="space-y-4">
+                  {Object.entries(notifications).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="text-sm font-medium text-gray-700 capitalize">
+                        {key} 알림
+                      </span>
+                      <label className="flex items-center cursor-pointer">
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            className="sr-only"
+                            checked={value}
+                            onChange={() =>
+                              setNotifications(prev => ({
+                                ...prev,
+                                [key as keyof typeof prev]:
+                                  !prev[key as keyof typeof prev],
+                              }))
+                            }
+                          />
+                          <div className="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
+                          <div
+                            className={`absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
+                              value
+                                ? "transform translate-x-full bg-orange-500"
+                                : ""
+                            }`}
+                          ></div>
+                        </div>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {activeSettingTab === "보안" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">보안 설정</h3>
+                <form className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor="current-password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      현재 비밀번호
+                    </label>
+                    <input
+                      type="password"
+                      id="current-password"
+                      name="current-password"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="new-password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      새 비밀번호
+                    </label>
+                    <input
+                      type="password"
+                      id="new-password"
+                      name="new-password"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="confirm-password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      새 비밀번호 확인
+                    </label>
+                    <input
+                      type="password"
+                      id="confirm-password"
+                      name="confirm-password"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                  >
+                    비밀번호 변경
+                  </button>
+                </form>
+
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-red-600 mb-4">
+                    계정 삭제
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    계정을 삭제하면 모든 데이터가 영구적으로 제거되며 복구할 수
+                    없습니다. 신중하게 결정해 주세요.
+                  </p>
+                  <button
+                    onClick={async () => {
+                      if (
+                        window.confirm(
+                          "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+                        )
+                      ) {
+                        try {
+                          await optoutUser(userData.id, accessToken);
+                          await signOut({ callbackUrl: "/" });
+                        } catch (error) {
+                          alert("회원 탈퇴 중 오류가 발생했습니다.");
+                          console.error(error);
+                        }
+                      }
+                    }}
+                    className="px-4 py-2 border border-red-600 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
+                  >
+                    계정 삭제
+                  </button>
+                </div>
+              </div>
+            )}
+            {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}
+          </div>
+        </div>
+      );
 
     // case "분석 및 통계":
     //   return (

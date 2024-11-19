@@ -1,8 +1,8 @@
 import { MdDashboard, MdSearch, MdSettings } from "react-icons/md";
 
 interface DashboardTabsProps {
-  activeTab: "대시보드" | "지원자 검색";
-  setActiveTab: (tab: "대시보드" | "지원자 검색") => void;
+  activeTab: "대시보드" | "지원자 검색" | "설정";
+  setActiveTab: (tab: "대시보드" | "지원자 검색" | "설정") => void;
 }
 
 const tabs = [
@@ -16,11 +16,11 @@ const tabs = [
     label: "지원자 검색",
     icon: <MdSearch className="w-4 h-4" />,
   },
-  // {
-  //   id: "설정",
-  //   label: "설정",
-  //   icon: <MdSettings className="w-4 h-4" />,
-  // },
+  {
+    id: "설정",
+    label: "설정",
+    icon: <MdSettings className="w-4 h-4" />,
+  },
 ];
 
 const DashboardTabs = ({ activeTab, setActiveTab }: DashboardTabsProps) => {
@@ -29,7 +29,9 @@ const DashboardTabs = ({ activeTab, setActiveTab }: DashboardTabsProps) => {
       {tabs.map(tab => (
         <button
           key={tab.id}
-          onClick={() => setActiveTab(tab.id as "대시보드" | "지원자 검색")}
+          onClick={() =>
+            setActiveTab(tab.id as "대시보드" | "지원자 검색" | "설정")
+          }
           className={`
             flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm
             transition-all duration-200 
