@@ -20,7 +20,11 @@ type FooterLinkProps = {
 };
 
 const FooterLink: React.FC<FooterLinkProps> = ({ href, children }) => (
-  <a href={href} className="hover:text-gray-600">
+  <a
+    href={href}
+    className="hover:text-gray-600"
+    target={href === "/" ? undefined : "_blank"}
+  >
     {children}
   </a>
 );
@@ -68,26 +72,30 @@ const LinkSection: React.FC = () => (
 );
 
 const LegalSection: React.FC = () => (
-  // <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
-  //   {[
-  //     { href: "/terms-and-conditions", text: "이용약관" },
-  //     { href: "/privacy-policy", text: "개인정보 취급방침" },
-  //     { href: "/refund-policy", text: "취소 및 환불정책" },
-  //   ].map(({ href, text }) => (
-  //     <FooterLink key={href} href={href}>
-  //       {text}
-  //     </FooterLink>
-  //   ))}
-  // </ul>
   <ul className="text-gray-500 text-caption md:text-body2 space-y-2 flex flex-col">
     {[
-      { text: "이용약관" },
-      { text: "개인정보 취급방침" },
-      { text: "취소 및 환불정책" },
-    ].map(({ text }, index) => (
-      <li key={index} className="cursor-not-allowed opacity-50">
+      {
+        href:
+          process.env.NEXT_PUBLIC_TERMS_AND_CONDITIONS_URL ||
+          "https://worksauce.gitbook.io/infomation/service/terms-and-conditions",
+        text: "이용약관",
+      },
+      {
+        href:
+          process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL ||
+          "https://worksauce.gitbook.io/infomation/service/privacy-policy",
+        text: "개인정보 취급방침",
+      },
+      {
+        href:
+          process.env.NEXT_PUBLIC_REFUND_POLICY_URL ||
+          "https://worksauce.gitbook.io/infomation/service/refund-policy",
+        text: "취소 및 환불정책",
+      },
+    ].map(({ href, text }) => (
+      <FooterLink key={href} href={href}>
         {text}
-      </li>
+      </FooterLink>
     ))}
   </ul>
 );
