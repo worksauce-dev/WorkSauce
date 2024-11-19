@@ -6,8 +6,6 @@ import { sendEmail } from "@/utils/sendEmail";
 import { createGroup } from "@/api/firebase/createGroup";
 import { MdInfoOutline, MdChevronRight } from "react-icons/md";
 
-type UserType = "individual" | "corporate";
-
 interface FirstLoginGreetingProps {
   user: User;
   saveUserData: (userId: string, data: any) => Promise<void>;
