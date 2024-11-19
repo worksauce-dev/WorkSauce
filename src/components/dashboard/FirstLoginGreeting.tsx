@@ -4,6 +4,7 @@ import { useState } from "react";
 import { User } from "@/types/user";
 import { sendEmail } from "@/utils/sendEmail";
 import { createGroup } from "@/api/firebase/createGroup";
+import { MdInfoOutline, MdChevronRight } from "react-icons/md";
 
 type UserType = "individual" | "corporate";
 
@@ -17,16 +18,15 @@ export default function FirstLoginGreeting({
   saveUserData,
 }: FirstLoginGreetingProps) {
   const [step, setStep] = useState(1);
-  const [userType, setUserType] = useState<UserType>("individual");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreeEmail, setAgreeEmail] = useState(false);
   const [email, setEmail] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [businessNumber, setBusinessNumber] = useState("");
-  const [representativeName, setRepresentativeName] = useState("");
-  const [address, setAddress] = useState("");
+  const [dashboardName, setDashboardName] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<"basic" | "premium">(
+    "basic"
+  );
 
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^01[0|1|6|7|8|9][0-9]{7,8}$/;
@@ -42,18 +42,6 @@ export default function FirstLoginGreeting({
     } else {
       setPhoneError("");
     }
-  };
-
-  const handleNextStep = () => {
-    if (step === 3 && userType === "individual") {
-      handleSubmit();
-    } else {
-      setStep(step + 1);
-    }
-  };
-
-  const handlePreviousStep = () => {
-    setStep(step - 1);
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -77,7 +65,7 @@ export default function FirstLoginGreeting({
             applicants: [
               {
                 name: user.name,
-                email: user.email,
+                email: email,
                 groupId: "", // 서버에서 생성될 예정
                 testStatus: "pending",
                 completedAt: null, // 빈 문자열 대신 null 사용
@@ -98,7 +86,7 @@ export default function FirstLoginGreeting({
           to: email,
           subject: "워크소스 테스트를 시작해주세요!",
           userName: user.name,
-          companyName: companyName,
+          dashboardName: dashboardName,
           deadline: formattedDeadline,
           groupId: newGroupId,
         });
@@ -115,17 +103,17 @@ export default function FirstLoginGreeting({
 
     try {
       await saveUserData(user.id, {
-        userType,
+        userType: "individual",
         phoneNumber,
-        plan: "free",
-        companyName,
+        plan: selectedPlan,
+        dashboardName: dashboardName,
         agreeTerms,
         email,
         isFirstLogin: false,
         groups: newGroupId ? [newGroupId] : [],
-        businessNumber,
-        representativeName,
-        address,
+        businessNumber: "",
+        representativeName: "",
+        address: "",
       });
     } catch (error) {
       console.error("Error saving user data:", error);
@@ -133,168 +121,160 @@ export default function FirstLoginGreeting({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-center mb-6 text-indigo-700">
-          환영합니다, {user.name}님!
-        </h1>
-        <p className="text-center text-gray-600 mb-4">
-          서비스를 시작하기 전에 몇 가지 정보가 필요합니다.
-        </p>
+    <div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            환영합니다, {user.name}님!
+          </h1>
+          <p className="text-gray-500">
+            서비스를 시작하기 전에 몇 가지 정보가 필요합니다.
+          </p>
+        </div>
 
         <div className="space-y-6">
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-indigo-600">
-                이용약관 동의
-              </h2>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={agreeTerms}
-                  onChange={e => setAgreeTerms(e.target.checked)}
-                  className=" h-5 w-5 text-indigo-600 "
-                />
-                <a
-                  href="policies/terms-and-conditions"
-                  className="text-gray-700 hover:text-indigo-600"
-                >
-                  이용약관 및 개인정보처리방침에 동의합니다
-                </a>
-              </label>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-indigo-600 text-center">
-                회원 유형을 선택해주세요
-              </h2>
-              <div className="flex justify-center space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setUserType("individual")}
-                  className={`px-4 py-2 rounded-full ${
-                    userType === "individual"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  개인 회원
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUserType("corporate")}
-                  className={`px-4 py-2 rounded-full ${
-                    userType === "corporate"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  기업 회원
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-indigo-600">
-                연락처를 입력해주세요
-              </h2>
-              <input
-                type="text"
-                value={companyName}
-                onChange={e => setCompanyName(e.target.value)}
-                placeholder="회사명 또는 그룹명"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <div className="space-y-2">
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={handlePhoneChange}
-                  placeholder="전화번호"
-                  className={`w-full px-3 py-2 border ${
-                    phoneError ? "border-red-500" : "border-gray-300"
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
-                />
-                {phoneError && (
-                  <p className="text-red-500 text-sm">{phoneError}</p>
-                )}
+              <div className="bg-secondary-blue border border-primary-blue/20 rounded-lg p-4 mb-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <MdInfoOutline className="h-5 w-5 text-primary-blue mt-0.5" />
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-primary-blue">
+                      기업 회원 안내
+                    </h3>
+                    <div className="mt-1 text-sm text-gray-700">
+                      회원가입 후 필요시 기업 회원으로 전환이 가능합니다.
+                      <a
+                        href={
+                          process.env.NEXT_PUBLIC_DOCUMENTATION_URL ||
+                          "https://worksauce.gitbook.io/infomation/service/terms-and-conditions"
+                        }
+                        className="inline-flex items-center ml-1 text-primary-blue hover:text-primary-blue/80 font-medium"
+                        target="_blank"
+                      >
+                        자세히 보기
+                        <MdChevronRight className="w-4 h-4 ml-1" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="이메일"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <h2 className="text-lg font-semibold text-gray-900">
+                필수 정보를 입력해주세요
+              </h2>
               <div className="space-y-4">
-                <label className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={dashboardName}
+                  onChange={e => setDashboardName(e.target.value)}
+                  placeholder="소속명"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+                <div className="space-y-2">
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={handlePhoneChange}
+                    placeholder="전화번호"
+                    className={`w-full px-4 py-3 rounded-lg border ${
+                      phoneError ? "border-red-500" : "border-gray-300"
+                    } focus:ring-2 focus:ring-orange-500 focus:border-transparent`}
+                  />
+                  {phoneError && (
+                    <p className="text-red-500 text-sm">{phoneError}</p>
+                  )}
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="이메일"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+                <label className="flex items-center space-x-3 p-4 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
                   <input
                     type="checkbox"
                     checked={agreeEmail}
                     onChange={e => setAgreeEmail(e.target.checked)}
-                    className="form-checkbox h-5 w-5 text-indigo-600"
+                    className="w-5 h-5 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
                   />
                   <span className="text-gray-700">
                     위 이메일로 소스테스트를 받아보시겠어요?
                   </span>
                 </label>
+
+                <label className="flex items-center space-x-3 p-4 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreeTerms}
+                    onChange={e => setAgreeTerms(e.target.checked)}
+                    className="w-5 h-5 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
+                  />
+                  <a
+                    href={
+                      process.env.NEXT_PUBLIC_TERMS_AND_CONDITIONS_URL ||
+                      "https://worksauce.gitbook.io/infomation/service/terms-and-conditions"
+                    }
+                    className="text-gray-700 hover:text-orange-500"
+                    target="_blank"
+                  >
+                    이용약관 및 개인정보처리방침에 동의합니다
+                  </a>
+                </label>
               </div>
             </div>
           )}
 
-          {step === 4 && userType === "corporate" && (
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-indigo-600 flex items-center justify-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                기업 정보를 입력해주세요. <br /> 해당 정보로 세금 계산서가
-                발행됩니다.
+          {step === 2 && (
+            <div className="space-y-6">
+              <h2 className="text-lg font-semibold text-gray-900 text-center">
+                구독 플랜을 선택해주세요
               </h2>
-              <input
-                type="text"
-                value={companyName}
-                onChange={e => setCompanyName(e.target.value)}
-                placeholder="상호명"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <input
-                type="text"
-                value={businessNumber}
-                onChange={e => setBusinessNumber(e.target.value)}
-                placeholder="사업자 등록 번호"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <input
-                type="text"
-                value={representativeName}
-                onChange={e => setRepresentativeName(e.target.value)}
-                placeholder="대표자 성명"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <input
-                type="text"
-                value={address}
-                onChange={e => setAddress(e.target.value)}
-                placeholder="주소"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setSelectedPlan("basic")}
+                  className={`p-6 rounded-xl border-2 transition-all ${
+                    selectedPlan === "basic"
+                      ? "border-[#F97316] bg-orange-50"
+                      : "border-gray-200 hover:border-orange-300"
+                  }`}
+                >
+                  <div className="text-xl font-bold text-gray-900 mb-2">
+                    Basic
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    기본적인 기능을 무료로 이용해보세요
+                  </div>
+                  <div className="mt-4 text-2xl font-bold text-[#F97316]">
+                    무료
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setSelectedPlan("premium")}
+                  className={`p-6 rounded-xl border-2 transition-all ${
+                    selectedPlan === "premium"
+                      ? "border-[#F97316] bg-orange-50"
+                      : "border-gray-200 hover:border-orange-300"
+                  }`}
+                >
+                  <div className="text-xl font-bold text-gray-900 mb-2">
+                    Premium
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    프리미엄 기능을 모두 이용해보세요
+                  </div>
+                  <div className="mt-4 text-2xl font-bold text-[#F97316]">
+                    ₩29,900
+                    <span className="text-sm font-normal text-gray-500">
+                      /월
+                    </span>
+                  </div>
+                </button>
+              </div>
             </div>
           )}
 
@@ -304,32 +284,32 @@ export default function FirstLoginGreeting({
             {step > 1 && (
               <button
                 type="button"
-                onClick={handlePreviousStep}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                onClick={() => setStep(step - 1)}
+                className="px-6 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 이전
               </button>
             )}
-            {step < 4 ? (
+            {step < 2 ? (
               <button
                 type="button"
-                onClick={handleNextStep}
-                disabled={step === 1 && !agreeTerms}
-                className={`px-4 py-2 ${
-                  step === 1 && !agreeTerms
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-700"
-                } text-white rounded-md`}
+                onClick={() => setStep(step + 1)}
+                disabled={!agreeTerms}
+                className={`px-6 py-3 rounded-lg transition-colors ${
+                  !agreeTerms
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-[#F97316] hover:bg-orange-600 text-white"
+                }`}
               >
                 다음
               </button>
             ) : (
               <button
                 type="submit"
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                 onClick={handleSubmit}
+                className="px-6 py-3 bg-[#F97316] text-white rounded-lg hover:bg-orange-600 transition-colors"
               >
-                완료
+                시작하기
               </button>
             )}
           </div>

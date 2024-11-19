@@ -3,7 +3,7 @@ interface EmailOptions {
   subject: string;
   userName: string;
   groupId: string;
-  companyName: string;
+  dashboardName: string;
   deadline: string;
 }
 
@@ -12,7 +12,7 @@ export async function sendEmail({
   subject,
   userName,
   groupId,
-  companyName,
+  dashboardName,
   deadline,
 }: EmailOptions): Promise<boolean> {
   try {
@@ -29,7 +29,7 @@ export async function sendEmail({
         html: generateDefaultHTMLTemplate(
           userName,
           groupId,
-          companyName,
+          dashboardName,
           deadline
         ),
       }),
@@ -44,7 +44,7 @@ export async function sendEmail({
 function generateDefaultHTMLTemplate(
   userName: string = "",
   groupId: string = "",
-  companyName: string = "",
+  dashboardName: string = "",
   deadline: string = ""
 ): string {
   const deployUrl =
@@ -71,7 +71,7 @@ function generateDefaultHTMLTemplate(
         
         <div style="background-color: #ffffff; padding: 0 10px;">
           <p>안녕하세요, <strong>${userName}</strong>님.</p>
-          <p><strong>${companyName}</strong>에서 발송한 소스테스트를 보내드립니다.</p>
+          <p><strong>${dashboardName}</strong>에서 발송한 소스테스트를 보내드립니다.</p>
           <p>소스테스트 응시 가능 기한은 <strong>${deadline}</strong>까지 입니다. 기한 이후에는 응시하실 수 없습니다.</p>
           <p>꼭 기한 내에 응시해 주세요. 불응시로 인한 책임은 응시자인 ${userName}님께 있습니다.</p>
 
