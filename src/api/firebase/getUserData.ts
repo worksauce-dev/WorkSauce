@@ -29,5 +29,8 @@ export async function getUserData(userId: string): Promise<User | null> {
     provider: userData.provider,
     lastLoginAt: userData.lastLoginAt?.toDate().toISOString() ?? null,
     groups: userData.groups,
+    userType: userData.userType,
+    agreeTerms: userData.agreeTerms,
+    phoneNumber: userData.phoneNumber,
   };
 }

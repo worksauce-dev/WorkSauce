@@ -112,6 +112,13 @@ export default function FirstLoginGreeting({
         businessNumber: "",
         representativeName: "",
         address: "",
+        status: "active",
+        isAdmin: false,
+        provider: user.provider,
+        lastLoginAt: new Date().toISOString(),
+        type: "individual",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
     } catch (error) {
       console.error("Error saving user data:", error);

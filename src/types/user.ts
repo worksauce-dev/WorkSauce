@@ -13,6 +13,11 @@ export interface User {
   updatedAt: string;
   groups: string[];
   dashboardName: string;
-  address: string;
+  address?: string;
   plan: string;
+  userType: string;
+  businessNumber?: string;
+  representativeName?: string;
+  agreeTerms: boolean;
+  phoneNumber: string;
 }
