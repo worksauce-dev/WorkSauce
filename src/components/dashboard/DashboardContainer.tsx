@@ -10,15 +10,22 @@ import { Group } from "@/types/group";
 interface DashboardContainerProps {
   userData: User;
   groupData: Group[];
+  optoutUser: (
+    userId: string,
+    accessToken: string
+  ) => Promise<{ success: boolean }>;
+  accessToken: string;
 }
 
 export default function DashboardContainer({
   userData,
   groupData,
+  optoutUser,
+  accessToken,
 }: DashboardContainerProps) {
-  const [activeTab, setActiveTab] = useState<"대시보드" | "지원자 검색">(
-    "대시보드"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "대시보드" | "지원자 검색" | "설정"
+  >("대시보드");
 
   const { name } = userData;
 
@@ -37,7 +44,13 @@ export default function DashboardContainer({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
-          <DashboardContent activeTab={activeTab} groupData={groupData} />
+          <DashboardContent
+            activeTab={activeTab}
+            groupData={groupData}
+            userData={userData}
+            optoutUser={optoutUser}
+            accessToken={accessToken}
+          />
         </div>
       </div>
     </div>

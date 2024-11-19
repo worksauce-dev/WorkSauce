@@ -10,7 +10,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user, account }: any) {
       if (user) {
         const userRef = doc(firestore, "users", user.id);
         const userDoc = await getDoc(userRef);
@@ -20,12 +20,6 @@ export const authOptions = {
           await setDoc(userRef, {
             id: user.id ?? "",
             name: user.name ?? "",
-            email: user.email ?? "",
-            image: user.image ?? "",
-            provider: "kakao",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            lastLoginAt: new Date(),
             type: "user",
             status: "active",
             isFirstLogin: true,
@@ -34,11 +28,19 @@ export const authOptions = {
         }
       }
 
-      return { ...token, ...user };
+      if (account) {
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.id = user.id;
+      }
+      return token;
     },
 
     async session({ session, token }: any) {
-      session.user = token as any;
+      if (token) {
+        session.user.accessToken = token.accessToken;
+        session.user.id = token.id;
+      }
       return session;
     },
   },
