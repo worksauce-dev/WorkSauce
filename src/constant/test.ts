@@ -83,7 +83,7 @@ export const typeDescriptions: { [key: string]: string } = {
 
 export const keyword = [
   { name: "기준윤리형", keyword: ["책임감", "원칙주의", "정직성"] },
-  { name: "기준심미형", keyword: ["감성", "혁신적", "직관적"] },
+  { name: "기준심미형", keyword: ["감성적", "혁신적", "직관적"] },
   { name: "예술느낌형", keyword: ["독창성", "표현력", "자유로움"] },
   { name: "예술융합형", keyword: ["다양성", "실험정신", "융합성"] },
   { name: "이해관리형", keyword: ["체계적", "신중함", "성실성"] },
