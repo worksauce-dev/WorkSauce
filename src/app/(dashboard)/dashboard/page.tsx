@@ -6,20 +6,15 @@ import { getUserData } from "@/api/firebase/getUserData";
 import { User } from "@/types/user";
 import { getGroup } from "@/api/firebase/getGroup";
 import { Group } from "@/types/group";
+import { optoutUser } from "@/api/firebase/optoutUser";
+
 export const metadata: Metadata = {
   title: "대시보드",
 };
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-
-  const user = await getUserData(session.user.id);
-
-  if (!user) {
-    return <div>Error: User data not found</div>;
-  }
-
-  const userData = (await getUserData(user.id)) as User;
+  const userData = (await getUserData(session.user.id)) as User;
   const groups = userData.groups;
 
   const groupData: Group[] = [];
@@ -34,7 +29,12 @@ export default async function DashboardPage() {
 
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row">
-      <DashboardContainer userData={userData} groupData={groupData} />
+      <DashboardContainer
+        userData={userData}
+        groupData={groupData}
+        optoutUser={optoutUser}
+        accessToken={session.user.accessToken}
+      />
     </div>
   );
 }
