@@ -44,25 +44,6 @@ export const Login = () => {
               <span className="ml-3 font-medium">Google로 계속하기</span>
             </button> */}
           </div>
-
-          {/* 부가 정보 */}
-          <div className="mt-8 text-center text-sm text-gray-500">
-            로그인함으로써
-            <a
-              href="/terms"
-              className="text-primary-accent hover:text-primary-accent-hover ml-1"
-            >
-              이용약관
-            </a>
-            <span className="mx-1">및</span>
-            <a
-              href="/privacy"
-              className="text-primary-accent hover:text-primary-accent-hover"
-            >
-              개인정보처리방침
-            </a>
-            에 동의하게 됩니다
-          </div>
         </div>
 
         {/* 회원가입 링크 */}
