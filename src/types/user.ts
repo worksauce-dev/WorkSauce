@@ -12,7 +12,7 @@ export interface User {
   type: string;
   updatedAt: string;
   groups: string[];
-  companyName: string;
+  dashboardName: string;
   address: string;
   plan: string;
 }
