@@ -3,7 +3,6 @@ export interface User {
   name: string;
   email: string;
   isFirstLogin: boolean;
-  image: string;
   createdAt: string;
   status: string;
   isAdmin: boolean;

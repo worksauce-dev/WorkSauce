@@ -3,11 +3,12 @@
 import React from "react";
 import { Applicant } from "@/types/group";
 import { determineApplicantType } from "@/utils/applicantAnalysis";
-import { formatDate } from "@/utils/formatDate";
+
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";
 import { typeDescriptions } from "@/constant/test";
+import { format } from "date-fns";
 
 // 새로운 컴포넌트 추가
 const TopResultCard: React.FC<{
@@ -94,7 +95,9 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
           <div className="px-4">
             <span className="text-sm text-gray-500">완료일</span>
             <p className="text-sm font-medium text-gray-900">
-              {applicant.completedAt ? formatDate(applicant.completedAt) : "-"}
+              {applicant.completedAt
+                ? format(new Date(applicant.completedAt), "yyyy년 MM월 dd일")
+                : "-"}
             </p>
           </div>
           <Link
