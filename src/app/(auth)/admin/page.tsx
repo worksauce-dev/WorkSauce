@@ -55,7 +55,15 @@ export default async function AdminDashboard() {
             <ActivityItem
               title="소스테스트 업데이트"
               description=""
-              time={formatDistanceToNow(stats.recentUpdates, {
+              time={formatDistanceToNow(stats.recentTestUpdates, {
+                addSuffix: true,
+                locale: ko,
+              })}
+            />
+            <ActivityItem
+              title="소스테스트 결과 업데이트"
+              description=""
+              time={formatDistanceToNow(stats.recentResultUpdates, {
                 addSuffix: true,
                 locale: ko,
               })}

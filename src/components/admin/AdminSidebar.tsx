@@ -37,6 +37,12 @@ const menuItems: MenuItem[] = [
     icon: MdEdit,
     href: "/edit-sauce-test",
   },
+  {
+    id: "editSauceResult",
+    label: "소스테스트 결과 수정하기",
+    icon: MdEdit,
+    href: "/edit-sauce-result",
+  },
 ];
 
 const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({

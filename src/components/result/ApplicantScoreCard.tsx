@@ -3,11 +3,10 @@
 import React from "react";
 import { Applicant } from "@/types/group";
 import { determineApplicantType } from "@/utils/applicantAnalysis";
-
+import { SauceResultType } from "@/types/test";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";
-import { typeDescriptions } from "@/constant/test";
 import { format } from "date-fns";
 
 // 새로운 컴포넌트 추가
@@ -59,17 +58,19 @@ const TopResultCard: React.FC<{
 interface ApplicantScoreCardProps {
   applicant: Applicant;
   keywords: string[];
+  sauceResult: SauceResultType;
 }
 
 const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   applicant,
   keywords,
+  sauceResult,
 }) => {
   const [activeTab, setActiveTab] = React.useState<string>("characteristics");
   const topResults = [...applicant.testResult]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
-  const applicantType = determineApplicantType(topResults);
+  const applicantType = determineApplicantType(topResults, sauceResult);
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -161,20 +162,7 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
                   <span className="text-orange-500 text-lg">✦</span>
                 </div>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  {applicant.name}님은{" "}
-                  {typeDescriptions[applicantType.title.replace(/\s+/g, "")]}
-                </p>
-              </div>
-            </div>
-
-            {/* 상세 설명 */}
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                  <span className="text-gray-600 text-lg">✤</span>
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {applicantType.description}
+                  {applicant.name}님은 {applicantType.description}
                 </p>
               </div>
             </div>
