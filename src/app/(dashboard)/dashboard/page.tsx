@@ -34,6 +34,7 @@ export default async function DashboardPage() {
         groupData={groupData}
         optoutUser={optoutUser}
         accessToken={session.user.accessToken}
+        refreshToken={session.user.refreshToken}
       />
     </div>
   );

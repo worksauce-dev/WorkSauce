@@ -12,9 +12,11 @@ interface DashboardContainerProps {
   groupData: Group[];
   optoutUser: (
     userId: string,
-    accessToken: string
+    accessToken: string,
+    refreshToken: string
   ) => Promise<{ success: boolean }>;
   accessToken: string;
+  refreshToken: string;
 }
 
 export default function DashboardContainer({
@@ -22,6 +24,7 @@ export default function DashboardContainer({
   groupData,
   optoutUser,
   accessToken,
+  refreshToken,
 }: DashboardContainerProps) {
   const [activeTab, setActiveTab] = useState<
     "대시보드" | "지원자 검색" | "설정"
@@ -50,6 +53,7 @@ export default function DashboardContainer({
             userData={userData}
             optoutUser={optoutUser}
             accessToken={accessToken}
+            refreshToken={refreshToken}
           />
         </div>
       </div>

@@ -12,6 +12,8 @@ export default async function HomeLayout({
   const session = await getServerSession(authOptions);
 
   const user = session ? await getUserData(session?.user?.id) : null;
+
+  console.log(session);
   return (
     <>
       <Header user={user} />
