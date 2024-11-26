@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Applicant, Group } from "@/types/group";
-import { formatDate } from "@/utils/formatDate";
 import { getStatusColor, getStatusText } from "@/utils/groupUtils";
 import { getApplicantType } from "@/utils/getApplicantTypeForGroup";
 import { memo, useMemo } from "react";

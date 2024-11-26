@@ -64,9 +64,9 @@ export default function FirstLoginGreeting({
               {
                 name: user.name,
                 email: email,
-                groupId: "", // 서버에서 생성될 예정
+                groupId: "",
                 testStatus: "pending",
-                completedAt: null, // 빈 문자열 대신 null 사용
+                completedAt: null,
                 testResult: [],
                 groupName: `${user.name}님의 가입을 환영합니다`,
               },

@@ -23,6 +23,7 @@ import Tooltip from "../common/Tooltip";
 import { Group } from "@/types/group";
 import { sendEmail } from "@/utils/sendEmail";
 import { useRouter } from "next/navigation";
+
 interface SendingTestProps {
   user: User;
   createGroup: (group: Group, userId: string) => Promise<string>;
@@ -202,9 +203,9 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
         applicants: applicants.map(applicant => ({
           name: applicant.name.trim(),
           email: applicant.email.trim().toLowerCase(),
-          groupId: "", // 서버에서 생성될 예정
+          groupId: "",
           testStatus: "pending",
-          completedAt: null, // 빈 문자열 대신 null 사용
+          completedAt: null,
           testResult: [],
           groupName: groupName,
         })),
@@ -427,7 +428,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                       </div>
                     ) : (
                       <span className="text-gray-500">
-                        지원자 유형 선택 (최대 3개)
+                        지원�� 유형 선택 (최대 3개)
                       </span>
                     )}
                   </div>

@@ -106,7 +106,10 @@ export default function DashboardContent({
                               </span>
                               <span className="text-xs md:text-sm text-gray-400">
                                 마감일:{" "}
-                                {format(new Date(group.deadline), "MM/dd/yyyy")}
+                                {format(
+                                  new Date(group.deadline),
+                                  "yy년 MM월 dd일"
+                                )}
                               </span>
                             </div>
                           </div>
