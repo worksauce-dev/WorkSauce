@@ -13,7 +13,6 @@ export default async function HomeLayout({
 
   const user = session ? await getUserData(session?.user?.id) : null;
 
-  console.log(session);
   return (
     <>
       <Header user={user} />
