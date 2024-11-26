@@ -19,9 +19,11 @@ interface DashboardContentProps {
   userData: User;
   optoutUser: (
     userId: string,
-    accessToken: string
+    accessToken: string,
+    refreshToken: string
   ) => Promise<{ success: boolean }>;
   accessToken: string;
+  refreshToken: string;
 }
 
 export default function DashboardContent({
@@ -30,6 +32,7 @@ export default function DashboardContent({
   userData,
   optoutUser,
   accessToken,
+  refreshToken,
 }: DashboardContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTestGroup, setSelectedTestGroup] = useState("");
@@ -513,7 +516,11 @@ export default function DashboardContent({
                         )
                       ) {
                         try {
-                          await optoutUser(userData.id, accessToken);
+                          await optoutUser(
+                            userData.id,
+                            accessToken,
+                            refreshToken
+                          );
                           await signOut({ callbackUrl: "/" });
                         } catch (error) {
                           alert("회원 탈퇴 중 오류가 발생했습니다.");
