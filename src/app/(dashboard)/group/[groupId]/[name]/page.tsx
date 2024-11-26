@@ -4,6 +4,8 @@ import ApplicantScoreCard from "@/components/result/ApplicantScoreCard";
 import { User } from "@/types/user";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
+import { getSauceResult } from "@/api/firebase/getSauceResult";
+import { SauceResultType } from "@/types/test";
 
 export default async function ApplicantPage({
   params,
@@ -28,9 +30,14 @@ export default async function ApplicantPage({
   // 디코딩된 이름으로 검색
   const applicant = applicants.find(a => a.name === decodedName);
   if (applicant) {
+    const sauceResult = await getSauceResult();
     return (
       <div className="w-full bg-[#F7F7F9] px-4 sm:px-6 sm:py-6 mx-auto lg:px-8 py-6 flex flex-col h-screen gap-4">
-        <ApplicantScoreCard applicant={applicant} keywords={keywords} />
+        <ApplicantScoreCard
+          applicant={applicant}
+          keywords={keywords}
+          sauceResult={sauceResult as SauceResultType}
+        />
       </div>
     );
   }

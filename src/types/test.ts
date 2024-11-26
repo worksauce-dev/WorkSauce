@@ -66,3 +66,18 @@ export interface TestDBType {
   updatedAt: string;
   [key: string]: CategoryType | string;
 }
+
+export type ResultFields = {
+  title: string;
+  keywords: string[];
+  description: string;
+  weaknesses: string;
+  interviewQuestions: string[];
+  onboardingSteps: string;
+};
+
+export interface SauceResultType {
+  updatedAt: string;
+  createdAt: string;
+  [mainType: string]: { [subType: string]: ResultFields } | string;
+}

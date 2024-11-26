@@ -13,7 +13,8 @@ interface DashboardStats {
   totalUsers: number;
   newUsersThisMonth: number;
   paidSubscribers: number;
-  recentUpdates: string;
+  recentTestUpdates: string;
+  recentResultUpdates: string;
 }
 
 export async function getAdminStats(): Promise<DashboardStats> {
@@ -43,13 +44,17 @@ export async function getAdminStats(): Promise<DashboardStats> {
   // saucetest 문서의 업데이트 정보 조회
   const saucetestDoc = await getDoc(doc(firestore, "tests", "saucetest"));
   const saucetestData = saucetestDoc.data();
+  const recentTestUpdates = saucetestData?.updatedAt;
 
-  const recentUpdates = saucetestData?.updatedAt;
+  const saucetestResultDoc = await getDoc(doc(firestore, "tests", "results"));
+  const saucetestResultData = saucetestResultDoc.data();
+  const recentResultUpdates = saucetestResultData?.updatedAt;
 
   return {
     totalUsers,
     newUsersThisMonth,
     paidSubscribers,
-    recentUpdates,
+    recentTestUpdates,
+    recentResultUpdates,
   };
 }
