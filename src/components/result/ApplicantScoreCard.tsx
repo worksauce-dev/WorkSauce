@@ -161,7 +161,7 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
                 <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                   <span className="text-orange-500 text-lg">✦</span>
                 </div>
-                <p className="text-gray-700 text-sm leading-relaxed">
+                <p className="text-gray-700 text-base leading-relaxed">
                   {applicant.name}님은 {applicantType.description}
                 </p>
               </div>
@@ -216,20 +216,20 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
             )}
 
             {activeTab === "interview" && (
-              <div className="space-y-4">
+              <div className="space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto overflow-x-hidden">
                 {applicantType.interviewQuestions.map((question, index) => (
                   <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                     key={index}
-                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
+                    className="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-lg transition-shadow"
                   >
-                    <div className="flex items-start">
-                      <span className="flex-shrink-0 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-semibold">
+                    <div className="flex items-start gap-3">
+                      <span className="flex-shrink-0 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-semibold">
                         Q{index + 1}
                       </span>
-                      <p className="ml-4 text-gray-700 text-sm">{question}</p>
+                      <p className="text-gray-700 text-sm py-1">{question}</p>
                     </div>
                   </motion.div>
                 ))}
