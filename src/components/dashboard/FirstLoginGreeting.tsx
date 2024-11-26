@@ -4,7 +4,12 @@ import { useState } from "react";
 import { User } from "@/types/user";
 import { sendEmail } from "@/utils/sendEmail";
 import { createGroup } from "@/api/firebase/createGroup";
-import { MdInfoOutline, MdChevronRight } from "react-icons/md";
+import {
+  MdInfoOutline,
+  MdChevronRight,
+  MdCheckCircle,
+  MdOutlineRefresh,
+} from "react-icons/md";
 
 interface FirstLoginGreetingProps {
   user: User;
@@ -25,6 +30,8 @@ export default function FirstLoginGreeting({
   const [selectedPlan, setSelectedPlan] = useState<"basic" | "premium">(
     "basic"
   );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^01[0|1|6|7|8|9][0-9]{7,8}$/;
@@ -47,59 +54,58 @@ export default function FirstLoginGreeting({
       e.preventDefault();
     }
 
+    setIsLoading(true);
     let newGroupId = "";
 
-    if (agreeEmail) {
-      try {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const formattedDeadline = tomorrow.toISOString().split("T")[0];
-
-        newGroupId = await createGroup(
-          {
-            name: `${user.name}님의 가입을 환영합니다`,
-            deadline: formattedDeadline,
-            keywords: ["기준윤리형", "이해관리형", "소통도움형"],
-            applicants: [
-              {
-                name: user.name,
-                email: email,
-                groupId: "",
-                testStatus: "pending",
-                completedAt: null,
-                testResult: [],
-                groupName: `${user.name}님의 가입을 환영합니다`,
-              },
-            ],
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            createdBy: { id: user.id, name: user.name },
-            updatedBy: { id: user.id, name: user.name },
-            groupId: "",
-          },
-          user.id
-        );
-
-        const success = await sendEmail({
-          to: email,
-          subject: "워크소스 테스트를 시작해주세요!",
-          userName: user.name,
-          dashboardName: dashboardName,
-          deadline: formattedDeadline,
-          groupId: newGroupId,
-        });
-
-        if (success) {
-          alert("이메일이 성공적으로 전송되었습니다!");
-        } else {
-          alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
-        }
-      } catch (error) {
-        console.error("Error sending email:", error);
-      }
-    }
-
     try {
+      if (agreeEmail) {
+        try {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const formattedDeadline = tomorrow.toISOString().split("T")[0];
+
+          newGroupId = await createGroup(
+            {
+              name: `${user.name}님의 가입을 환영합니다`,
+              deadline: formattedDeadline,
+              keywords: ["기준윤리형", "이해관리형", "소통도움형"],
+              applicants: [
+                {
+                  name: user.name,
+                  email: email,
+                  groupId: "",
+                  testStatus: "pending",
+                  completedAt: null,
+                  testResult: [],
+                  groupName: `${user.name}님의 가입을 환영합니다`,
+                },
+              ],
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              createdBy: { id: user.id, name: user.name },
+              updatedBy: { id: user.id, name: user.name },
+              groupId: "",
+            },
+            user.id
+          );
+
+          const success = await sendEmail({
+            to: email,
+            subject: "워크소스 테스트를 시작해주세요!",
+            userName: user.name,
+            dashboardName: dashboardName,
+            deadline: formattedDeadline,
+            groupId: newGroupId,
+          });
+
+          if (!success) {
+            alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
+          }
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
+      }
+
       await saveUserData(user.id, {
         userType: "individual",
         phoneNumber,
@@ -120,8 +126,15 @@ export default function FirstLoginGreeting({
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
+
+      setIsComplete(true);
+      setTimeout(() => {
+        setIsComplete(false);
+        setIsLoading(false);
+      }, 1000);
     } catch (error) {
-      console.error("Error saving user data:", error);
+      console.error("Error:", error);
+      setIsLoading(false);
     }
   };
 
@@ -312,9 +325,29 @@ export default function FirstLoginGreeting({
               <button
                 type="submit"
                 onClick={handleSubmit}
-                className="px-6 py-3 bg-[#F97316] text-white rounded-lg hover:bg-orange-600 transition-colors"
+                disabled={isLoading || isComplete}
+                className={`px-6 py-3 rounded-lg transition-colors flex items-center justify-center space-x-2
+                  ${
+                    isComplete
+                      ? "bg-green-500"
+                      : isLoading
+                      ? "bg-orange-400 cursor-not-allowed"
+                      : "bg-[#F97316] hover:bg-orange-600"
+                  } text-white`}
               >
-                시작하기
+                {isComplete ? (
+                  <>
+                    <MdCheckCircle className="h-5 w-5" />
+                    <span>완료</span>
+                  </>
+                ) : isLoading ? (
+                  <>
+                    <MdOutlineRefresh className="h-5 w-5 animate-spin" />
+                    <span>처리중...</span>
+                  </>
+                ) : (
+                  <span>시작하기</span>
+                )}
               </button>
             )}
           </div>
