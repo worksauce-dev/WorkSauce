@@ -101,7 +101,12 @@ export function AuthCheck({
     const applicant = groupData.applicants.find(
       a => a.email === email && a.name === name
     );
+
     if (applicant) {
+      if (applicant.testStatus === "completed") {
+        setError("이미 테스트를 완료하셨습니다.");
+        return;
+      }
       setIsAuthorized(true);
     } else {
       setError("입력하신 정보와 일치하는 지원자를 찾을 수 없습니다.");
