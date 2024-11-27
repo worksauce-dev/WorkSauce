@@ -9,6 +9,7 @@ import {
   MdCheckCircle,
   MdWarning,
   MdCheck,
+  MdOutlineRefresh,
 } from "react-icons/md";
 import { User } from "@/types/user";
 import { signOut } from "next-auth/react";
@@ -43,16 +44,13 @@ export default function DashboardContent({
   const [selectedTestGroup, setSelectedTestGroup] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [activeSettingTab, setActiveSettingTab] = useState("프로필");
-  const [notifications, setNotifications] = useState({
-    email: true,
-    push: false,
-    sms: false,
-  });
   const [profileForm, setProfileForm] = useState({
     name: userData.name,
     email: userData.email,
     dashboardName: userData.dashboardName,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const filteredApplicants = groupData
     .map(group => group.applicants)
@@ -67,6 +65,7 @@ export default function DashboardContent({
 
   const handleProfileSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       await updateUserProfile(userData.id, {
@@ -76,7 +75,7 @@ export default function DashboardContent({
         updatedAt: new Date().toISOString(),
       });
 
-      alert("프로필이 성공적으로 업데이트되었습니다.");
+      setShowSuccess(true);
     } catch (error) {
       console.error("프로필 업데이트 중 오류가 발생했습니다:", error);
       alert(
@@ -84,6 +83,8 @@ export default function DashboardContent({
           ? error.message
           : "프로필 업데이트 중 오류가 발생했습니다."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -446,9 +447,29 @@ export default function DashboardContent({
                   </div>
                   <button
                     type="submit"
-                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                    disabled={isSubmitting || showSuccess}
+                    className={`w-full md:w-auto px-6 py-3 rounded-lg transition-colors flex items-center justify-center space-x-2
+                      ${
+                        showSuccess
+                          ? "bg-green-500"
+                          : isSubmitting
+                          ? "bg-orange-400 cursor-not-allowed"
+                          : "bg-orange-600 hover:bg-orange-700"
+                      } text-white`}
                   >
-                    변경사항 저장
+                    {showSuccess ? (
+                      <>
+                        <MdCheckCircle className="h-5 w-5" />
+                        <span>저장 완료</span>
+                      </>
+                    ) : isSubmitting ? (
+                      <>
+                        <MdOutlineRefresh className="h-5 w-5 animate-spin" />
+                        <span>저장 중...</span>
+                      </>
+                    ) : (
+                      <span>변경사항 저장</span>
+                    )}
                   </button>
                 </form>
               </div>
