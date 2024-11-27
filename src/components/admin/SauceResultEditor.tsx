@@ -36,6 +36,7 @@ function SauceResultEditor({
       const currentFields = mainTypeData[activeSubType] || {};
       const updatedData: SauceResultType = {
         ...editedData,
+        updatedAt: currentTime,
         [activeMainType]: {
           ...mainTypeData,
           [activeSubType]: {
