@@ -8,7 +8,6 @@ export interface User {
   isAdmin: boolean;
   provider: string;
   lastLoginAt: string;
-  type: string;
   updatedAt: string;
   groups: string[];
   dashboardName: string;
