@@ -14,41 +14,35 @@ export const ScoreButton = ({
   isSelected,
   onClick,
 }: ScoreButtonProps) => {
-  const getScoreLabel = (score: number) => {
-    switch (score) {
-      case 1:
-        return "매우 그렇지 않다";
-      case 2:
-        return "그렇지 않다";
-      case 3:
-        return "보통이다";
-      case 4:
-        return "그렇다";
-      case 5:
-        return "매우 그렇다";
-      default:
-        return "";
-    }
-  };
+  const answerLabels = [
+    "매우 그렇지 않다",
+    "그렇지 않다",
+    "보통이다",
+    "그렇다",
+    "매우 그렇다",
+  ];
 
   return (
     <div className="flex flex-col items-center gap-2">
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         onClick={onClick}
-        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full font-bold transition-colors
+        aria-label={answerLabels[score - 1]}
+        className={`
+          w-full py-3 rounded-lg font-medium transition-all duration-200
+          flex items-center justify-center
           ${
             isSelected
-              ? "bg-blue-500 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md"
+              : "bg-white border border-gray-200 text-gray-700 hover:bg-orange-50"
           }
         `}
       >
         {score}
       </motion.button>
-      <span className="text-xs text-gray-500 text-center whitespace-nowrap">
-        {getScoreLabel(score)}
+      <span className="text-xs text-gray-500 text-center">
+        {answerLabels[score - 1]}
       </span>
     </div>
   );

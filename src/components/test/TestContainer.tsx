@@ -54,7 +54,7 @@ const TestContainer = ({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
+    <div className="bg-[#F7F7F9] border-b-2 border-gray-100 min-h-screen py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
       <QuestionSection
         categoryData={currentCategoryData}
         handleAnswer={handleAnswer}
@@ -126,7 +126,7 @@ export function AuthCheck({
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[#F7F7F9] border-b-2 border-gray-100 ">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
           지원자 확인
