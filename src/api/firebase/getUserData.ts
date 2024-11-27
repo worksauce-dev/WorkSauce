@@ -22,7 +22,6 @@ export async function getUserData(userId: string): Promise<User | null> {
     isFirstLogin: userData.isFirstLogin,
     createdAt: userData.createdAt,
     status: userData.status,
-    type: userData.type,
     updatedAt: userData.updatedAt,
     isAdmin: userData.isAdmin,
     provider: userData.provider,
