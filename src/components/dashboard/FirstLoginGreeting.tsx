@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { User } from "@/types/user";
-import { sendEmail } from "@/utils/sendEmail";
-import { createGroup } from "@/api/firebase/createGroup";
 import {
   MdInfoOutline,
   MdChevronRight,
@@ -24,7 +22,7 @@ export default function FirstLoginGreeting({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [agreeEmail, setAgreeEmail] = useState(false);
+  // const [agreeEmail, setAgreeEmail] = useState(false);
   const [email, setEmail] = useState("");
   const [dashboardName, setDashboardName] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<"basic" | "premium">(
@@ -55,56 +53,56 @@ export default function FirstLoginGreeting({
     }
 
     setIsLoading(true);
-    let newGroupId = "";
+    // let newGroupId = "";
 
     try {
-      if (agreeEmail) {
-        try {
-          const tomorrow = new Date();
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          const formattedDeadline = tomorrow.toISOString().split("T")[0];
+      // if (agreeEmail) {
+      //   try {
+      //     const tomorrow = new Date();
+      //     tomorrow.setDate(tomorrow.getDate() + 1);
+      //     const formattedDeadline = tomorrow.toISOString().split("T")[0];
 
-          newGroupId = await createGroup(
-            {
-              name: `${user.name}님의 가입을 환영합니다`,
-              deadline: formattedDeadline,
-              keywords: ["기준윤리형", "이해관리형", "소통도움형"],
-              applicants: [
-                {
-                  name: user.name,
-                  email: email,
-                  groupId: "",
-                  testStatus: "pending",
-                  completedAt: null,
-                  testResult: [],
-                  groupName: `${user.name}님의 가입을 환영합니다`,
-                },
-              ],
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              createdBy: { id: user.id, name: user.name },
-              updatedBy: { id: user.id, name: user.name },
-              groupId: "",
-            },
-            user.id
-          );
+      //     newGroupId = await createGroup(
+      //       {
+      //         name: `${user.name}님의 가입을 환영합니다`,
+      //         deadline: formattedDeadline,
+      //         keywords: ["기준윤리형", "이해관리형", "소통도움형"],
+      //         applicants: [
+      //           {
+      //             name: user.name,
+      //             email: email,
+      //             groupId: "",
+      //             testStatus: "pending",
+      //             completedAt: null,
+      //             testResult: [],
+      //             groupName: `${user.name}님의 가입을 환영합니다`,
+      //           },
+      //         ],
+      //         createdAt: new Date().toISOString(),
+      //         updatedAt: new Date().toISOString(),
+      //         createdBy: { id: user.id, name: user.name },
+      //         updatedBy: { id: user.id, name: user.name },
+      //         groupId: "",
+      //       },
+      //       user.id
+      //     );
 
-          const success = await sendEmail({
-            to: email,
-            subject: "워크소스 테스트를 시작해주세요!",
-            userName: user.name,
-            dashboardName: dashboardName,
-            deadline: formattedDeadline,
-            groupId: newGroupId,
-          });
+      //     const success = await sendEmail({
+      //       to: email,
+      //       subject: "워크소스 테스트를 시작해주세요!",
+      //       userName: user.name,
+      //       dashboardName: dashboardName,
+      //       deadline: formattedDeadline,
+      //       groupId: newGroupId,
+      //     });
 
-          if (!success) {
-            alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
-          }
-        } catch (error) {
-          console.error("Error sending email:", error);
-        }
-      }
+      //     if (!success) {
+      //       alert("이메일 전송에 실패했습니다. 다시 시도해주세요.");
+      //     }
+      //   } catch (error) {
+      //     console.error("Error sending email:", error);
+      //   }
+      // }
 
       await saveUserData(user.id, {
         userType: "individual",
@@ -114,7 +112,8 @@ export default function FirstLoginGreeting({
         agreeTerms,
         email,
         isFirstLogin: false,
-        groups: newGroupId ? [newGroupId] : [],
+        // groups: newGroupId ? [newGroupId] : [],
+        groups: [],
         businessNumber: "",
         representativeName: "",
         address: "",
@@ -122,7 +121,6 @@ export default function FirstLoginGreeting({
         isAdmin: false,
         provider: user.provider,
         lastLoginAt: new Date().toISOString(),
-        type: "individual",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
@@ -212,7 +210,7 @@ export default function FirstLoginGreeting({
                   placeholder="이메일"
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
-                <label className="flex items-center space-x-3 p-4 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
+                {/* <label className="flex items-center space-x-3 p-4 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
                   <input
                     type="checkbox"
                     checked={agreeEmail}
@@ -222,7 +220,7 @@ export default function FirstLoginGreeting({
                   <span className="text-gray-700">
                     위 이메일로 소스테스트를 받아보시겠어요?
                   </span>
-                </label>
+                </label> */}
 
                 <label className="flex items-center space-x-3 p-4 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
                   <input
