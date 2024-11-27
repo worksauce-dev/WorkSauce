@@ -1,6 +1,6 @@
 "use server";
 
-import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
 import { ScoreType } from "@/types/test";
 
@@ -30,7 +30,6 @@ export async function submitTest(
       throw new Error("Applicant not found");
     }
 
-    // Create a new applicants array with the updated test result
     const updatedApplicants = applicants.map(
       (applicant: any, index: number) => {
         if (index === applicantIndex) {
@@ -50,9 +49,19 @@ export async function submitTest(
       applicants: updatedApplicants,
     });
 
+    // Create unique document ID using name and email
+    const documentId = `${name}-${email.replace("@", "-at-")}`;
+    const testResultRef = doc(firestore, "sauceTestResults", documentId);
+    await setDoc(testResultRef, {
+      email,
+      name,
+      testResult,
+      groupId,
+      completedAt: new Date().toISOString(),
+    });
+
     console.log("Test result submitted successfully");
 
-    // Return the updated applicant data
     return updatedApplicants[applicantIndex];
   } catch (error) {
     console.error("Error submitting test result:", error);
