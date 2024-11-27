@@ -83,6 +83,10 @@ function SauceResultEditor({
     return field === "keywords" || field === "interviewQuestions";
   }
 
+  const sortKeys = Object.keys(editedData).filter(
+    key => key !== "updatedAt" && key !== "createdAt"
+  );
+
   const handleFieldChange = (
     field: keyof ResultFields,
     value: string | string[],
@@ -108,7 +112,7 @@ function SauceResultEditor({
       <div className="flex justify-between items-center mb-4 pb-1 border-b border-gray-200 gap-2">
         {/* 메인 타입 탭 */}
         <div className="flex flex-wrap gap-2">
-          {mainTypes.map(type => (
+          {sortKeys.map(type => (
             <button
               key={type}
               onClick={() => handleMainTypeChange(type)}
