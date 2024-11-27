@@ -36,33 +36,59 @@ export const QuestionSection = ({
   };
 
   return (
-    <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl overflow-hidden p-4 sm:p-8">
+    <div
+      className="w-full lg:w-3/4 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+      role="region"
+      aria-label={`${categoryData.name} 질문 섹션`}
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="gap-16 flex flex-col"
+        className="p-6 space-y-8"
       >
         {categoryData.questions.map((question, displayIndex) => {
           const actualIndex = getActualQuestionIndex(displayIndex);
           const answerKey = `${categoryData.index}-${actualIndex}`;
-          const globalQuestionNumber = getGlobalQuestionNumber(displayIndex);
+          const questionNumber = actualIndex + 1;
 
           return (
-            <div key={actualIndex} className="gap-4 flex flex-col">
-              <p className="text-base sm:text-lg leading-relaxed mb-4 text-gray-700 font-medium">
-                {globalQuestionNumber}. {question.text}
-              </p>
-              <div className="flex items-center sm:gap-8 w-full justify-between">
+            <div
+              key={actualIndex}
+              className="space-y-4 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            >
+              <div className="flex items-start gap-2">
+                <span
+                  className="text-base sm:text-lg font-semibold text-gray-700 min-w-[24px]"
+                  aria-hidden="true"
+                >
+                  {getGlobalQuestionNumber(displayIndex)}.
+                </span>
+                <p
+                  className="text-base sm:text-lg text-gray-700 font-medium"
+                  id={`question-${answerKey}`}
+                >
+                  {question.text}
+                </p>
+              </div>
+              <fieldset
+                className="grid grid-cols-5 gap-2 sm:gap-4 md:gap-6 w-full max-w-4xl mx-auto px-4"
+                aria-labelledby={`question-${answerKey}`}
+              >
+                <legend className="sr-only">점수 선택: {question.text}</legend>
                 {[1, 2, 3, 4, 5].map(score => (
                   <ScoreButton
                     key={score}
                     score={score}
                     isSelected={selectedAnswers[answerKey] === score}
                     onClick={() => handleAnswer(actualIndex, score)}
+                    aria-label={`${score}점`}
                   />
                 ))}
-              </div>
+              </fieldset>
+              {displayIndex < categoryData.questions.length - 1 && (
+                <div className="h-px bg-gray-100 mt-8" aria-hidden="true" />
+              )}
             </div>
           );
         })}
