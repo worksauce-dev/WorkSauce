@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Group } from "@/types/group";
 import { format } from "date-fns";
 import {
@@ -24,6 +24,10 @@ interface DashboardContentProps {
   ) => Promise<{ success: boolean }>;
   accessToken: string;
   refreshToken: string;
+  updateUserProfile: (
+    userId: string,
+    profileForm: any
+  ) => Promise<{ success: boolean }>;
 }
 
 export default function DashboardContent({
@@ -33,6 +37,7 @@ export default function DashboardContent({
   optoutUser,
   accessToken,
   refreshToken,
+  updateUserProfile,
 }: DashboardContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTestGroup, setSelectedTestGroup] = useState("");
@@ -42,6 +47,11 @@ export default function DashboardContent({
     email: true,
     push: false,
     sms: false,
+  });
+  const [profileForm, setProfileForm] = useState({
+    name: userData.name,
+    email: userData.email,
+    dashboardName: userData.dashboardName,
   });
 
   const filteredApplicants = groupData
@@ -54,6 +64,28 @@ export default function DashboardContent({
         (selectedTestGroup === "" || applicant.groupId === selectedTestGroup) &&
         (selectedStatus === "" || applicant.testStatus === selectedStatus)
     );
+
+  const handleProfileSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      await updateUserProfile(userData.id, {
+        name: profileForm.name,
+        email: profileForm.email,
+        dashboardName: profileForm.dashboardName,
+        updatedAt: new Date().toISOString(),
+      });
+
+      alert("프로필이 성공적으로 업데이트되었습니다.");
+    } catch (error) {
+      console.error("프로필 업데이트 중 오류가 발생했습니다:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "프로필 업데이트 중 오류가 발생했습니다."
+      );
+    }
+  };
 
   switch (activeTab) {
     case "대시보드":
@@ -314,7 +346,7 @@ export default function DashboardContent({
                   검색 결과가 없습니다
                 </h3>
                 <p className="text-sm text-gray-500">
-                  다른 검색어나 필터를 시도해보세요
+                  다른 검색어나 필터를 도해보세요
                 </p>
               </div>
             )}
@@ -328,29 +360,27 @@ export default function DashboardContent({
           <div className="w-full md:w-1/4">
             <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
             <ul className="space-y-2">
-              {["프로필", "알림", "보안", "테스트 설정", "통합", "청구"].map(
-                tab => (
-                  <li key={tab}>
-                    <button
-                      onClick={() => setActiveSettingTab(tab)}
-                      className={`w-full text-left px-4 py-2 rounded-md ${
-                        activeSettingTab === tab
-                          ? "bg-orange-500 text-white"
-                          : "text-gray-600 hover:bg-orange-50"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  </li>
-                )
-              )}
+              {["프로필", "보안"].map(tab => (
+                <li key={tab}>
+                  <button
+                    onClick={() => setActiveSettingTab(tab)}
+                    className={`w-full text-left px-4 py-2 rounded-md ${
+                      activeSettingTab === tab
+                        ? "bg-orange-500 text-white"
+                        : "text-gray-600 hover:bg-orange-50"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="w-full md:w-3/4">
             {activeSettingTab === "프로필" && (
               <div>
                 <h3 className="text-lg font-semibold mb-4">프로필 설정</h3>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleProfileSubmit}>
                   <div>
                     <label
                       htmlFor="name"
@@ -359,7 +389,13 @@ export default function DashboardContent({
                       이름
                     </label>
                     <input
-                      placeholder={userData.name}
+                      value={profileForm.name}
+                      onChange={e =>
+                        setProfileForm(prev => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       type="text"
                       id="name"
                       name="name"
@@ -374,7 +410,13 @@ export default function DashboardContent({
                       이메일
                     </label>
                     <input
-                      placeholder={userData.email}
+                      value={profileForm.email}
+                      onChange={e =>
+                        setProfileForm(prev => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                       type="email"
                       id="email"
                       name="email"
@@ -389,7 +431,13 @@ export default function DashboardContent({
                       회사명
                     </label>
                     <input
-                      placeholder={userData.dashboardName}
+                      value={profileForm.dashboardName}
+                      onChange={e =>
+                        setProfileForm(prev => ({
+                          ...prev,
+                          dashboardName: e.target.value,
+                        }))
+                      }
                       type="text"
                       id="dashboardName"
                       name="dashboardName"
@@ -405,134 +453,40 @@ export default function DashboardContent({
                 </form>
               </div>
             )}
-            {activeSettingTab === "알림" && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">알림 설정</h3>
-                <div className="space-y-4">
-                  {Object.entries(notifications).map(([key, value]) => (
-                    <div
-                      key={key}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-sm font-medium text-gray-700 capitalize">
-                        {key} 알림
-                      </span>
-                      <label className="flex items-center cursor-pointer">
-                        <div className="relative">
-                          <input
-                            type="checkbox"
-                            className="sr-only"
-                            checked={value}
-                            onChange={() =>
-                              setNotifications(prev => ({
-                                ...prev,
-                                [key as keyof typeof prev]:
-                                  !prev[key as keyof typeof prev],
-                              }))
-                            }
-                          />
-                          <div className="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
-                          <div
-                            className={`absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
-                              value
-                                ? "transform translate-x-full bg-orange-500"
-                                : ""
-                            }`}
-                          ></div>
-                        </div>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+
             {activeSettingTab === "보안" && (
               <div>
-                <h3 className="text-lg font-semibold mb-4">보안 설정</h3>
-                <form className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="current-password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      현재 비밀번호
-                    </label>
-                    <input
-                      type="password"
-                      id="current-password"
-                      name="current-password"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="new-password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      새 비밀번호
-                    </label>
-                    <input
-                      type="password"
-                      id="new-password"
-                      name="new-password"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="confirm-password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      새 비밀번호 확인
-                    </label>
-                    <input
-                      type="password"
-                      id="confirm-password"
-                      name="confirm-password"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                  >
-                    비밀번호 변경
-                  </button>
-                </form>
-
-                <div className="mt-12 pt-8 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold text-red-600 mb-4">
-                    계정 삭제
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    계정을 삭제하면 모든 데이터가 영구적으로 제거되며 복구할 수
-                    없습니다. 신중하게 결정해 주세요.
-                  </p>
-                  <button
-                    onClick={async () => {
-                      if (
-                        window.confirm(
-                          "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
-                        )
-                      ) {
-                        try {
-                          await optoutUser(
-                            userData.id,
-                            accessToken,
-                            refreshToken
-                          );
-                          await signOut({ callbackUrl: "/" });
-                        } catch (error) {
-                          alert("회원 탈퇴 중 오류가 발생했습니다.");
-                          console.error(error);
-                        }
+                <h3 className="text-lg font-semibold text-red-600 mb-4">
+                  계정 삭제
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  계정을 삭제하면 모든 데이터가 영구적으로 제거되며 복구할 수
+                  없습니다. 신중하게 결정해 주세요.
+                </p>
+                <button
+                  onClick={async () => {
+                    if (
+                      window.confirm(
+                        "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
+                      )
+                    ) {
+                      try {
+                        await optoutUser(
+                          userData.id,
+                          accessToken,
+                          refreshToken
+                        );
+                        await signOut({ callbackUrl: "/" });
+                      } catch (error) {
+                        alert("회원 탈퇴 중 오류가 발생했습니다.");
+                        console.error(error);
                       }
-                    }}
-                    className="px-4 py-2 border border-red-600 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
-                  >
-                    계정 삭제
-                  </button>
-                </div>
+                    }
+                  }}
+                  className="px-4 py-2 border border-red-600 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
+                >
+                  계정 삭제
+                </button>
               </div>
             )}
             {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}
