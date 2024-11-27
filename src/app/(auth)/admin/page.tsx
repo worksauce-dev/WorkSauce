@@ -3,7 +3,6 @@ import {
   MdPeople,
   MdTrendingUp,
   MdWorkspaces,
-  MdHourglassEmpty,
   MdFolder,
   MdSettings,
   MdBarChart,
