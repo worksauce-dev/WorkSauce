@@ -7,6 +7,7 @@ import { User } from "@/types/user";
 import { getGroup } from "@/api/firebase/getGroup";
 import { Group } from "@/types/group";
 import { optoutUser } from "@/api/firebase/optoutUser";
+import { updateUserProfile } from "@/api/firebase/updateUserProfile";
 
 export const metadata: Metadata = {
   title: "대시보드",
@@ -33,6 +34,7 @@ export default async function DashboardPage() {
         userData={userData}
         groupData={groupData}
         optoutUser={optoutUser}
+        updateUserProfile={updateUserProfile}
         accessToken={session.user.accessToken}
         refreshToken={session.user.refreshToken}
       />

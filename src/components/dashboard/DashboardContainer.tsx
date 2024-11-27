@@ -17,6 +17,10 @@ interface DashboardContainerProps {
   ) => Promise<{ success: boolean }>;
   accessToken: string;
   refreshToken: string;
+  updateUserProfile: (
+    userId: string,
+    profileForm: any
+  ) => Promise<{ success: boolean }>;
 }
 
 export default function DashboardContainer({
@@ -25,6 +29,7 @@ export default function DashboardContainer({
   optoutUser,
   accessToken,
   refreshToken,
+  updateUserProfile,
 }: DashboardContainerProps) {
   const [activeTab, setActiveTab] = useState<
     "대시보드" | "지원자 검색" | "설정"
@@ -54,6 +59,7 @@ export default function DashboardContainer({
             optoutUser={optoutUser}
             accessToken={accessToken}
             refreshToken={refreshToken}
+            updateUserProfile={updateUserProfile}
           />
         </div>
       </div>
