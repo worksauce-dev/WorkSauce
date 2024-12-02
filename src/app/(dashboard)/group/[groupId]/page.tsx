@@ -4,6 +4,9 @@ import { Metadata } from "next";
 import StatisticsSection from "@/components/group/StatisticsSection";
 import GroupContent from "@/components/group/GroupContent";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/utils/authOptions";
+import { ErrorPage } from "@/components/common/ErrorPage";
 
 export const metadata: Metadata = {
   title: "그룹 진행 현황",
@@ -14,25 +17,55 @@ export default async function GroupPage({
 }: {
   params: { groupId: string };
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return (
+      <ErrorPage
+        title="로그인이 필요합니다"
+        message="이 페이지에 접근하려면 먼저 로그인해 주세요."
+        showHomeButton={true}
+      />
+    );
+  }
+
   const groupId = params.groupId;
   const group = (await getGroup(groupId)) as Group;
 
   if (!group) {
-    return <div>그룹을 찾을 수 없습니다.</div>;
+    return (
+      <ErrorPage
+        title="그룹을 찾을 수 없습니다"
+        message="요청하신 그룹이 존재하지 않거나 삭제되었습니다."
+        showHomeButton={true}
+      />
+    );
   }
 
-  // 통계 데이터 계산
+  if (group.createdBy.id !== session.user.id) {
+    return (
+      <ErrorPage
+        title="접근 권한이 없습니다"
+        message="이 그룹에 대한 접근 권한이 없습니다."
+        showHomeButton={true}
+      />
+    );
+  }
+
+  // 통계 데이터 계산 최적화
+  const completedApplicants = group.applicants.filter(
+    a => a.testStatus === "completed"
+  );
   const stats = {
     totalApplicants: group.applicants.length,
-    completedTests: group.applicants.filter(a => a.testStatus === "completed")
-      .length,
+    completedTests: completedApplicants.length,
     pendingTests: group.applicants.filter(a => a.testStatus === "pending")
       .length,
-    completionRate: Math.round(
-      (group.applicants.filter(a => a.testStatus === "completed").length /
-        group.applicants.length) *
-        100
-    ),
+    completionRate:
+      group.applicants.length === 0
+        ? 0
+        : Math.round(
+            (completedApplicants.length / group.applicants.length) * 100
+          ),
   };
 
   return (
