@@ -29,20 +29,27 @@ const ApplicantRow = memo(
     const isCompleted = applicant.testStatus === "completed";
     const href = isCompleted ? `/group/${groupId}/${applicant.name}` : "#";
 
+    // 모바일 카드 뷰
     return (
       <tr
-        className={`${index % 2 === 0 ? "bg-white" : "bg-orange-50"} ${
-          isCompleted
-            ? "cursor-pointer hover:bg-orange-100 transition-colors"
-            : ""
-        }`}
+        className={`
+          ${index % 2 === 0 ? "bg-white" : "bg-orange-50"}
+          ${
+            isCompleted
+              ? "cursor-pointer hover:bg-orange-100 transition-colors"
+              : ""
+          }
+          md:table-row flex flex-col border-b border-orange-200
+        `}
       >
-        <td className="border-b border-orange-200 px-6 py-4">
+        <td className="md:border-b md:border-orange-200 px-6 py-4">
+          <div className="md:hidden font-semibold text-gray-500 mb-1">이름</div>
           <Link href={href} className="block w-full">
             {applicant.name}
           </Link>
         </td>
-        <td className="border-b border-orange-200 px-6 py-4">
+        <td className="md:border-b md:border-orange-200 px-6 py-4">
+          <div className="md:hidden font-semibold text-gray-500 mb-1">유형</div>
           <Link href={href} className="block w-full">
             {!types.main ? (
               "-"
@@ -58,7 +65,8 @@ const ApplicantRow = memo(
             )}
           </Link>
         </td>
-        <td className="border-b border-orange-200 px-6 py-4">
+        <td className="md:border-b md:border-orange-200 px-6 py-4">
+          <div className="md:hidden font-semibold text-gray-500 mb-1">상태</div>
           <Link href={href} className="block w-full">
             <span
               className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
@@ -69,7 +77,10 @@ const ApplicantRow = memo(
             </span>
           </Link>
         </td>
-        <td className="border-b border-orange-200 px-6 py-4">
+        <td className="md:border-b md:border-orange-200 px-6 py-4">
+          <div className="md:hidden font-semibold text-gray-500 mb-1">
+            완료일
+          </div>
           <Link href={href} className="block w-full">
             {applicant.completedAt
               ? `${new Date(applicant.completedAt).getMonth() + 1}월 ${new Date(
@@ -110,12 +121,12 @@ export default function ApplicantTable({
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col flex-1 min-h-0 h-full">
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-3">
         <h2 className="text-lg font-semibold text-gray-900">
           {`${selectedKeyword} 지원자 현황`}
         </h2>
         <button
-          className="border rounded-lg px-3 py-2 text-sm"
+          className="border rounded-lg px-3 py-2 text-sm mt-2 md:mt-0"
           onClick={() => onKeywordSelect("전체")}
         >
           전체보기
@@ -124,15 +135,15 @@ export default function ApplicantTable({
 
       <div className="overflow-x-auto flex-1">
         <table className="w-full table-auto">
-          <thead>
-            <tr className="bg-orange-100 text-gray-900">
+          <thead className="hidden md:table-header-group bg-orange-100 text-gray-900">
+            <tr>
               <th className="px-6 py-3 text-left">이름</th>
               <th className="px-6 py-3 text-left">유형</th>
               <th className="px-6 py-3 text-left">상태</th>
               <th className="px-6 py-3 text-left">완료일</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="md:table-row-group">
             {filteredApplicants.map((applicant, index) => (
               <ApplicantRow
                 key={applicant.name}
