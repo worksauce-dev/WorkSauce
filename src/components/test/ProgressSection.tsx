@@ -9,6 +9,7 @@ interface ProgressSectionProps {
   handleNextHalf: () => void;
   handleSkip: () => void;
   canProceedToNext: boolean;
+  isAdmin: boolean;
 }
 
 export const ProgressSection = ({
@@ -16,6 +17,7 @@ export const ProgressSection = ({
   handleNextHalf,
   handleSkip,
   canProceedToNext,
+  isAdmin,
 }: ProgressSectionProps) => {
   // 다음 문항으로 이동하는 핸들러
   const handleNextWithScroll = () => {
@@ -77,21 +79,21 @@ export const ProgressSection = ({
           onClick={handleNextWithScroll}
           disabled={!canProceedToNext}
         >
-          {progress.categoryInfo.isFirstHalf
-            ? "다음 문항으로"
-            : progress.categoryInfo.current < progress.categoryInfo.total
-            ? "다음 유형으로"
+          {progress.categoryInfo.current < progress.categoryInfo.total
+            ? "다음으로"
             : "설문 완료"}
         </motion.button>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full py-3 rounded-lg text-gray-700 font-medium border border-gray-200 hover:bg-gray-50 transition-all duration-200"
-          onClick={handleSkipWithScroll}
-        >
-          스킵하기
-        </motion.button>
+        {isAdmin && (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full py-3 rounded-lg text-gray-700 font-medium border border-gray-200 hover:bg-gray-50 transition-all duration-200"
+            onClick={handleSkipWithScroll}
+          >
+            스킵하기
+          </motion.button>
+        )}
       </div>
     </div>
   );

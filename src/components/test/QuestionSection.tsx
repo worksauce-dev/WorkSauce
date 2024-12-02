@@ -37,7 +37,7 @@ export const QuestionSection = ({
 
   return (
     <div
-      className="w-full lg:w-3/4 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+      className="w-full lg:w-3/4 xl:w-3/5 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
       role="region"
       aria-label={`${categoryData.name} 질문 섹션`}
     >
@@ -59,20 +59,20 @@ export const QuestionSection = ({
             >
               <div className="flex items-start gap-2">
                 <span
-                  className="text-base sm:text-lg font-semibold text-gray-700 min-w-[24px]"
+                  className="text-sm sm:text-base md:text-lg font-semibold text-gray-700 min-w-[24px]"
                   aria-hidden="true"
                 >
                   {getGlobalQuestionNumber(displayIndex)}.
                 </span>
                 <p
-                  className="text-base sm:text-lg text-gray-700 font-medium"
+                  className="text-sm sm:text-base md:text-lg text-gray-700 font-medium"
                   id={`question-${answerKey}`}
                 >
                   {question.text}
                 </p>
               </div>
               <fieldset
-                className="grid grid-cols-5 gap-2 sm:gap-4 md:gap-6 w-full max-w-4xl mx-auto px-4"
+                className="grid grid-cols-5 gap-0.5 sm:gap-1 md:gap-2 w-full max-w-4xl mx-auto px-1 sm:px-2 md:px-4"
                 aria-labelledby={`question-${answerKey}`}
               >
                 <legend className="sr-only">점수 선택: {question.text}</legend>
