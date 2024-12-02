@@ -7,6 +7,8 @@ interface ApplicantType {
   weaknesses: string;
   interviewQuestions: string[];
   onboardingSteps: string;
+  primaryType?: string;
+  secondaryType?: string;
 }
 
 type TestResult = {
@@ -23,10 +25,16 @@ export const determineApplicantType = (
   const primaryType = testResults[0].sort;
   const secondaryType = testResults[1].sort;
 
-  return (
+  const applicantType = (
     sauceResult[primaryType as keyof SauceResultType] as Record<
       string,
       ApplicantType
     >
   )[secondaryType];
+
+  return {
+    ...applicantType,
+    primaryType,
+    secondaryType,
+  };
 };
