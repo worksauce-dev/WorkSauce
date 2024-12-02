@@ -26,8 +26,8 @@ export default function GroupContent({
   );
 
   return (
-    <div className="flex flex-row gap-4 h-full">
-      <div className="w-1/3 h-full">
+    <div className="flex flex-col md:flex-row gap-4 h-full">
+      <div className="w-full md:w-1/3 h-full">
         <KeywordAnalysis
           group={group}
           stats={stats}
@@ -35,7 +35,7 @@ export default function GroupContent({
           selectedKeyword={selectedKeyword}
         />
       </div>
-      <div className="w-2/3 h-full">
+      <div className="w-full md:w-2/3 h-full">
         <ApplicantTable
           group={group}
           groupId={groupId}

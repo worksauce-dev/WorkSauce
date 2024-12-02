@@ -73,7 +73,7 @@ export default function KeywordAnalysis({
       <h2 className="text-lg font-semibold text-gray-900 mb-3">
         키워드 매칭 분석
       </h2>
-      <div className="flex flex-col gap-3 max-w-xl">
+      <div className="flex flex-col gap-3 max-w-full md:max-w-xl">
         {keywordMatchAnalysis.map(analysis => (
           <button
             onClick={() => onKeywordSelect(analysis.keyword)}
@@ -109,21 +109,6 @@ export default function KeywordAnalysis({
                 서브: {analysis.subCount}명
               </span>
             </div>
-            {/* <div className="mt-2">
-              {analysis.applicants.slice(0, 3).map((applicant, idx) => (
-                <span
-                  key={idx}
-                  className="inline-block bg-indigo-100 text-indigo-700 rounded-full px-2 py-1 text-xs mr-2 mb-1"
-                >
-                  {applicant.name}
-                </span>
-              ))}
-              {analysis.applicants.length > 3 && (
-                <span className="text-xs text-gray-500">
-                  +{analysis.applicants.length - 3}명
-                </span>
-              )}
-            </div> */}
           </button>
         ))}
       </div>
