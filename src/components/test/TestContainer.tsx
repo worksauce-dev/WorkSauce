@@ -14,6 +14,7 @@ const TestContainer = ({
   groupId,
   submitTest,
   testData,
+  isAdmin,
 }: {
   name: string;
   email: string;
@@ -25,6 +26,7 @@ const TestContainer = ({
     name: string,
     testResult: ScoreType[]
   ) => void;
+  isAdmin: boolean;
 }) => {
   const {
     handleAnswer,
@@ -66,6 +68,7 @@ const TestContainer = ({
         handleNextHalf={handleNextHalf}
         handleSkip={handleSkip}
         canProceedToNext={canProceedToNext}
+        isAdmin={isAdmin}
       />
     </div>
   );
@@ -75,6 +78,7 @@ export function AuthCheck({
   groupData,
   submitTest,
   testData,
+  isAdmin,
 }: {
   groupData: Group;
   submitTest: (
@@ -84,6 +88,7 @@ export function AuthCheck({
     testResult: ScoreType[]
   ) => void;
   testData: TestDBType;
+  isAdmin: boolean;
 }) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -121,6 +126,7 @@ export function AuthCheck({
         groupId={groupData.groupId}
         submitTest={submitTest}
         testData={testData}
+        isAdmin={isAdmin}
       />
     );
   }

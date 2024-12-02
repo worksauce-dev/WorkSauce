@@ -52,14 +52,14 @@ export const VerbTest = ({
   >("idle");
 
   const SCORE_WEIGHTS = {
-    start: 100, // 시작 동사 (2개 선택)
-    advance: 150, // 발전된 동사 (2개 선택)
-    utility: 200, // 실용적 동사 (2개 선택)
-    communicate: 250, // 소통 동사 (2개 선택)
-    expert: 300, // 전문적 동사 (2개 선택)
+    start: 100,
+    advance: 150,
+    utility: 200,
+    communicate: 250,
+    expert: 300,
   };
 
-  // step에 따른 타입 반환 함수
+  // 현재 단계의 타입을 반환하는 함수
   const getStepType = (step: number): keyof typeof SCORE_WEIGHTS => {
     switch (Math.floor(step)) {
       case 0:
@@ -77,25 +77,39 @@ export const VerbTest = ({
     }
   };
 
-  const renderQustion = () => {
-    if (step === 0 || step === 0.5) {
-      return "Q. " + verbQuestions[0] + " (2개를 선택해주세요.)";
-    }
+  // 현재 단계의 단어를 가져오는 함수
+  const getWordForCurrentStep = (item: TestItem): string => {
+    const stepType = getStepType(step);
+    return stepType === "start" ? item.start : item[stepType][0];
+  };
 
-    if (step === 1 || step === 1.5) {
-      return "Q. " + verbQuestions[1] + " (2개를 선택해주세요.)";
-    }
+  // 단어가 선택되었는지 확인하는 함수
+  const isWordSelected = (item: TestItem): boolean => {
+    const word = getWordForCurrentStep(item);
+    return selectedAnswers.includes(word);
+  };
 
-    if (step === 2 || step === 2.5) {
-      return "Q. " + verbQuestions[2] + " (2개를 선택해주세요.)";
-    }
+  // 단계 레이블을 가져오는 함수
+  const getStepLabel = (index: number): string => {
+    const labels = {
+      0: "시작 동사",
+      1: "발전 동사",
+      2: "기술 동사",
+      3: "소통 동사",
+      4: "결과 동사",
+    };
+    return labels[index as keyof typeof labels] || "";
+  };
 
-    if (step === 3 || step === 3.5) {
-      return "Q. " + verbQuestions[3] + " (2개를 선택해주세요.)";
-    }
-    if (step === 4 || step === 4.5) {
-      return "Q. " + verbQuestions[4] + " (2개를 선택해주세요.)";
-    }
+  // 특정 단계의 선택된 단어들을 가져오는 함수
+  const getSelectedWordsForStep = (stepIndex: number): string[] => {
+    const startIndex = stepIndex * 2;
+    return selectedAnswers.slice(startIndex, startIndex + 2);
+  };
+
+  // 현재 진행률을 계산하는 함수
+  const getCurrentProgress = (): number => {
+    return (step / 5) * 100;
   };
 
   const handleSelect = (target: TestItem, word: string) => {
@@ -105,7 +119,6 @@ export const VerbTest = ({
       (_, index) => Math.floor(index / 2) === Math.floor(step)
     );
 
-    // 이미 2개 선택했고, 새로운 선택을 시도할 경우 중단
     if (!isSelected && currentStepAnswers.length >= 2) {
       return;
     }
@@ -115,26 +128,35 @@ export const VerbTest = ({
       : SCORE_WEIGHTS[stepType];
 
     setSelectedAnswers(prev => {
-      const newAnswers = [...prev];
       if (isSelected) {
-        newAnswers.pop();
-      } else {
-        newAnswers.push(word);
+        const newAnswers = prev.filter(w => w !== word);
+        // 현재 단계의 선택된 단어 수를 다시 계산
+        const updatedStepAnswers = newAnswers.filter(
+          (_, index) => Math.floor(index / 2) === Math.floor(step)
+        );
+        // 선택 취소 시 step 조정
+        if (updatedStepAnswers.length === 0) {
+          setStep(Math.floor(step));
+        } else if (updatedStepAnswers.length === 1) {
+          setStep(Math.floor(step) + 0.5);
+        }
+        return newAnswers;
       }
-      return newAnswers;
+      return [...prev, word];
     });
 
     setNameArr(prev => {
-      const newNames = [...prev];
       if (isSelected) {
-        newNames.pop();
-      } else {
-        newNames.push(target.name);
+        return prev.filter(n => n !== target.name);
       }
-      return newNames;
+      return [...prev, target.name];
     });
 
-    setStep(prev => prev + 0.5);
+    // 선택 시에만 step 증가
+    if (!isSelected && currentStepAnswers.length < 2) {
+      setStep(prev => prev + 0.5);
+    }
+
     setScores(prev =>
       prev.map(score =>
         score.sort === target.sort
@@ -144,430 +166,12 @@ export const VerbTest = ({
     );
   };
 
-  const renderAnswers = () => {
-    if (step === 0 || step === 0.5) {
-      return (
-        <>
-          {verbTestData.map(el => (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleSelect(el, el.start)}
-              key={el.sort}
-              className={`py-3 px-6 rounded-lg border border-gray-300 shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(el.start)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-            >
-              {el.start}
-            </motion.button>
-          ))}
-        </>
-      );
-    }
-    if (step === 1 || step === 1.5) {
-      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
-      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
-
-      if (nameArr[0] === nameArr[1]) {
-        return (
-          <>
-            {arr1.map(words =>
-              words.advance.map(word => (
-                <motion.button
-                  onClick={() => handleSelect(words, word)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  key={word}
-                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-                >
-                  {word}
-                </motion.button>
-              ))
-            )}
-          </>
-        );
-      }
-
-      return (
-        <>
-          {arr1.map(words =>
-            words.advance.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-          {arr2.map(words =>
-            words.advance.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-        </>
-      );
-    }
-    if (step === 2 || step === 2.5) {
-      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
-      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
-
-      if (nameArr[0] === nameArr[1]) {
-        return (
-          <>
-            {arr1.map(words =>
-              words.utility.map(word => (
-                <motion.button
-                  onClick={() => handleSelect(words, word)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  key={word}
-                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-                >
-                  {word}
-                </motion.button>
-              ))
-            )}
-          </>
-        );
-      }
-
-      return (
-        <>
-          {arr1.map(words =>
-            words.utility.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-          {arr2.map(words =>
-            words.utility.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-        </>
-      );
-    }
-    if (step === 3 || step === 3.5) {
-      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
-      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
-
-      if (nameArr[0] === nameArr[1]) {
-        return (
-          <>
-            {arr1.map(words =>
-              words.communicate.map(word => (
-                <motion.button
-                  onClick={() => handleSelect(words, word)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  key={word}
-                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-                >
-                  {word}
-                </motion.button>
-              ))
-            )}
-          </>
-        );
-      }
-
-      return (
-        <>
-          {arr1.map(words =>
-            words.communicate.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-          {arr2.map(words =>
-            words.communicate.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-        </>
-      );
-    }
-    if (step === 4 || step === 4.5) {
-      const arr1 = verbTestData.filter(el => el.name === nameArr[0]);
-      const arr2 = verbTestData.filter(el => el.name === nameArr[1]);
-
-      if (nameArr[0] === nameArr[1]) {
-        return (
-          <>
-            {arr1.map(words =>
-              words.expert.map(word => (
-                <motion.button
-                  onClick={() => handleSelect(words, word)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  key={word}
-                  className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-                >
-                  {word}
-                </motion.button>
-              ))
-            )}
-          </>
-        );
-      }
-
-      return (
-        <>
-          {arr1.map(words =>
-            words.expert.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-          {arr2.map(words =>
-            words.expert.map(word => (
-              <motion.button
-                onClick={() => handleSelect(words, word)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={word}
-                className={`border border-gray-300 p-4 rounded-lg shadow-sm hover:shadow-md bg-white text-gray-800 font-medium transition-colors duration-200
-                ${
-                  selectedAnswers.includes(word)
-                    ? "bg-indigo-100 border-indigo-500 text-indigo-700"
-                    : ""
-                }`}
-              >
-                {word}
-              </motion.button>
-            ))
-          )}
-        </>
-      );
-    }
-
-    if (step === 5) {
-      return (
-        <div className="col-span-full text-center flex flex-col gap-4 justify-center items-center">
-          <h3 className="text-2xl font-semibold mb-4">테스트 완료!</h3>
-          <p className="text-lg mb-2">모든 질문에 답변해 주셔서 감사합니다.</p>
-          <p className="text-lg mb-6">
-            우측 하단의{" "}
-            <span className="font-semibold">&apos;제출하기&apos;</span> 버튼을
-            꼭 클릭해주세요.
-          </p>
-          <div className="text-sm text-gray-600">
-            제출 후에는 답변을 수정할 수 없으니 신중히 검토해 주세요.
-          </div>
-        </div>
-      );
-    }
-  };
-
-  const getCurrentProgress = () => {
-    return (step / 5) * 100;
-  };
-
-  const renderSidebar = () => {
-    return (
-      <div className="w-full lg:w-1/3 sm:p-8 bg-white p-6 rounded-xl shadow-lg flex flex-col">
-        <div className="flex-grow">
-          <h3 className="text-xl font-bold mb-6 text-gray-800">진행 상황</h3>
-
-          <div className="mb-4">
-            <div className="bg-gray-100 h-2 rounded-full overflow-hidden">
-              <motion.div
-                className="bg-blue-500 h-full rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${getCurrentProgress()}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-            <p className="text-right mt-2 text-sm font-medium text-gray-600">
-              {Math.round(getCurrentProgress())}% 완료
-            </p>
-          </div>
-
-          <div className="space-y-4 mb-6 ">
-            {[
-              "Start 동사",
-              "Advance 동사",
-              "Utility 동사",
-              "Communicate 동사",
-              "Expert 동사",
-            ].map(
-              (question, index) =>
-                step > index - 0.5 && (
-                  <div
-                    key={index}
-                    className="bg-gray-50 p-4 rounded-lg flex items-center justify-between h-[56px]"
-                  >
-                    <p className="text-sm font-semibold text-gray-700">
-                      {question}
-                    </p>
-                    <div className="flex gap-2 text-xs">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full ">
-                        {selectedAnswers[index * 2]}
-                      </span>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                        {selectedAnswers[index * 2 + 1]}
-                      </span>
-                    </div>
-                  </div>
-                )
-            )}
-          </div>
-        </div>
-
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full py-3 mt-auto rounded-lg text-white font-bold bg-blue-500 hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
-          onClick={clickReset}
-        >
-          <RefreshCw size={18} />
-          소스테스트 다시하기
-        </motion.button>
-
-        {
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className={`${
-              step !== 5
-                ? "bg-slate-300 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-600"
-            } w-full py-3 mt-4 rounded-lg text-white font-bold transition-colors flex items-center justify-center gap-2`}
-            onClick={() => step === 5 && handleSubmit()}
-            disabled={step !== 5}
-          >
-            <Send size={18} />
-            {isSubmitting ? "제출 중..." : "제출하기"}
-          </motion.button>
-        }
-      </div>
-    );
-  };
-
-  // const getTopScore = () => {
-  //   return scores.reduce((prev, current) =>
-  //     prev.score > current.score ? prev : current
-  //   );
-  // };
-
-  // const getTypeDescription = (sort: string) => {
-  //   return (
-  //     typeDescriptions[sort.replace(/\s/g, "")] || "설명이 제공되지 않았습니다."
-  //   );
-  // };
-
   const clickReset = () => {
     setStep(0);
     setNameArr([]);
     setScores(prevScores);
     setSelectedAnswers([]);
+    setSubmitStatus("idle");
   };
 
   const handleSubmit = async () => {
@@ -575,10 +179,8 @@ export const VerbTest = ({
     setSubmitStatus("loading");
 
     try {
-      submitTest(groupId, email, name, scores);
+      await submitTest(groupId, email, name, scores);
       setSubmitStatus("success");
-
-      // 3초 후 자동으로 창 닫기
       setTimeout(() => {
         window.close();
       }, 3000);
@@ -590,10 +192,26 @@ export const VerbTest = ({
     }
   };
 
+  const renderQuestion = () => {
+    if (step === 5) return null;
+    return (
+      <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+        <span>{verbQuestions[Math.floor(step)]}</span>
+        <span className="text-orange-200 text-base whitespace-nowrap">
+          2개 선택
+        </span>
+      </h2>
+    );
+  };
+
   const renderSubmitFeedback = () => {
     if (submitStatus === "success") {
       return (
-        <div className="col-span-full text-center flex flex-col gap-4 justify-center items-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="col-span-full text-center flex flex-col gap-4 justify-center items-center p-8"
+        >
           <h3 className="text-2xl font-semibold text-green-600 mb-4">
             제출 완료!
           </h3>
@@ -606,19 +224,17 @@ export const VerbTest = ({
           <p className="text-sm text-gray-500 mt-4">
             3초 후 자동으로 창이 닫힙니다...
           </p>
-          <button
-            onClick={() => window.close()}
-            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            창 닫기
-          </button>
-        </div>
+        </motion.div>
       );
     }
 
     if (submitStatus === "error") {
       return (
-        <div className="col-span-full text-center flex flex-col gap-4 justify-center items-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="col-span-full text-center flex flex-col gap-4 justify-center items-center p-8"
+        >
           <h3 className="text-2xl font-semibold text-red-600 mb-4">
             제출 실패
           </h3>
@@ -628,45 +244,159 @@ export const VerbTest = ({
           </p>
           <button
             onClick={() => setSubmitStatus("idle")}
-            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
           >
             다시 시도
           </button>
-        </div>
+        </motion.div>
       );
     }
 
     return renderAnswers();
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
-      <div className="max-w-5xl lg:w-3/4 bg-white rounded-lg shadow-xl flex flex-col">
-        <div className="bg-indigo-600 text-white p-6 rounded-t-lg">
-          <h2 className="text-base sm:text-lg font-semibold">
-            {renderQustion()}
-          </h2>
-        </div>
+  const renderAnswers = () => {
+    if (step === 5) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="col-span-full text-center flex flex-col gap-4 justify-center items-center p-8"
+        >
+          <h3 className="text-2xl font-semibold mb-4">테스트 완료!</h3>
+          <p className="text-lg mb-2">모든 질문에 답변해 주셔서 감사합니다.</p>
+          <p className="text-lg mb-6">
+            우측의{" "}
+            <span className="font-semibold text-orange-600">제출하기</span>{" "}
+            버튼을 클릭해주세요.
+          </p>
+          <div className="text-sm text-gray-600">
+            제출 후에는 답변을 수정할 수 없으니 신중히 검토해 주세요.
+          </div>
+        </motion.div>
+      );
+    }
 
-        <div className="flex flex-col gap-8 p-8 flex-grow">
-          <div
-            className={`grid grid-cols-2 sm:grid-cols-3 gap-8 ${
-              step >= 1 ? "md:grid-cols-4" : "md:grid-cols-5"
-            }`}
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-6">
+        {verbTestData.map(el => (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handleSelect(el, getWordForCurrentStep(el))}
+            key={el.sort}
+            className={`
+              py-3 px-6 rounded-lg font-medium transition-all duration-200
+              ${
+                isWordSelected(el)
+                  ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md"
+                  : "bg-white border border-gray-200 text-gray-700 hover:bg-orange-50"
+              }
+            `}
           >
-            {renderSubmitFeedback()}
+            {getWordForCurrentStep(el)}
+          </motion.button>
+        ))}
+      </div>
+    );
+  };
+
+  const renderSidebar = () => {
+    return (
+      <div className="w-full lg:w-1/4 bg-white rounded-xl shadow-sm border border-gray-100 lg:sticky lg:top-32 flex flex-col h-auto">
+        <div className="p-6 space-y-6 flex-1">
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">진행 상황</h3>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={clickReset}
+                className="py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 
+                  border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <RefreshCw size={18} />
+                다시하기
+              </motion.button>
+            </div>
+            <div className="space-y-2">
+              <div className="bg-gray-100 h-2 rounded-full overflow-hidden">
+                <motion.div
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 h-full rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${getCurrentProgress()}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600 font-medium">
+                  단계 {Math.floor(step)} / 5
+                </span>
+                <span className="text-gray-600 font-medium">
+                  {Math.round(getCurrentProgress())}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {verbQuestions.map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 p-4 rounded-lg flex items-center justify-between max-h-[52px]"
+              >
+                <p className="text-sm font-medium text-gray-700">
+                  {getStepLabel(index)}
+                </p>
+                <div className="flex gap-2">
+                  {getSelectedWordsForStep(index).map((word, idx) => (
+                    <span
+                      key={idx}
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        idx === 0
+                          ? "bg-orange-100 text-orange-800"
+                          : "bg-blue-100 text-blue-800"
+                      }`}
+                    >
+                      {word || "미선택"}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex justify-between items-center w-full p-8">
-          <span className="text-sm text-primary-gray">
-            &quot;소스테스트&quot;는 (주)워크소스의 자산으로, 캡처, 복사 등 무단
-            배포 및 전송을 엄격히 금지합니다. 이를 위반할 경우 법적 책임이 따를
-            수 있습니다.
-          </span>
+        <div className="p-6 border-t border-gray-100">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`w-full py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2
+              ${
+                step === 5
+                  ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }
+            `}
+            onClick={() => step === 5 && handleSubmit()}
+            disabled={step !== 5}
+          >
+            <Send size={18} />
+            {isSubmitting ? "제출 중..." : "제출하기"}
+          </motion.button>
         </div>
       </div>
+    );
+  };
 
+  return (
+    <div className="bg-[#F7F7F9] min-h-screen py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
+      <div className="w-full lg:w-3/4 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6">
+          {renderQuestion()}
+        </div>
+        {renderSubmitFeedback()}
+      </div>
       {renderSidebar()}
     </div>
   );
