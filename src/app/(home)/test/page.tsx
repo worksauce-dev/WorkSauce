@@ -7,6 +7,9 @@ import { ExpiredTest } from "@/components/test/ExpiredTest";
 import { getTestDB } from "@/api/firebase/getTestDB";
 import { TestDBType } from "@/types/test";
 import { ErrorPage } from "@/components/common/ErrorPage";
+import { authOptions } from "@/utils/authOptions";
+import { getServerSession } from "next-auth";
+import { getUserData } from "@/api/firebase/getUserData";
 
 export const metadata: Metadata = {
   title: "소스테스트",
@@ -53,12 +56,17 @@ export default async function TestPage({
     return <ExpiredTest deadline={groupData.deadline} />;
   }
 
+  const session = await getServerSession(authOptions);
+  const userData = session ? await getUserData(session.user.id) : null;
+  const isAdmin = userData?.isAdmin ?? false;
+
   return (
     <>
       <AuthCheck
         groupData={groupData}
         submitTest={submitTest}
         testData={testData as TestDBType}
+        isAdmin={isAdmin}
       />
     </>
   );
