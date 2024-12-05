@@ -34,63 +34,57 @@ const ApplicantRow = memo(
       <tr
         className={`
           ${index % 2 === 0 ? "bg-white" : "bg-orange-50"}
-          ${
-            isCompleted
-              ? "cursor-pointer hover:bg-orange-100 transition-colors"
-              : ""
-          }
           md:table-row flex flex-col border-b border-orange-200
         `}
       >
         <td className="md:border-b md:border-orange-200 px-6 py-4">
           <div className="md:hidden font-semibold text-gray-500 mb-1">이름</div>
-          <Link href={href} className="block w-full">
-            {applicant.name}
-          </Link>
+          {applicant.name}
         </td>
         <td className="md:border-b md:border-orange-200 px-6 py-4">
           <div className="md:hidden font-semibold text-gray-500 mb-1">유형</div>
-          <Link href={href} className="block w-full">
-            {!types.main ? (
-              "-"
-            ) : (
-              <>
-                <span className="font-medium">{types.main}</span>
-                {types.sub && (
-                  <span className="text-gray-500 text-sm ml-2">
-                    / {types.sub}
-                  </span>
-                )}
-              </>
-            )}
-          </Link>
+          {!types.main ? (
+            "-"
+          ) : (
+            <>
+              <span className="font-medium">{types.main}</span>
+              {types.sub && (
+                <span className="text-gray-500 text-sm ml-2">
+                  / {types.sub}
+                </span>
+              )}
+            </>
+          )}
         </td>
         <td className="md:border-b md:border-orange-200 px-6 py-4">
           <div className="md:hidden font-semibold text-gray-500 mb-1">상태</div>
-          <Link href={href} className="block w-full">
-            <span
-              className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-                applicant.testStatus
-              )}`}
-            >
-              {getStatusText(applicant.testStatus)}
-            </span>
-          </Link>
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+              applicant.testStatus
+            )}`}
+          >
+            {getStatusText(applicant.testStatus)}
+          </span>
         </td>
         <td className="md:border-b md:border-orange-200 px-6 py-4">
           <div className="md:hidden font-semibold text-gray-500 mb-1">
             완료일
           </div>
-          <Link href={href} className="block w-full">
+          <div>
             {applicant.completedAt
               ? `${new Date(applicant.completedAt).getMonth() + 1}월 ${new Date(
                   applicant.completedAt
                 ).getDate()}일`
               : "-"}
             {applicant.testStatus === "completed" && (
-              <span className="ml-2 text-xs text-orange-500">(결과 보기)</span>
+              <Link
+                href={href}
+                className="ml-2 text-xs text-orange-500 hover:bg-orange-100 px-1 py-0.5 rounded transition-colors"
+              >
+                (결과 보기)
+              </Link>
             )}
-          </Link>
+          </div>
         </td>
       </tr>
     );
