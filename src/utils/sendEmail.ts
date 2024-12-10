@@ -62,10 +62,7 @@ function generateDefaultHTMLTemplate(
       <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
         <div style="margin-bottom: 30px; display: flex; justify-content: center; align-items: center;">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNmOTczMTYiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMi42OWw1LjY2IDUuNjZhOCA4IDAgMSAxLTExLjMxIDB6Ij48L3BhdGg+PC9zdmc+" alt="Droplet Icon" style="width: 40px; height: 40px;" />
-            <span style="font-size: 36px; font-weight: bold; color: #111827;">
-              Work<span style="font-style: italic; color: #f97316; font-family: serif;">Sauce</span>
-            </span>
+            <img src="https://firebasestorage.googleapis.com/v0/b/worksauce-eee8c.appspot.com/o/%E1%84%85%E1%85%A9%E1%84%80%E1%85%A9%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A1%E1%86%AB1.png?alt=media&token=a3f88230-1d58-4827-8b0d-52dab4c8fd08" alt="Droplet Icon" style="width: 230px; height: 45px;" />
           </div>
         </div>
         
@@ -78,7 +75,7 @@ function generateDefaultHTMLTemplate(
           <div style="background-color: #f7fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">
             <div style="font-weight: bold; margin-bottom: 12px;">소스테스트 응시를 위한 주의사항입니다.</div>
             <ol style="padding-left: 20px; margin: 0;">
-              <li style="margin-bottom: 8px;">암호화 로그인을 위해 발송 받으신 이메일과 성함을 정확히 기재해 주세요.</li>
+              <li style="margin-bottom: 8px;">암호화 로그인을 위해 발송 받으신 이메일과 성함을 정확히 기재해 주세��.</li>
               <li style="margin-bottom: 8px;">소스테스트는 정해진 정답이 있는 검사가 아닙니다. 편하고 솔직하게 응해주세요.</li>
               <li style="margin-bottom: 8px;">응시 결과 유형으로 분류되어 인사채용담당자에게 전달됩니다.</li>
               <li style="margin-bottom: 8px;">응시하실 경우 개인정보처리방침에 동의하신 것으로 간주됩니다.</li>
@@ -90,7 +87,7 @@ function generateDefaultHTMLTemplate(
 
           <div style="text-align: center; margin: 30px 0;">
             <a href="${deployUrl}/test?groupId=${groupId}" 
-               style="display: inline-block; background-color: #4299e1; color: white; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: bold;">
+               style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: bold;">
               소스테스트 응시하기
             </a>
           </div>
