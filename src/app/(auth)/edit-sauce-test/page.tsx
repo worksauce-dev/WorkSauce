@@ -8,7 +8,7 @@ export default async function EditSauceTest() {
   const testDB = await getTestDB("saucetest");
 
   return (
-    <div className="w-full h-screen flex flex-col lg:flex-row bg-[#F7F7F9] ">
+    <div className="w-full h-screen flex flex-col lg:flex-row  ">
       <TestDBEditor
         initialData={testDB as TestDBType}
         updateTestDB={updateSauceTest}

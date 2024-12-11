@@ -35,7 +35,7 @@ export default function AdminReports({ results }: { results: UserResult[] }) {
   );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto w-full bg-[#F7F7F9]">
+    <div className="p-6 max-w-7xl mx-auto w-full ">
       <h1 className="text-3xl font-bold mb-8 text-[#F97316]">
         테스트 결과 리포트
       </h1>

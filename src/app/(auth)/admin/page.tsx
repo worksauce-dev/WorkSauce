@@ -20,7 +20,7 @@ export default async function AdminDashboard() {
   const stats = await getAdminStats();
 
   return (
-    <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-screen gap-4 bg-[#F7F7F9]">
+    <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-screen gap-4 ">
       <h1 className="text-3xl font-bold mb-8 text-[#F97316]">
         관리자 대시보드
       </h1>
