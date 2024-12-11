@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";
 import { format } from "date-fns";
 import { typeDescriptions } from "@/constant/test";
+import { getWorkflow } from "@/utils/getWorkflow";
 
 // 새로운 컴포넌트 추가
 const TopResultCard: React.FC<{
@@ -61,7 +62,7 @@ interface ApplicantScoreCardProps {
 }
 
 // 탭 타입 정의
-type TabType = "characteristics" | "onboarding" | "interview";
+type TabType = "characteristics" | "onboarding" | "interview" | "workflow";
 
 // 공통 스타일 상수
 const STYLES = {
@@ -175,7 +176,8 @@ const MainContent: React.FC<{
 const TabContent: React.FC<{
   activeTab: TabType;
   applicantType: ReturnType<typeof determineApplicantType>;
-}> = ({ activeTab, applicantType }) => (
+  applicant: Applicant;
+}> = ({ activeTab, applicantType, applicant }) => (
   <AnimatePresence mode="wait">
     <motion.div
       key={activeTab}
@@ -230,6 +232,14 @@ const TabContent: React.FC<{
           </div>
         </div>
       )}
+
+      {activeTab === "workflow" && (
+        <div className="h-full p-0.5">
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6">
+            {getWorkflow(applicantType, applicant.name)}
+          </div>
+        </div>
+      )}
     </motion.div>
   </AnimatePresence>
 );
@@ -241,7 +251,7 @@ const TabNavigation: React.FC<{
 }> = ({ activeTab, setActiveTab }) => (
   <div className="border-b border-gray-200 mb-4">
     <div className="flex space-x-6">
-      {["characteristics", "onboarding", "interview"].map(tab => (
+      {["workflow", "characteristics", "onboarding", "interview"].map(tab => (
         <button
           key={tab}
           onClick={() => setActiveTab(tab as TabType)}
@@ -258,6 +268,7 @@ const TabNavigation: React.FC<{
             />
           )}
           {tab === "characteristics" && "특성 분석"}
+          {tab === "workflow" && "워크플로우"}
           {tab === "interview" && "면접 가이드"}
           {tab === "onboarding" && "온보딩 제안"}
         </button>
@@ -307,7 +318,11 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
 
       <div className={`flex-1 ${STYLES.card} flex flex-col overflow-y-hidden`}>
         <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
-        <TabContent activeTab={activeTab} applicantType={applicantType} />
+        <TabContent
+          activeTab={activeTab}
+          applicantType={applicantType}
+          applicant={applicant}
+        />
       </div>
     </div>
   );
