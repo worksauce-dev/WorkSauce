@@ -7,7 +7,7 @@ export default async function EditSauceResult() {
   const sauceResult = await getSauceResult();
 
   return (
-    <div className="w-full h-screen flex flex-col lg:flex-row bg-[#F7F7F9] ">
+    <div className="w-full h-screen flex flex-col lg:flex-row ">
       <SauceResultEditor
         initialData={sauceResult as SauceResultType}
         updateResult={updateSauceResult}

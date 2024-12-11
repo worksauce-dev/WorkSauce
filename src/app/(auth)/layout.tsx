@@ -24,7 +24,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="w-full h-screen flex flex-col lg:flex-row ">
+    <div className="w-full h-screen flex flex-col lg:flex-row bg-[#F7F7F9]">
       <AdminSidebar user={user} />
       {children}
     </div>
