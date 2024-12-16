@@ -62,7 +62,7 @@ interface ApplicantScoreCardProps {
 }
 
 // 탭 타입 정의
-type TabType = "characteristics" | "onboarding" | "interview" | "workflow";
+type TabType = "workflow" | "characteristics" | "onboarding" | "interview";
 
 // 공통 스타일 상수
 const STYLES = {
@@ -282,7 +282,7 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   keywords,
   sauceResult,
 }) => {
-  const [activeTab, setActiveTab] = React.useState<TabType>("characteristics");
+  const [activeTab, setActiveTab] = React.useState<TabType>("workflow");
   const topResults = [...applicant.testResult]
     .sort((a, b) => b.score - a.score)
     .slice(0, 3);
