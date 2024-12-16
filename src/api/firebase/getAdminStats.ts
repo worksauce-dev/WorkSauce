@@ -11,27 +11,28 @@ import {
 
 interface DashboardStats {
   totalUsers: number;
-  newUsersThisMonth: number;
+  last30DaysNewUsers: number;
   paidSubscribers: number;
   recentTestUpdates: string;
   recentResultUpdates: string;
 }
 
 export async function getAdminStats(): Promise<DashboardStats> {
-  const now = new Date();
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
   // 전체 사용자 수 조회
   const usersSnapshot = await getDocs(collection(firestore, "users"));
   const totalUsers = usersSnapshot.size;
 
-  // 이번 달 신규 가입자 수 조회
+  // 최근 30일 신규 가입자 수 조회
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const thirtyDaysAgoString = thirtyDaysAgo.toISOString();
+
   const newUsersQuery = query(
     collection(firestore, "users"),
-    where("createdAt", ">=", Timestamp.fromDate(firstDayOfMonth))
+    where("createdAt", ">=", thirtyDaysAgoString)
   );
   const newUsersSnapshot = await getDocs(newUsersQuery);
-  const newUsersThisMonth = newUsersSnapshot.size;
+  const last30DaysNewUsers = newUsersSnapshot.size;
 
   // 유료 구독자 수 조회
   const paidSubscribersQuery = query(
@@ -52,7 +53,7 @@ export async function getAdminStats(): Promise<DashboardStats> {
 
   return {
     totalUsers,
-    newUsersThisMonth,
+    last30DaysNewUsers,
     paidSubscribers,
     recentTestUpdates,
     recentResultUpdates,

@@ -33,8 +33,8 @@ export default async function AdminDashboard() {
           icon={<MdPeople size={24} />}
         />
         <StatCard
-          title="이번 달 신규가입"
-          value={stats.newUsersThisMonth.toLocaleString()}
+          title="최근 30일 이내 신규가입"
+          value={stats.last30DaysNewUsers.toString()}
           icon={<MdTrendingUp size={24} />}
         />
         <StatCard
