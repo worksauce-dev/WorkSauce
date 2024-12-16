@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 type TestResultItem = {
@@ -20,7 +20,36 @@ type UserResult = {
 export default function AdminReports({ results }: { results: UserResult[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const calculateItemsPerPage = () => {
+    const ROW_HEIGHT = 73;
+    const tableContainer = document.querySelector(".overflow-y-auto");
+    if (tableContainer) {
+      const availableHeight = tableContainer.clientHeight;
+      const possibleRows = Math.floor(availableHeight / ROW_HEIGHT);
+      return Math.max(3, Math.min(20, possibleRows));
+    }
+    return 5;
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLoading(true);
+      const newItemsPerPage = calculateItemsPerPage();
+      setItemsPerPage(newItemsPerPage);
+      setCurrentPage(1);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 100);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const filteredResults = results.filter(
     user =>
@@ -28,10 +57,10 @@ export default function AdminReports({ results }: { results: UserResult[] }) {
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
   const paginatedResults = filteredResults.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   return (
@@ -60,115 +89,123 @@ export default function AdminReports({ results }: { results: UserResult[] }) {
         </div>
 
         {/* 테이블 섹션 - 스크롤 가능한 영역 */}
-        <div className="flex-1 overflow-auto min-h-0">
-          <table className="min-w-full">
-            <thead className="sticky top-0 bg-orange-50 z-10">
-              <tr>
-                <th className="p-3 text-left font-semibold text-gray-700">
-                  이름
-                </th>
-                <th className="p-3 text-left font-semibold text-gray-700">
-                  이메일
-                </th>
-                <th className="p-3 text-left font-semibold text-gray-700">
-                  완료일
-                </th>
-                <th className="p-3 text-left font-semibold text-gray-700">
-                  메인 유형
-                </th>
-                <th className="p-3 text-left font-semibold text-gray-700">
-                  서브 유형
-                </th>
-                <th className="p-3 text-center font-semibold text-gray-700">
-                  상세보기
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedResults.map((user: UserResult) => {
-                const topResults = [...user.testResult]
-                  .sort((a, b) => b.score - a.score)
-                  .slice(0, 2);
+        <div className="flex-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F97316]" />
+            </div>
+          ) : (
+            <table className="min-w-full">
+              <thead className="sticky top-0 bg-orange-50 z-10">
+                <tr>
+                  <th className="p-3 text-left font-semibold text-gray-700">
+                    이름
+                  </th>
+                  <th className="p-3 text-left font-semibold text-gray-700">
+                    이메일
+                  </th>
+                  <th className="p-3 text-left font-semibold text-gray-700">
+                    완료일
+                  </th>
+                  <th className="p-3 text-left font-semibold text-gray-700">
+                    메인 유형
+                  </th>
+                  <th className="p-3 text-left font-semibold text-gray-700">
+                    서브 유형
+                  </th>
+                  <th className="p-3 text-center font-semibold text-gray-700">
+                    상세보기
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedResults.map((user: UserResult) => {
+                  const topResults = [...user.testResult]
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 2);
 
-                return (
-                  <tr
-                    key={user.id}
-                    className="border-b hover:bg-orange-50 transition-colors"
-                  >
-                    <td className="p-3">{user.name}</td>
-                    <td className="p-3">{user.email}</td>
-                    <td className="p-3">
-                      {new Date(user.completedAt).toLocaleDateString("ko-KR")}
-                    </td>
-                    <td className="p-3">
-                      <div className="font-medium text-[#F97316]">
-                        {topResults[0]?.sort}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {((topResults[0]?.score / 4600) * 100).toFixed(1)}%
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="font-medium text-[#F97316]">
-                        {topResults[1]?.sort}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {((topResults[1]?.score / 4600) * 100).toFixed(1)}%
-                      </div>
-                    </td>
-                    <td className="p-3 text-center">
-                      <Link
-                        href={`/admin/reports/${user.id}`}
-                        className="text-[#F97316] hover:text-orange-700 underline"
-                      >
-                        상세보기
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr
+                      key={user.id}
+                      className="border-b hover:bg-orange-50 transition-colors"
+                    >
+                      <td className="p-3">{user.name}</td>
+                      <td className="p-3">{user.email}</td>
+                      <td className="p-3">
+                        {new Date(user.completedAt).toLocaleDateString("ko-KR")}
+                      </td>
+                      <td className="p-3">
+                        <div className="font-medium text-[#F97316]">
+                          {topResults[0]?.sort}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {((topResults[0]?.score / 4600) * 100).toFixed(1)}%
+                        </div>
+                      </td>
+                      <td className="p-3">
+                        <div className="font-medium text-[#F97316]">
+                          {topResults[1]?.sort}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {((topResults[1]?.score / 4600) * 100).toFixed(1)}%
+                        </div>
+                      </td>
+                      <td className="p-3 text-center">
+                        <Link
+                          href={`/admin/reports/${user.id}`}
+                          className="text-[#F97316] hover:text-orange-700 underline"
+                        >
+                          상세보기
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* 페이지네이션 - 하단에 고정 */}
-        <div className="flex justify-center gap-2 mt-6 pt-4 border-t">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-lg hover:bg-orange-50 disabled:opacity-50 transition-colors"
-          >
-            이전
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+        {!isLoading && (
+          <div className="flex justify-center gap-2 mt-6 pt-4 border-t">
             <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 border rounded-lg transition-colors
-                ${
-                  currentPage === page
-                    ? "bg-[#F97316] text-white hover:bg-orange-600"
-                    : "hover:bg-orange-50"
-                }`}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded-lg hover:bg-orange-50 disabled:opacity-50 transition-colors"
             >
-              {page}
+              이전
             </button>
-          ))}
 
-          <button
-            onClick={() =>
-              setCurrentPage(prev => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded-lg hover:bg-orange-50 disabled:opacity-50 transition-colors"
-          >
-            다음
-          </button>
-        </div>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 border rounded-lg transition-colors
+                  ${
+                    currentPage === page
+                      ? "bg-[#F97316] text-white hover:bg-orange-600"
+                      : "hover:bg-orange-50"
+                  }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() =>
+                setCurrentPage(prev => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded-lg hover:bg-orange-50 disabled:opacity-50 transition-colors"
+            >
+              다음
+            </button>
+          </div>
+        )}
       </div>
 
-      {filteredResults.length === 0 && (
+      {!isLoading && filteredResults.length === 0 && (
         <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow">
           검색 결과가 없습니다.
         </div>
