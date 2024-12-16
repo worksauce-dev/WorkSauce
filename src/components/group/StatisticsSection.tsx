@@ -25,7 +25,7 @@ export default function StatisticsSection({ stats }: StatisticsSectionProps) {
         color="orange"
       />
       <StatCard
-        title="테스트 완료"
+        title="완료"
         value={stats.completedTests}
         icon={<FaChartPie />}
         color="green"
