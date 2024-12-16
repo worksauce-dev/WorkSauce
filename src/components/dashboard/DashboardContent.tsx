@@ -53,7 +53,18 @@ export default function DashboardContent({
   const [showSuccess, setShowSuccess] = useState(false);
 
   const filteredApplicants = groupData
-    .map(group => group.applicants)
+    .map(group => {
+      const isExpired = new Date(group.deadline) < new Date();
+
+      return group.applicants.map(applicant => ({
+        ...applicant,
+        // 만약 마감기한이 지났고 완료되지 않은 상태라면 'expired'로 설정
+        testStatus:
+          isExpired && applicant.testStatus !== "completed"
+            ? "expired"
+            : applicant.testStatus,
+      }));
+    })
     .flat()
     .filter(
       applicant =>
@@ -584,7 +595,7 @@ export default function DashboardContent({
     //             <thead className="bg-gray-50">
     //               <tr>
     //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    //                   부서
+    //                   부��
     //                 </th>
     //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
     //                   테스트 수
