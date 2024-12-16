@@ -5,9 +5,9 @@ import Link from "next/link";
 import {
   MdDashboard,
   MdMail,
-  MdSettings,
   MdHelp,
   MdLogout,
+  MdCalendarMonth,
 } from "react-icons/md";
 import { Logo } from "@/components/common/Logo";
 import { User } from "@/types/user";
@@ -32,12 +32,17 @@ const menuItems: MenuItem[] = [
     href: "/dashboard",
   },
   {
+    id: "calendar",
+    label: "캘린더  ",
+    icon: MdCalendarMonth,
+    href: "/dashboard/calendar",
+  },
+  {
     id: "sendingMail",
-    label: "테스트 시작하기",
+    label: "진단도구 발송하기",
     icon: MdMail,
     href: "/sending-test",
   },
-  { id: "settings", label: "설정", icon: MdSettings, href: "/settings" },
 ];
 
 const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
@@ -49,7 +54,7 @@ const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
     passHref
     className={`flex items-center gap-3 text-md font-semibold p-3 px-4 rounded-full transition-all duration-200 ${
       isActive
-        ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-100"
+        ? "bg-primary-accent hover:bg-primary-accent-hover text-white shadow-md shadow-orange-100"
         : "text-primary-gray hover:bg-orange-50 hover:text-orange-500"
     }`}
   >
