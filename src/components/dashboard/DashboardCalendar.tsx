@@ -1,7 +1,7 @@
 "use client";
 
 import { Group } from "@/types/group";
-import { useState } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import React from "react";
 import { MdChevronLeft, MdChevronRight, MdClose } from "react-icons/md";
 import Link from "next/link";
@@ -10,192 +10,49 @@ interface DashboardCalendarProps {
   groups: Group[];
 }
 
-const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const today = new Date();
+const COLORS = [
+  {
+    bg: "bg-blue-100",
+    text: "text-blue-700",
+    hover: "hover:bg-blue-200",
+  },
+  {
+    bg: "bg-purple-100",
+    text: "text-purple-700",
+    hover: "hover:bg-purple-200",
+  },
+  {
+    bg: "bg-green-100",
+    text: "text-green-700",
+    hover: "hover:bg-green-200",
+  },
+  {
+    bg: "bg-orange-100",
+    text: "text-orange-700",
+    hover: "hover:bg-orange-200",
+  },
+  {
+    bg: "bg-pink-100",
+    text: "text-pink-700",
+    hover: "hover:bg-pink-200",
+  },
+];
 
-  const MAX_VISIBLE_EVENTS = 2;
+// 그룹 ID에 따라 일관된 색상을 반환하는 함수
+const getGroupColor = (groupId: string) => {
+  if (!groupId) return COLORS[0];
 
-  const COLORS = [
-    {
-      bg: "bg-blue-100",
-      text: "text-blue-700",
-      hover: "hover:bg-blue-200",
-    },
-    {
-      bg: "bg-purple-100",
-      text: "text-purple-700",
-      hover: "hover:bg-purple-200",
-    },
-    {
-      bg: "bg-green-100",
-      text: "text-green-700",
-      hover: "hover:bg-green-200",
-    },
-    {
-      bg: "bg-orange-100",
-      text: "text-orange-700",
-      hover: "hover:bg-orange-200",
-    },
-    {
-      bg: "bg-pink-100",
-      text: "text-pink-700",
-      hover: "hover:bg-pink-200",
-    },
-  ];
+  const hash = groupId.split("").reduce((acc, char) => {
+    return char.charCodeAt(0) + ((acc << 5) - acc);
+  }, 0);
 
-  const getGroupColor = (groupId: string) => {
-    if (!groupId) return COLORS[0];
+  const index = Math.abs(hash) % COLORS.length;
+  return COLORS[index];
+};
 
-    const hash = groupId.split("").reduce((acc, char) => {
-      return char.charCodeAt(0) + ((acc << 5) - acc);
-    }, 0);
-
-    const index = Math.abs(hash) % COLORS.length;
-    return COLORS[index];
-  };
-
-  // 날짜별 그룹 일정을 찾는 함수
-  const getGroupsForDate = (date: Date) => {
-    if (!date) return { starts: [], ends: [] };
-
-    const dateStr = date.toISOString().split("T")[0];
-
-    return {
-      starts: groups.filter(group => group.createdAt.split("T")[0] === dateStr),
-      ends: groups.filter(group => group.deadline.split("T")[0] === dateStr),
-    };
-  };
-
-  // 달력 날짜 생성 함수
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
-
-    const calendar = [];
-    let day = 1;
-
-    for (let i = 0; i < 6; i++) {
-      const week = [];
-      for (let j = 0; j < 7; j++) {
-        if (i === 0 && j < startingDay) {
-          week.push(null);
-        } else if (day > daysInMonth) {
-          week.push(null);
-        } else {
-          week.push(new Date(year, month, day));
-          day++;
-        }
-      }
-      calendar.push(week);
-    }
-
-    return calendar;
-  };
-
-  const calendar = getDaysInMonth(currentDate);
-  const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
-
-  // 대달 열기 함수
-  const handleShowMore = (date: Date) => {
-    setSelectedDate(date);
-    setShowModal(true);
-  };
-
-  // 모달 컴포넌트
-  const EventModal = () => {
-    if (!selectedDate) return null;
-
-    const { starts, ends } = getGroupsForDate(selectedDate);
-
-    return (
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        onClick={() => setShowModal(false)}
-      >
-        <div
-          className="bg-white rounded-xl shadow-lg w-full max-w-md mx-4 overflow-hidden"
-          onClick={e => e.stopPropagation()}
-        >
-          <div className="modal-header bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-4 rounded-t-xl">
-            <h3 className="text-lg font-semibold">
-              {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월{" "}
-              {selectedDate.getDate()}일
-            </h3>
-          </div>
-
-          <div className="px-6 py-4">
-            {/* 시작하는 그룹 */}
-            {starts.length > 0 && (
-              <div className="mb-4">
-                <h4 className="text-sm font-medium text-gray-600 mb-2">
-                  시작하는 그룹
-                </h4>
-                <div className="space-y-2">
-                  {starts.map((group, idx) => (
-                    <Link
-                      key={`modal-start-${idx}`}
-                      href={`/group/${group.groupId}`}
-                      className="flex items-center p-2 rounded-lg hover:bg-gray-50 w-full transition-colors"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                      <span className="text-sm text-gray-800">
-                        {group.name}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 마감되는 그룹 */}
-            {ends.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-600 mb-2">
-                  마감되는 그룹
-                </h4>
-                <div className="space-y-2">
-                  {ends.map((group, idx) => (
-                    <Link
-                      key={`modal-end-${idx}`}
-                      href={`/group/${group.groupId}`}
-                      className="flex items-center p-2 rounded-lg hover:bg-gray-50 w-full transition-colors"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-                      <span className="text-sm text-gray-800">
-                        {group.name}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {starts.length === 0 && ends.length === 0 && (
-              <div className="text-center text-gray-500 py-8">
-                일정이 없습니다.
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // 1. 이벤트 표시 개선
-  const EventIndicator = ({
-    group,
-    type,
-  }: {
-    group: Group;
-    type: "start" | "end";
-  }) => {
+// EventIndicator 컴포넌트 메모이제이션
+const EventIndicator = memo(
+  ({ group, type }: { group: Group; type: "start" | "end" }) => {
     const color = getGroupColor(group.groupId);
     return (
       <Link
@@ -220,16 +77,191 @@ const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
         <span className="truncate">{group.name}</span>
       </Link>
     );
+  }
+);
+EventIndicator.displayName = "EventIndicator";
+
+const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const today = useMemo(() => new Date(), []); // today는 변하지 않으므로 메모이제이션
+
+  const MAX_VISIBLE_EVENTS = 2;
+
+  // 날짜별 그룹 필터링 최적화
+  const groupsByDate = useMemo(() => {
+    const cache = new Map<string, { starts: Group[]; ends: Group[] }>();
+
+    groups.forEach(group => {
+      const startDate = group.createdAt.split("T")[0];
+      const endDate = group.deadline.split("T")[0];
+
+      // 시작일 캐싱
+      if (!cache.has(startDate)) {
+        cache.set(startDate, { starts: [], ends: [] });
+      }
+      cache.get(startDate)!.starts.push(group);
+
+      // 마감일 캐싱
+      if (!cache.has(endDate)) {
+        cache.set(endDate, { starts: [], ends: [] });
+      }
+      cache.get(endDate)!.ends.push(group);
+    });
+
+    return cache;
+  }, [groups]);
+
+  // 최적화된 getGroupsForDate
+  const getGroupsForDate = useCallback(
+    (date: Date) => {
+      if (!date) return { starts: [], ends: [] };
+      const dateStr = date.toISOString().split("T")[0];
+      return groupsByDate.get(dateStr) || { starts: [], ends: [] };
+    },
+    [groupsByDate]
+  );
+
+  // 달력 날짜 계산 최적화
+  const calendar = useMemo(() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+
+    const calendar = [];
+    let day = 1;
+
+    for (let i = 0; i < 6; i++) {
+      const week = [];
+      for (let j = 0; j < 7; j++) {
+        if (i === 0 && j < startingDay) {
+          week.push(null);
+        } else if (day > daysInMonth) {
+          week.push(null);
+        } else {
+          week.push(new Date(year, month, day));
+          day++;
+        }
+      }
+      calendar.push(week);
+    }
+
+    return calendar;
+  }, [currentDate]);
+
+  const weekDays = ["일", "월", "화", "수", "목", "금", "토"];
+
+  // 대달 열기 함수
+  const handleShowMore = useCallback((date: Date) => {
+    setSelectedDate(date);
+    setShowModal(true);
+  }, []);
+
+  // 모달 컴포넌트
+  const EventModal = () => {
+    if (!selectedDate) return null;
+
+    const { starts, ends } = getGroupsForDate(selectedDate);
+
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+        onClick={() => setShowModal(false)}
+      >
+        <div
+          className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden transform transition-all"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* 헤더 */}
+          <div className="px-6 py-4 flex justify-between items-center">
+            <h3 className="text-lg font-medium text-gray-900">
+              {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월{" "}
+              {selectedDate.getDate()}일
+            </h3>
+            <button
+              onClick={() => setShowModal(false)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <MdClose className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* 컨텐츠 */}
+          <div className="px-6 pb-6">
+            {starts.length === 0 && ends.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-gray-400">
+                <span className="text-sm">일정이 없습니다</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                {/* 시작하는 그룹 */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 flex items-center">
+                    <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                    시작하는 그룹
+                  </h4>
+                  <div className="space-y-1">
+                    {starts.length > 0 ? (
+                      starts.map((group, idx) => (
+                        <Link
+                          key={`modal-start-${idx}`}
+                          href={`/group/${group.groupId}`}
+                          className="flex items-center p-2.5 rounded-lg hover:bg-gray-50 w-full transition-all group"
+                        >
+                          <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors truncate">
+                            {group.name}
+                          </span>
+                        </Link>
+                      ))
+                    ) : (
+                      <div className="text-sm text-gray-400 p-2.5">없음</div>
+                    )}
+                  </div>
+                </div>
+
+                {/* 마감되는 그룹 */}
+                <div>
+                  <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 flex items-center">
+                    <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
+                    마감되는 그룹
+                  </h4>
+                  <div className="space-y-1">
+                    {ends.length > 0 ? (
+                      ends.map((group, idx) => (
+                        <Link
+                          key={`modal-end-${idx}`}
+                          href={`/group/${group.groupId}`}
+                          className="flex items-center p-2.5 rounded-lg hover:bg-gray-50 w-full transition-all group"
+                        >
+                          <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors truncate">
+                            {group.name}
+                          </span>
+                        </Link>
+                      ))
+                    ) : (
+                      <div className="text-sm text-gray-400 p-2.5">없음</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   };
 
-  // 1. 날짜 이동 로직 개선
-  const moveMonth = (direction: "prev" | "next") => {
+  const moveMonth = useCallback((direction: "prev" | "next") => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
       newDate.setMonth(prev.getMonth() + (direction === "prev" ? -1 : 1));
       return newDate;
     });
-  };
+  }, []);
 
   return (
     <div className="flex flex-col h-screen w-full bg-[#F7F7F9]">
@@ -312,20 +344,29 @@ const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
                           hover:shadow-md
                           hover:border-blue-200
                           ${
-                            isToday
-                              ? "bg-blue-50 ring-2 ring-blue-400"
+                            !date
+                              ? "bg-gray-50"
+                              : isToday
+                              ? "bg-orange-50 ring-2 ring-primary-accent"
                               : "bg-white border border-gray-100"
                           }
                         `}
                       >
                         {date && (
                           <>
-                            <div
-                              className={`font-medium mb-0.5 sm:mb-1 ${
-                                isToday ? "text-blue-700" : ""
-                              }`}
-                            >
-                              {date.getDate()}
+                            <div className="flex items-center gap-1 mb-0.5 sm:mb-1">
+                              <span
+                                className={`font-medium ${
+                                  isToday ? "text-orange-700" : ""
+                                }`}
+                              >
+                                {date.getDate()}
+                              </span>
+                              {isToday && (
+                                <span className="text-[8px] sm:text-[10px] text-orange-700 font-medium px-1 py-0.5 bg-orange-100 rounded">
+                                  오늘
+                                </span>
+                              )}
                             </div>
 
                             {/* 그룹 일정 표시 */}
