@@ -26,8 +26,6 @@ export default async function DashboardCalendarPage() {
     }
   }
 
-  console.log(groupData);
-
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row">
       <DashboardCalendar groups={groupData} />
