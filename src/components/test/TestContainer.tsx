@@ -15,6 +15,7 @@ const TestContainer = ({
   submitTest,
   testData,
   isAdmin,
+  dashboardName,
 }: {
   name: string;
   email: string;
@@ -27,6 +28,7 @@ const TestContainer = ({
     testResult: ScoreType[]
   ) => void;
   isAdmin: boolean;
+  dashboardName: string;
 }) => {
   const {
     handleAnswer,
@@ -51,6 +53,7 @@ const TestContainer = ({
         groupId={groupId}
         submitTest={submitTest}
         verbTestData={verbTestData}
+        dashboardName={dashboardName}
       />
     );
   }
@@ -79,6 +82,7 @@ export function AuthCheck({
   submitTest,
   testData,
   isAdmin,
+  dashboardName,
 }: {
   groupData: Group;
   submitTest: (
@@ -89,6 +93,7 @@ export function AuthCheck({
   ) => void;
   testData: TestDBType;
   isAdmin: boolean;
+  dashboardName: string;
 }) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -127,6 +132,7 @@ export function AuthCheck({
         submitTest={submitTest}
         testData={testData}
         isAdmin={isAdmin}
+        dashboardName={dashboardName}
       />
     );
   }

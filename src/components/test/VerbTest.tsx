@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { verbQuestions } from "@/constant/test";
 import { RefreshCw, Send } from "lucide-react";
 import { ScoreType, VerbType } from "@/types/test";
+import { sendSubmissionCompleteEmail } from "@/utils/sendEmail";
 
 interface VerbTestProps {
   prevScores: {
@@ -22,6 +23,7 @@ interface VerbTestProps {
     testResult: ScoreType[]
   ) => void;
   verbTestData: VerbType[];
+  dashboardName: string;
 }
 
 interface TestItem {
@@ -41,9 +43,9 @@ export const VerbTest = ({
   groupId,
   submitTest,
   verbTestData,
+  dashboardName,
 }: VerbTestProps) => {
   const [step, setStep] = useState(0);
-  const [nameArr, setNameArr] = useState<string[]>([]);
   const [scores, setScores] = useState(prevScores);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -145,13 +147,6 @@ export const VerbTest = ({
       return [...prev, word];
     });
 
-    setNameArr(prev => {
-      if (isSelected) {
-        return prev.filter(n => n !== target.name);
-      }
-      return [...prev, target.name];
-    });
-
     // 선택 시에만 step 증가
     if (!isSelected && currentStepAnswers.length < 2) {
       setStep(prev => prev + 0.5);
@@ -168,7 +163,6 @@ export const VerbTest = ({
 
   const clickReset = () => {
     setStep(0);
-    setNameArr([]);
     setScores(prevScores);
     setSelectedAnswers([]);
     setSubmitStatus("idle");
@@ -179,7 +173,16 @@ export const VerbTest = ({
     setSubmitStatus("loading");
 
     try {
+      // 테스트 결과 제출
       await submitTest(groupId, email, name, scores);
+
+      // 제출 완료 이메일 발송
+      await sendSubmissionCompleteEmail({
+        to: email,
+        userName: name,
+        dashboardName: dashboardName,
+      });
+
       setSubmitStatus("success");
       setTimeout(() => {
         window.close();
@@ -388,6 +391,18 @@ export const VerbTest = ({
       </div>
     );
   };
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (selectedAnswers.length > 0 && submitStatus !== "success") {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [selectedAnswers, submitStatus]);
 
   return (
     <div className="bg-[#F7F7F9] min-h-screen py-12 px-4 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
