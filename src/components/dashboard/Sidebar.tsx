@@ -8,6 +8,7 @@ import {
   MdHelp,
   MdLogout,
   MdCalendarMonth,
+  MdContacts,
 } from "react-icons/md";
 import { Logo } from "@/components/common/Logo";
 import { User } from "@/types/user";
@@ -36,6 +37,12 @@ const menuItems: MenuItem[] = [
     label: "캘린더  ",
     icon: MdCalendarMonth,
     href: "/dashboard/calendar",
+  },
+  {
+    id: "contacts",
+    label: "주소록",
+    icon: MdContacts,
+    href: "/dashboard/contacts",
   },
   {
     id: "sendingMail",
