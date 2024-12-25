@@ -23,6 +23,7 @@ import Tooltip from "../common/Tooltip";
 import { Group } from "@/types/group";
 import { sendEmail } from "@/utils/sendEmail";
 import { useRouter } from "next/navigation";
+import { isValidEmail } from "@/utils/isValidEmail";
 
 interface SendingTestProps {
   user: User;
@@ -109,8 +110,6 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
-const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-
 export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
@@ -145,7 +144,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
 
   const handleAddApplicant = () => {
     if (currentApplicant.name && currentApplicant.email) {
-      if (!emailRegex.test(currentApplicant.email)) {
+      if (!isValidEmail(currentApplicant.email)) {
         setEmailError("올바른 이메일 형식을 입력해주세요.");
         return;
       }
@@ -221,7 +220,6 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
     for (const applicant of applicants) {
       const success = await sendEmail({
         to: applicant.email,
-        subject: "워크소스 테스트를 시작해주세요!",
         userName: applicant.name,
         groupId: groupId,
         dashboardName: user.dashboardName,
@@ -428,7 +426,7 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                       </div>
                     ) : (
                       <span className="text-gray-500">
-                        지원�� 유형 선택 (최대 3개)
+                        지원자 유형 선택 (최대 3개)
                       </span>
                     )}
                   </div>
