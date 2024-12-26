@@ -52,7 +52,7 @@ const ContactDetail = ({
 
   const handleSave = async () => {
     if (editData.email && !isValidEmail(editData.email)) {
-      setEmailError("올바른 이메일 형식��� 입력해주세요.");
+      setEmailError("올바른 이메일 형식을 입력해주세요.");
       return;
     }
 
@@ -103,12 +103,27 @@ const ContactDetail = ({
     }
   };
 
+  const handleReset = () => {
+    // 원래 데이터로 초기화
+    setEditData({
+      name: contact?.name,
+      email: contact?.email,
+      memo: contact?.memo,
+    });
+    setEmailError("");
+  };
+
   return (
     <div className="space-y-8 p-1">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">연락처 상세</h2>
         <button
-          onClick={() => setIsEditing(!isEditing)}
+          onClick={() => {
+            if (isEditing) {
+              handleReset(); // 취소할 때도 초기화
+            }
+            setIsEditing(!isEditing);
+          }}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 
             ${
               isEditing
@@ -249,7 +264,14 @@ const ContactDetail = ({
 
         {/* 저장 버튼 */}
         {isEditing && (
-          <div className="flex justify-end pt-6">
+          <div className="flex justify-end pt-6 gap-2">
+            <button
+              onClick={handleReset}
+              className="px-6 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                rounded-lg transition-all duration-200"
+            >
+              초기화
+            </button>
             <button
               onClick={handleSave}
               className="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 
