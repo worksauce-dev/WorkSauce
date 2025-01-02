@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   const userData = (await getUserData(session.user.id)) as User;
-  const groups = userData.groups;
+  const groups = userData?.groups || [];
 
   const groupData: Group[] = [];
 
