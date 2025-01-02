@@ -1,12 +1,6 @@
 "use server";
 
-import {
-  deleteDoc,
-  query,
-  where,
-  getDocs,
-  collection,
-} from "firebase/firestore";
+import { getDocs, collection, writeBatch } from "firebase/firestore";
 import { doc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
 
@@ -64,18 +58,29 @@ export async function optoutUser(
       );
     }
 
-    // 파이어베이스 데이터 삭제 로직
+    // 2. Firestore 데이터 삭제 로직
+    const batch = writeBatch(firestore);
+
+    // 사용자의 연락처 삭제
+    const contactsRef = collection(firestore, `users/${userId}/contacts`);
+    const contactsSnapshot = await getDocs(contactsRef);
+    contactsSnapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    // 사용자의 그룹 삭제
+    const groupsRef = collection(firestore, `users/${userId}/groups`);
+    const groupsSnapshot = await getDocs(groupsRef);
+    groupsSnapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    // 사용자 문서 삭제
     const userRef = doc(firestore, "users", userId);
-    await deleteDoc(userRef);
+    batch.delete(userRef);
 
-    const groupsQuery = query(
-      collection(firestore, "groups"),
-      where("createdBy.id", "==", userId)
-    );
-
-    const querySnapshot = await getDocs(groupsQuery);
-    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
-    await Promise.all(deletePromises);
+    // 일괄 삭제 실행
+    await batch.commit();
 
     return { success: true };
   } catch (error) {
