@@ -3,6 +3,31 @@ import { Footer } from "@/components/landing/footer/Footer";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { getUserData } from "@/api/firebase/getUserData";
+import { Session } from "@/types/auth";
+import { GhostSessionHandler } from "@/components/auth/GhostSessionHandler";
+
+async function validateSessionAndUser(session: Session | null) {
+  if (!session?.user?.id) {
+    return null;
+  }
+
+  try {
+    const userData = await getUserData(session.user.id);
+
+    if (!userData) {
+      console.warn(
+        "Session exists but user not found in database:",
+        session.user.id
+      );
+      return null;
+    }
+
+    return userData;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
+}
 
 export default async function HomeLayout({
   children,
@@ -10,8 +35,11 @@ export default async function HomeLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+  const user = await validateSessionAndUser(session);
 
-  const user = session ? await getUserData(session?.user?.id) : null;
+  if (session && !user) {
+    return <GhostSessionHandler />;
+  }
 
   return (
     <>
