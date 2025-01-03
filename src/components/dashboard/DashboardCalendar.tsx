@@ -94,8 +94,13 @@ const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
     const cache = new Map<string, { starts: Group[]; ends: Group[] }>();
 
     groups.forEach(group => {
-      const startDate = group.createdAt.split("T")[0];
-      const endDate = group.deadline.split("T")[0];
+      // UTC 날짜를 한국 시간으로 변환
+      const startDate = new Date(group.createdAt)
+        .toLocaleString("sv", { timeZone: "Asia/Seoul" })
+        .split(" ")[0];
+      const endDate = new Date(group.deadline)
+        .toLocaleString("sv", { timeZone: "Asia/Seoul" })
+        .split(" ")[0];
 
       // 시작일 캐싱
       if (!cache.has(startDate)) {
@@ -117,7 +122,10 @@ const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
   const getGroupsForDate = useCallback(
     (date: Date) => {
       if (!date) return { starts: [], ends: [] };
-      const dateStr = date.toISOString().split("T")[0];
+      // 날짜를 한국 시간 기준으로 변환
+      const dateStr = date
+        .toLocaleString("sv", { timeZone: "Asia/Seoul" })
+        .split(" ")[0];
       return groupsByDate.get(dateStr) || { starts: [], ends: [] };
     },
     [groupsByDate]
@@ -264,13 +272,13 @@ const DashboardCalendar = ({ groups }: DashboardCalendarProps) => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#F7F7F9]">
-      <div className="mx-auto w-full px-2 sm:px-4 lg:px-8 py-4 sm:py-6 flex flex-col h-full">
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 w-full h-full flex flex-col overflow-hidden">
-          <div className="p-2 sm:p-4 flex flex-col h-full overflow-auto">
+    <div className="flex flex-col min-h-screen w-full bg-[#F7F7F9]">
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-full">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 w-full h-full flex flex-col overflow-hidden">
+          <div className="p-4 sm:p-6 flex flex-col h-full overflow-auto">
             {/* Calendar Header */}
             <div
-              className="flex justify-between items-center mb-2 sm:mb-4 flex-shrink-0"
+              className="flex justify-between items-center mb-4 sm:mb-6 flex-shrink-0"
               tabIndex={0}
             >
               <h2 className="text-lg font-semibold text-gray-800">

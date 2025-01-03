@@ -38,9 +38,9 @@ const ContactGroups = ({
     <div className="flex-1 overflow-y-auto px-1 pt-1">
       <div className="space-y-2">
         <div
-          className={`flex items-center p-3 rounded-xl transition-all duration-200 ${
+          className={`flex items-center p-3 rounded-lg transition-all duration-200 ${
             selectedGroupId === null
-              ? "bg-blue-50 shadow-sm ring-1 ring-blue-100"
+              ? "bg-orange-50 shadow-sm ring-1 ring-orange-100"
               : "hover:bg-gray-50"
           }`}
           onClick={() => onSelectGroup(null)}
@@ -51,9 +51,9 @@ const ContactGroups = ({
         {groups.map(group => (
           <div
             key={group.id}
-            className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
+            className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
               selectedGroupId === group.id
-                ? "bg-blue-50 shadow-sm ring-1 ring-blue-100"
+                ? "bg-orange-50 shadow-sm ring-1 ring-orange-100"
                 : "hover:bg-gray-50"
             }`}
           >
@@ -64,9 +64,9 @@ const ContactGroups = ({
                 onChange={e => setEditName(e.target.value)}
                 onBlur={() => handleSave(group.id)}
                 onKeyPress={e => e.key === "Enter" && handleSave(group.id)}
-                className="flex-1 p-[9px] text-sm text-gray-900 rounded-lg bg-gray-50
-                  border border-gray-200 hover:border-gray-300 transition-all duration-200
-                  focus:border-blue-500 focus:bg-white outline-none"
+                className="flex-1 p-2 text-sm text-gray-900 rounded-lg bg-white
+                  border border-gray-200 hover:border-orange-200 transition-all duration-200
+                  focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none"
                 autoFocus
               />
             ) : (
