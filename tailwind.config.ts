@@ -16,7 +16,7 @@ const config: Config = {
         dark: "#1C1C1E",
 
         "primary-gray": "#636366",
-        placeholder: "AEAEB2",
+        placeholder: "#AEAEB2",
         border: "#C6C6C6",
 
         "primary-blue": "#004DDE",
@@ -30,7 +30,7 @@ const config: Config = {
 
         "primary-accent": "#F97316",
         "primary-accent-hover": "#EA580C",
-        "secondary-accent": "#ffd2d6",
+        "secondary-accent": "#fff7ed",
       },
       fontSize: {
         caption: "12px",
@@ -53,6 +53,70 @@ const config: Config = {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+
+      components: {
+        ".btn": {
+          "@apply px-4 py-2 rounded-lg font-medium transition-colors duration-200":
+            {},
+        },
+        ".btn-primary": {
+          "@apply bg-primary-accent text-white hover:bg-primary-accent-hover":
+            {},
+        },
+        ".btn-secondary": {
+          "@apply bg-white border border-gray-200 text-gray-700 hover:bg-gray-50":
+            {},
+        },
+
+        ".card": {
+          "@apply bg-white rounded-lg shadow-sm border border-gray-100": {},
+        },
+        ".card-hover": {
+          "@apply hover:shadow-lg transition-shadow duration-200": {},
+        },
+
+        ".input": {
+          "@apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent transition-colors":
+            {},
+        },
+
+        ".badge": {
+          "@apply px-2 py-0.5 rounded-full text-sm font-medium": {},
+        },
+        ".badge-primary": {
+          "@apply bg-orange-100 text-orange-500": {},
+        },
+      },
+
+      screens: {
+        xs: "475px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1536px",
+      },
+
+      boxShadow: {
+        card: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+        "card-hover":
+          "0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)",
+      },
+
+      animation: {
+        "fade-in": "fadeIn 0.3s ease-in-out",
+        "slide-up": "slideUp 0.4s ease-out",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(20px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
       },
     },
   },
