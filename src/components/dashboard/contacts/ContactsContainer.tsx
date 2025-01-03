@@ -207,61 +207,65 @@ const ContactsContainer = ({
     : contacts;
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F7F7F9] mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 h-screen gap-4">
-      <div className="flex-1 bg-white rounded-2xl shadow-xl border border-gray-100 min-h-0">
-        <div className="flex h-full">
-          {/* 그룹 목록 */}
-          <div className="w-64 border-r p-4 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-700">그룹</h2>
-              <button
-                onClick={() => handleCreateGroup("새 그룹")}
-                className="p-1.5 hover:bg-orange-50 rounded-full text-gray-600 transition-colors"
-              >
-                <MdAdd size={20} />
-              </button>
-            </div>
-            <ContactGroups
-              groups={groups}
-              selectedGroupId={selectedGroupId}
-              onSelectGroup={setSelectedGroupId}
-              onDeleteGroup={handleDeleteGroup}
-              onUpdateGroup={handleUpdateGroup}
-            />
-          </div>
-
-          {/* 연락처 목록 */}
-          <div className="w-96 border-r p-4 flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-gray-700">리스트</h2>
-                <span className="px-2 py-0.5 bg-gray-50 text-gray-600 text-sm font-medium rounded-full border border-gray-100">
-                  {filteredContacts.length}
-                </span>
+    <div className="flex flex-col min-h-screen w-full bg-[#F7F7F9]">
+      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 h-screen">
+        <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 h-full">
+          <div className="flex h-full">
+            {/* 그룹 목록 */}
+            <div className="w-64 border-r p-4 sm:p-6 flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-700">그룹</h2>
+                <button
+                  onClick={() => handleCreateGroup("새 그룹")}
+                  className="p-1.5 hover:bg-orange-50 rounded-full text-gray-600 transition-colors"
+                >
+                  <MdAdd size={20} />
+                </button>
               </div>
-              <button
-                onClick={() => handleCreateContact({ name: "새 연락처" })}
-                className="p-1.5 hover:bg-orange-50 rounded-full text-gray-600 transition-colors"
-              >
-                <MdAdd size={20} />
-              </button>
+              <ContactGroups
+                groups={groups}
+                selectedGroupId={selectedGroupId}
+                onSelectGroup={setSelectedGroupId}
+                onDeleteGroup={handleDeleteGroup}
+                onUpdateGroup={handleUpdateGroup}
+              />
             </div>
-            <ContactList
-              contacts={filteredContacts}
-              selectedContact={selectedContact}
-              onSelectContact={setSelectedContact}
-              onDeleteContact={handleDeleteContact}
-            />
-          </div>
 
-          {/* 연락처 상세 */}
-          <div className="flex-1 p-6">
-            <ContactDetail
-              contact={selectedContact}
-              groups={groups}
-              onUpdateContact={handleUpdateContact}
-              onMoveToGroup={handleMoveToGroup}
-            />
+            {/* 연락처 목록 */}
+            <div className="w-96 border-r p-4 sm:p-6 flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-semibold text-gray-700">
+                    리스트
+                  </h2>
+                  <span className="px-2 py-0.5 bg-gray-50 text-gray-600 text-sm font-medium rounded-full border border-gray-100">
+                    {filteredContacts.length}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCreateContact({ name: "새 연락처" })}
+                  className="p-1.5 hover:bg-orange-50 rounded-full text-gray-600 transition-colors"
+                >
+                  <MdAdd size={20} />
+                </button>
+              </div>
+              <ContactList
+                contacts={filteredContacts}
+                selectedContact={selectedContact}
+                onSelectContact={setSelectedContact}
+                onDeleteContact={handleDeleteContact}
+              />
+            </div>
+
+            {/* 연락처 상세 */}
+            <div className="flex-1 p-4 sm:p-6">
+              <ContactDetail
+                contact={selectedContact}
+                groups={groups}
+                onUpdateContact={handleUpdateContact}
+                onMoveToGroup={handleMoveToGroup}
+              />
+            </div>
           </div>
         </div>
       </div>

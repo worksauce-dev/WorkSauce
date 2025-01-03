@@ -113,6 +113,14 @@ const ContactDetail = ({
     setEmailError("");
   };
 
+  // 입력 필드 공통 스타일
+  const inputClassName = `block w-full p-2.5 text-sm text-gray-900 rounded-lg bg-white
+    border border-gray-200 hover:border-orange-200 transition-all duration-200
+    focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none`;
+
+  // 버튼 공통 스타일
+  const buttonClassName = `px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200`;
+
   return (
     <div className="space-y-8 p-1">
       <div className="flex items-center justify-between">
@@ -120,16 +128,15 @@ const ContactDetail = ({
         <button
           onClick={() => {
             if (isEditing) {
-              handleReset(); // 취소할 때도 초기화
+              handleReset();
             }
             setIsEditing(!isEditing);
           }}
-          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 
-            ${
-              isEditing
-                ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                : "text-blue-600 hover:bg-blue-50"
-            }`}
+          className={`${buttonClassName} ${
+            isEditing
+              ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              : "text-orange-600 hover:bg-orange-50"
+          }`}
         >
           {isEditing ? "취소" : "수정"}
         </button>
@@ -149,9 +156,7 @@ const ContactDetail = ({
                 onChange={e =>
                   setEditData({ ...editData, name: e.target.value })
                 }
-                className="block w-full p-[9px] text-sm text-gray-900 rounded-lg bg-gray-50
-                  border border-gray-200 hover:border-gray-300 transition-all duration-200
-                  focus:border-blue-500 focus:bg-white outline-none"
+                className={inputClassName}
                 placeholder="이름을 입력하세요"
                 autoFocus
               />
@@ -178,8 +183,9 @@ const ContactDetail = ({
                   type="email"
                   value={editData.email || ""}
                   onChange={handleEmailChange}
-                  className={`block w-full p-[9px] text-sm text-gray-900 rounded-lg bg-gray-50
-                    border ${emailError ? "border-red-500" : "border-gray-200"} 
+                  className={`${inputClassName} ${
+                    emailError ? "border-red-500" : "border-gray-200"
+                  } 
                     hover:border-gray-300 transition-all duration-200
                     focus:border-blue-500 focus:bg-white outline-none`}
                   placeholder="이메일을 입력하세요"
@@ -274,8 +280,8 @@ const ContactDetail = ({
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 
-                hover:bg-blue-700 rounded-lg transition-all duration-200"
+              className="px-6 py-2.5 text-sm font-medium text-white bg-orange-600 
+                hover:bg-orange-700 rounded-lg transition-all duration-200"
             >
               저장
             </button>

@@ -17,17 +17,14 @@ const ContactList = ({
   onDeleteContact,
 }: ContactListProps) => {
   return (
-    <div
-      className="flex-1 overflow-y-auto px-1 pt-1 
-     scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent"
-    >
+    <div className="flex-1 overflow-y-auto px-1 pt-1 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
       <div className="space-y-2">
         {contacts.map(contact => (
           <div
             key={contact.id}
-            className={`flex items-center justify-between p-3 rounded-xl transition-all duration-200 ${
+            className={`flex items-center justify-between p-3 rounded-lg transition-all duration-200 ${
               selectedContact?.id === contact.id
-                ? "bg-blue-50 shadow-sm ring-1 ring-blue-100"
+                ? "bg-orange-50 shadow-sm ring-1 ring-orange-100"
                 : "hover:bg-gray-50"
             }`}
             onClick={() => onSelectContact(contact)}
@@ -51,7 +48,7 @@ const ContactList = ({
             >
               <MdDelete
                 size={16}
-                className="text-gray-500 group-hover:text-red-500"
+                className="text-gray-400 group-hover:text-red-500 transition-colors"
               />
             </button>
           </div>

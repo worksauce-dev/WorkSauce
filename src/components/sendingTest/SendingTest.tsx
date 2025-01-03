@@ -326,13 +326,13 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
   };
 
   return (
-    <div className="mx-auto w-full px-4 sm:px-6 lg:px-9 py-4 sm:py-6 bg-[#F7F7F9] min-h-screen flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-6xl">
+    <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 bg-[#F7F7F9] min-h-screen flex items-center justify-center">
+      <div className="bg-white rounded-xl shadow-[0_1px_3px_0_rgb(0,0,0,0.1),0_1px_2px_-1px_rgb(0,0,0,0.1)] border border-gray-100 overflow-hidden w-full max-w-6xl">
         <div className="flex flex-col lg:flex-row h-full">
           {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
-          <div className="lg:w-1/2 p-8 flex flex-col gap-8">
+          <div className="lg:w-1/2 p-4 sm:p-6 flex flex-col gap-6">
             <h2 className="text-xl font-bold text-gray-800">지원자 관리</h2>
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-6">
               <InputField
                 id="groupName"
                 label="그룹 이름"
@@ -506,16 +506,19 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
           </div>
 
           {/* 오른쪽 섹션: 추가된 지원자 목록 */}
-          <div className="lg:w-1/2 bg-[#F7F7F9] p-8 flex flex-col h-[calc(100vh-4rem)]">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
-              추가된 지원자 목록
+          <div className="lg:w-1/2 bg-white p-4 sm:p-6 flex flex-col h-[calc(100vh-4rem)] border-l border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="mr-2">추가된 지원자 목록</span>
+              <span className="text-sm font-normal text-gray-500">
+                ({applicants.length}명)
+              </span>
             </h2>
-            <div className="flex-grow overflow-hidden flex flex-col">
-              <div className="space-y-4 overflow-y-auto flex-grow">
+            <div className="flex-grow overflow-hidden flex flex-col bg-gray-50 rounded-lg p-4">
+              <div className="space-y-3 overflow-y-auto flex-grow">
                 {paginatedApplicants.map((applicant, index) => (
                   <div
                     key={index + (currentPage - 1) * APPLICANTS_PER_PAGE}
-                    className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+                    className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100"
                   >
                     <div>
                       <p className="font-medium text-gray-800">
@@ -537,16 +540,17 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                 ))}
               </div>
             </div>
+
             {applicants.length > APPLICANTS_PER_PAGE && (
-              <div className="flex justify-between items-center my-4">
+              <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 rounded-lg">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 rounded-md bg-[#FFF1E7] text-[#F97316] disabled:opacity-50 transition-all duration-200 hover:bg-[#FFE4D4]"
+                  className="px-4 py-2 rounded-md bg-white text-[#F97316] border border-[#F97316] disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400 transition-all duration-200 hover:bg-[#FFF1E7]"
                 >
-                  <FiChevronLeft className="text-[#F97316]" />
+                  <FiChevronLeft className="h-5 w-5" />
                 </button>
-                <span className="text-indigo-800 font-medium">
+                <span className="font-medium text-gray-700">
                   {currentPage} / {totalPages}
                 </span>
                 <button
@@ -554,15 +558,16 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 rounded-md bg-indigo-100 text-indigo-600 disabled:opacity-50 transition-all duration-200 hover:bg-indigo-200"
+                  className="px-4 py-2 rounded-md bg-white text-[#F97316] border border-[#F97316] disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400 transition-all duration-200 hover:bg-[#FFF1E7]"
                 >
-                  <FiChevronRight className="text-[#F97316]" />
+                  <FiChevronRight className="h-5 w-5" />
                 </button>
               </div>
             )}
+
             <button
               type="button"
-              className={`w-full flex justify-center items-center px-6 py-3 border border-transparent text-lg font-medium rounded-lg text-white bg-[#F97316] hover:bg-[#EA580C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F97316] transition-all duration-200 ${
+              className={`w-full flex justify-center items-center px-6 py-3 mt-4 border border-transparent text-lg font-medium rounded-lg text-white bg-[#F97316] hover:bg-[#EA580C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F97316] transition-all duration-200 ${
                 isSubmitDisabled()
                   ? "opacity-50 cursor-not-allowed"
                   : "shadow-lg hover:shadow-xl"
