@@ -8,7 +8,7 @@ import {
 export const AdminDashboardContainer = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-[#F97316]">
+      <h1 className="text-heading2 font-bold mb-8 text-primary-accent">
         관리자 대시보드
       </h1>
 
@@ -17,37 +17,37 @@ export const AdminDashboardContainer = () => {
         <StatCard
           title="총 사용자"
           value="1,234"
-          icon={<MdPeople className="text-[#F97316]" />}
+          icon={<MdPeople className="text-primary-accent" />}
         />
         <StatCard
           title="이번 달 신규가입"
           value="56"
-          icon={<MdTrendingUp className="text-[#F97316]" />}
+          icon={<MdTrendingUp className="text-primary-accent" />}
         />
         <StatCard
           title="활성 프로젝트"
           value="89"
-          icon={<MdAssignment className="text-[#F97316]" />}
+          icon={<MdAssignment className="text-primary-accent" />}
         />
         <StatCard
           title="대기중인 요청"
           value="12"
-          icon={<MdHourglassEmpty className="text-[#F97316]" />}
+          icon={<MdHourglassEmpty className="text-primary-accent" />}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 최근 활동 섹션 */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4 text-[#F97316]">
+        <div className="card p-6">
+          <h2 className="text-subheading font-semibold mb-4 text-primary-accent">
             최근 활동
           </h2>
           {/* ... existing ActivityItem components ... */}
         </div>
 
         {/* 빠른 작업 섹션 */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4 text-[#F97316]">
+        <div className="card p-6">
+          <h2 className="text-subheading font-semibold mb-4 text-primary-accent">
             빠른 작업
           </h2>
           <div className="grid grid-cols-2 gap-4">
@@ -75,10 +75,10 @@ function StatCard({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-      <div className="text-2xl mb-2 text-gray-700">{icon}</div>
-      <div className="text-sm text-gray-600">{title}</div>
-      <div className="text-2xl font-bold text-gray-700">{value}</div>
+    <div className="card card-hover p-6">
+      <div className="text-2xl mb-2 text-primary-gray">{icon}</div>
+      <div className="text-body1 text-primary-gray">{title}</div>
+      <div className="text-heading1 font-bold text-dark">{value}</div>
     </div>
   );
 }
@@ -115,12 +115,12 @@ function QuickActionButton({
   return (
     <a
       href={href}
-      className="flex items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors group"
+      className="flex items-center p-4 bg-secondary-accent/10 rounded-lg hover:bg-secondary-accent/20 transition-colors group"
     >
-      <span className="text-xl mr-2 text-gray-700 group-hover:text-[#F97316] transition-colors">
+      <span className="text-xl mr-2 text-primary-gray group-hover:text-primary-accent transition-colors">
         {icon}
       </span>
-      <span className="font-medium text-gray-700">{title}</span>
+      <span className="font-medium text-dark">{title}</span>
     </a>
   );
 }

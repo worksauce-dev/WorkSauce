@@ -52,10 +52,10 @@ const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
   <Link
     href={item.href}
     passHref
-    className={`flex items-center gap-3 text-md font-semibold p-3 px-4 rounded-full transition-all duration-200 ${
+    className={`flex items-center gap-3 text-body2 font-semibold p-3 px-4 rounded-full transition-all duration-200 ${
       isActive
-        ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md shadow-orange-100"
-        : "text-primary-gray hover:bg-orange-50 hover:text-orange-500"
+        ? "bg-primary-accent text-white shadow-md shadow-primary-accent/20"
+        : "text-primary-gray hover:bg-secondary-accent hover:text-primary-accent"
     }`}
   >
     <item.icon size={20} />
@@ -83,10 +83,10 @@ export default function AdminSidebar({ user }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="min-w-[300px] h-full hidden flex-col gap-8 px-9 py-6 bg-white lg:flex drop-shadow">
+    <aside className="min-w-[300px] h-full hidden flex-col gap-8 px-9 py-6 bg-white lg:flex shadow-card">
       <Logo />
       <UserInfo user={user} />
-      <nav className="flex flex-col gap-8 border-t border-gray-200 pt-8">
+      <nav className="flex flex-col gap-8 border-t border-border pt-8">
         {menuItems.map(item => (
           <MenuItem
             key={item.id}
