@@ -3,6 +3,7 @@
 import { getDocs, collection, writeBatch } from "firebase/firestore";
 import { doc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
+import { Group } from "@/types/group";
 
 export async function optoutUser(
   userId: string,
@@ -75,11 +76,14 @@ export async function optoutUser(
       batch.delete(doc.ref);
     });
 
-    // 사용자의 그룹 삭제
-    const groupsRef = collection(firestore, `users/${userId}/groups`);
+    // groups 컬렉션에서 해당 유저가 생성한 그룹들 삭제
+    const groupsRef = collection(firestore, "groups");
     const groupsSnapshot = await getDocs(groupsRef);
     groupsSnapshot.forEach(doc => {
-      batch.delete(doc.ref);
+      const groupData = doc.data() as Group;
+      if (groupData.createdBy.id === userId) {
+        batch.delete(doc.ref);
+      }
     });
 
     // 사용자 문서 삭제
