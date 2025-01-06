@@ -28,13 +28,20 @@ export async function optoutUser(
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          client_id: process.env.NEXT_PUBLIC_KAKAO_CLIENT_ID!,
+          client_id: process.env.KAKAO_CLIENT_ID!,
           refresh_token: refreshToken,
         }),
       });
 
       if (!tokenResponse.ok) {
-        throw new Error("토큰 갱신 실패");
+        const errorData = await tokenResponse.json();
+        throw new Error(
+          `토큰 갱신 실패: ${JSON.stringify({
+            status: tokenResponse.status,
+            statusText: tokenResponse.statusText,
+            error: errorData,
+          })}`
+        );
       }
 
       const { access_token: newAccessToken } = await tokenResponse.json();
