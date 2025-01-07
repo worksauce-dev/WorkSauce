@@ -5,7 +5,8 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { getUserData } from "@/api/firebase/getUserData";
 import { saveUserData } from "@/api/firebase/saveUserData";
-import { ErrorPage } from "@/components/common/ErrorPage";
+import { handleAppError } from "@/utils/errorHandler";
+import { ERROR_MESSAGES } from "@/types/error";
 
 export default async function DashboardLayout({
   children,
@@ -21,18 +22,13 @@ export default async function DashboardLayout({
   const user = await getUserData(session.user.id);
 
   if (!user) {
-    return (
-      <ErrorPage
-        title="사용자 정보를 찾을 수 없습니다"
-        message="사용자 데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
-        showHomeButton={true}
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
   }
 
   if (user.isFirstLogin) {
     return <FirstLoginGreeting user={user} saveUserData={saveUserData} />;
   }
+
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row">
       <Sidebar user={user} />

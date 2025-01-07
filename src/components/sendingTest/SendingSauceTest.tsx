@@ -110,7 +110,7 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
-export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
+export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
   const [currentApplicant, setCurrentApplicant] = useState<Applicant>({
