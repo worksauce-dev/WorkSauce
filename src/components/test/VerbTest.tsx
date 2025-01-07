@@ -23,7 +23,8 @@ interface VerbTestProps {
     testResult: ScoreType[]
   ) => void;
   verbTestData: VerbType[];
-  dashboardName: string;
+  companyName: string;
+  userType: string;
 }
 
 interface TestItem {
@@ -43,7 +44,8 @@ export const VerbTest = ({
   groupId,
   submitTest,
   verbTestData,
-  dashboardName,
+  companyName,
+  userType,
 }: VerbTestProps) => {
   const [step, setStep] = useState(0);
   const [scores, setScores] = useState(prevScores);
@@ -176,12 +178,14 @@ export const VerbTest = ({
       // 테스트 결과 제출
       await submitTest(groupId, email, name, scores);
 
-      // 제출 완료 이메일 발송
-      await sendSubmissionCompleteEmail({
-        to: email,
-        userName: name,
-        dashboardName: dashboardName,
-      });
+      // 기업회원의 테스트만 제출 완료 이메일 발송
+      if (userType === "business") {
+        await sendSubmissionCompleteEmail({
+          to: email,
+          applicantName: name,
+          companyName: companyName,
+        });
+      }
 
       setSubmitStatus("success");
       setTimeout(() => {

@@ -16,7 +16,6 @@ export const authOptions = {
         const userDoc = await getDoc(userRef);
 
         if (!userDoc.exists()) {
-          // Create a new user document if it doesn't exist
           await setDoc(userRef, {
             id: user.id ?? "",
             name: user.name ?? "",
@@ -24,6 +23,7 @@ export const authOptions = {
             status: "active",
             isFirstLogin: true,
             isAdmin: false,
+            provider: account?.provider,
           });
         }
       }

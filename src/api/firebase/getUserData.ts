@@ -13,7 +13,8 @@ export async function getUserData(userId: string): Promise<User | null> {
   const userData = userDoc.data();
 
   return {
-    dashboardName: userData.dashboardName,
+    companyName: userData.companyName,
+    position: userData.position,
     address: userData.address,
     plan: userData.plan,
     id: userData.id,
