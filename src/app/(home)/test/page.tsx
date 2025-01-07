@@ -3,13 +3,13 @@ import { submitTest } from "@/api/firebase/submitTest";
 import { AuthCheck } from "@/components/test/TestContainer";
 import { Group } from "@/types/group";
 import { Metadata } from "next";
-import { ExpiredTest } from "@/components/test/ExpiredTest";
 import { getTestDB } from "@/api/firebase/getTestDB";
 import { TestDBType } from "@/types/test";
-import { ErrorPage } from "@/components/common/ErrorPage";
 import { authOptions } from "@/utils/authOptions";
 import { getServerSession } from "next-auth";
 import { getUserData } from "@/api/firebase/getUserData";
+import { ERROR_MESSAGES } from "@/types/error";
+import { handleAppError } from "@/utils/errorHandler";
 
 export const metadata: Metadata = {
   title: "소스테스트",
@@ -21,39 +21,21 @@ export default async function TestPage({
   searchParams: { groupId: string };
 }) {
   if (Object.keys(searchParams).length === 0) {
-    return (
-      <ErrorPage
-        title="그룹을 찾을 수 없습니다"
-        message="삭제되거나 존재하지 않는 그룹입니다."
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.GROUP.NOT_FOUND);
   }
 
-  const groupId = searchParams.groupId;
-  const groupData = (await getGroup(groupId)) as Group;
-
+  const groupData = (await getGroup(searchParams.groupId)) as Group;
   if (!groupData) {
-    return (
-      <ErrorPage
-        title="존재하지 않는 그룹입니다"
-        message="삭제되거나 존재하지 않는 그룹입니다."
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.GROUP.NOT_FOUND);
   }
 
   const testData = await getTestDB("saucetest");
-
   if (!testData) {
-    return (
-      <ErrorPage
-        title="테스트를 찾을 수 없습니다"
-        message="요청하신 테스트가 삭제되었거나 존재하지 않습니다. 관리자에게 문의해 주세요."
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.TEST.NOT_FOUND);
   }
 
   if (groupData.deadline && new Date(groupData.deadline) < new Date()) {
-    return <ExpiredTest deadline={groupData.deadline} />;
+    return handleAppError(ERROR_MESSAGES.TEST.EXPIRED);
   }
 
   const session = await getServerSession(authOptions);

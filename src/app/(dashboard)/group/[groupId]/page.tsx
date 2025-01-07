@@ -5,11 +5,12 @@ import StatisticsSection from "@/components/group/StatisticsSection";
 import GroupContent from "@/components/group/GroupContent";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/utils/authOptions";
-import { ErrorPage } from "@/components/common/ErrorPage";
 import GroupHeader from "@/components/group/GroupHeader";
 import { deleteGroup } from "@/api/firebase/deleteGroup";
-import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getUserData } from "@/api/firebase/getUserData";
+import { ERROR_MESSAGES } from "@/types/error";
+import { handleAppError } from "@/utils/errorHandler";
+
 export const metadata: Metadata = {
   title: "그룹 진행 현황",
 };
@@ -21,40 +22,20 @@ export default async function GroupPage({
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return (
-      <ErrorPage
-        title="로그인이 필요합니다"
-        message="이 페이지에 접근하려면 먼저 로그인해 주세요."
-        showHomeButton={true}
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.AUTH.LOGIN_REQUIRED);
   }
 
   const groupId = params.groupId;
   const group = (await getGroup(groupId)) as Group;
-
   const user = await getUserData(session.user.id);
-
   const isAdmin = user?.isAdmin || false;
 
   if (!group) {
-    return (
-      <ErrorPage
-        title="그룹을 찾을 수 없습니다"
-        message="요청하신 그룹이 존재하지 않거나 삭제되었습니다."
-        showHomeButton={true}
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.GROUP.NOT_FOUND);
   }
 
   if (group.createdBy.id !== session.user.id) {
-    return (
-      <ErrorPage
-        title="접근 권한이 없습니다"
-        message="이 그룹에 대한 접근 권한이 없습니다."
-        showHomeButton={true}
-      />
-    );
+    return handleAppError(ERROR_MESSAGES.GROUP.ACCESS_DENIED);
   }
 
   // 통계 데이터 계산 최적화
