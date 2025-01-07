@@ -304,7 +304,7 @@ const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
                 sort={result.sort}
                 score={result.score}
                 rank={index + 1}
-                total={4600}
+                total={6400}
                 isKeywordMatch={keywords.includes(result.sort)}
               />
             ))}
