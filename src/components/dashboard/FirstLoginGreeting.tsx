@@ -8,6 +8,8 @@ import {
   MdCheckCircle,
   MdOutlineRefresh,
 } from "react-icons/md";
+import { isValidEmail } from "@/utils/isValidEmail";
+import { isValidPhoneNumber } from "@/utils/isValidPhoneNumber";
 
 interface FirstLoginGreetingProps {
   user: User;
@@ -22,23 +24,31 @@ export default function FirstLoginGreeting({
   const [phoneError, setPhoneError] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [email, setEmail] = useState("");
-  const [dashboardName, setDashboardName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-
-  const validatePhoneNumber = (phone: string) => {
-    const phoneRegex = /^01[0|1|6|7|8|9][0-9]{7,8}$/;
-    return phoneRegex.test(phone);
-  };
+  const [emailError, setEmailError] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [position, setPosition] = useState("");
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, "");
     setPhoneNumber(value);
 
-    if (value && !validatePhoneNumber(value)) {
+    if (value && !isValidPhoneNumber(value)) {
       setPhoneError("올바른 전화번호 형식이 아닙니다 (예: 010 1234 5678)");
     } else {
       setPhoneError("");
+    }
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+
+    if (value && !isValidEmail(value)) {
+      setEmailError("올바른 이메일 형식이 아닙니다");
+    } else {
+      setEmailError("");
     }
   };
 
@@ -53,7 +63,8 @@ export default function FirstLoginGreeting({
       await saveUserData(user.id, {
         userType: "individual",
         phoneNumber,
-        dashboardName: dashboardName,
+        companyName,
+        position,
         agreeTerms,
         email,
         isFirstLogin: false,
@@ -125,34 +136,61 @@ export default function FirstLoginGreeting({
               필수 정보를 입력해주세요
             </h2>
             <div className="space-y-4">
-              <input
-                type="text"
-                value={dashboardName}
-                onChange={e => setDashboardName(e.target.value)}
-                placeholder="소속명"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              />
               <div className="space-y-2">
+                <h3 className="text-sm font-medium text-gray-700">필수 정보</h3>
+                <input
+                  type="text"
+                  value={user.name}
+                  disabled
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50"
+                />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  placeholder="이메일 *"
+                  required
+                  className={`w-full px-4 py-3 rounded-lg border ${
+                    emailError ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                {emailError && (
+                  <p className="text-red-500 text-sm">{emailError}</p>
+                )}
                 <input
                   type="tel"
                   value={phoneNumber}
                   onChange={handlePhoneChange}
-                  placeholder="전화번호"
+                  placeholder="전화번호 *"
+                  required
                   className={`w-full px-4 py-3 rounded-lg border ${
                     phoneError ? "border-red-500" : "border-gray-300"
-                  } focus:ring-2 focus:ring-orange-500 focus:border-transparent`}
+                  }`}
                 />
                 {phoneError && (
                   <p className="text-red-500 text-sm">{phoneError}</p>
                 )}
               </div>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="이메일"
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              />
+
+              <div className="space-y-2 pt-4">
+                <h3 className="text-sm font-medium text-gray-700">
+                  추가 정보 (선택)
+                </h3>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={e => setCompanyName(e.target.value)}
+                  placeholder="회사명 (선택)"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300"
+                />
+                <input
+                  type="text"
+                  value={position}
+                  onChange={e => setPosition(e.target.value)}
+                  placeholder="직책 (선택)"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300"
+                />
+              </div>
 
               <label className="flex items-center space-x-3 p-4 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer">
                 <input
