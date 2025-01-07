@@ -59,7 +59,8 @@ export default async function TestPage({
   const session = await getServerSession(authOptions);
   const userData = session ? await getUserData(session.user.id) : null;
   const isAdmin = userData?.isAdmin ?? false;
-  const dashboardName = userData?.dashboardName ?? "지원하신 회사";
+  const companyName = userData?.companyName ?? userData?.name ?? "";
+  const userType = userData?.userType ?? "individual";
 
   return (
     <>
@@ -68,7 +69,8 @@ export default async function TestPage({
         submitTest={submitTest}
         testData={testData as TestDBType}
         isAdmin={isAdmin}
-        dashboardName={dashboardName}
+        companyName={companyName}
+        userType={userType}
       />
     </>
   );

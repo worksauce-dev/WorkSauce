@@ -220,10 +220,12 @@ export const SendingTest = ({ user, createGroup }: SendingTestProps) => {
     for (const applicant of applicants) {
       const success = await sendEmail({
         to: applicant.email,
-        userName: applicant.name,
+        applicantName: applicant.name,
         groupId: groupId,
-        dashboardName: user.dashboardName,
+        userName: user.name,
+        companyName: user.companyName,
         deadline: deadline,
+        userType: user.userType,
       });
 
       if (!success) {
