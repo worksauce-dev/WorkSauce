@@ -41,7 +41,7 @@ export default function DashboardContainer({
     <div className="flex flex-col min-h-screen w-full bg-[#F7F7F9]">
       <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-screen gap-4">
         {/* Header */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-100">
           <DashboardHeader name={name} isDeadline={false} />
         </div>
 
@@ -51,7 +51,7 @@ export default function DashboardContainer({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto ">
           <DashboardContent
             activeTab={activeTab}
             groupData={groupData}

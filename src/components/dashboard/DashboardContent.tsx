@@ -10,6 +10,7 @@ import {
   MdWarning,
   MdCheck,
   MdOutlineRefresh,
+  MdBusinessCenter,
 } from "react-icons/md";
 import { User } from "@/types/user";
 import { signOut } from "next-auth/react";
@@ -29,6 +30,15 @@ interface DashboardContentProps {
     userId: string,
     profileForm: any
   ) => Promise<{ success: boolean }>;
+  updateUserType?: (
+    userId: string,
+    userType: string,
+    businessData?: {
+      businessNumber: string;
+      representativeName: string;
+      businessName: string;
+    }
+  ) => Promise<{ success: boolean }>;
 }
 
 export default function DashboardContent({
@@ -47,10 +57,16 @@ export default function DashboardContent({
   const [profileForm, setProfileForm] = useState({
     name: userData.name,
     email: userData.email,
-    dashboardName: userData.dashboardName,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showBusinessForm, setShowBusinessForm] = useState(false);
+  const [businessForm, setBusinessForm] = useState({
+    businessNumber: "",
+    representativeName: "",
+    businessName: "",
+  });
+  const [isBusinessSubmitting, setIsBusinessSubmitting] = useState(false);
 
   const filteredApplicants = groupData
     .map(group => {
@@ -82,7 +98,6 @@ export default function DashboardContent({
       await updateUserProfile(userData.id, {
         name: profileForm.name,
         email: profileForm.email,
-        dashboardName: profileForm.dashboardName,
         updatedAt: new Date().toISOString(),
       });
 
@@ -103,7 +118,7 @@ export default function DashboardContent({
     case "대시보드":
       return (
         <div className="flex gap-4 sm:gap-8 flex-col lg:flex-row h-full">
-          <div className="flex flex-col gap-4 md:gap-8 bg-white p-4 md:p-8 rounded-xl w-full lg:w-3/5 shadow-sm border border-gray-100 h-full">
+          <div className="flex flex-col gap-4 md:gap-8 p-4 md:p-8 w-full lg:w-3/5 h-full bg-white rounded-xl shadow-sm border border-gray-100">
             <h1 className="text-lg md:text-2xl font-bold text-gray-700">
               최근 워크소스 현황
             </h1>
@@ -187,7 +202,7 @@ export default function DashboardContent({
               </ul>
             )}
           </div>
-          <div className="flex flex-col gap-4 md:gap-8 bg-white p-4 md:p-8 rounded-xl w-full lg:w-2/5 shadow-sm border border-gray-100 h-full">
+          <div className="flex flex-col gap-4 md:gap-8 p-4 md:p-8 w-full lg:w-2/5 h-full bg-white rounded-xl shadow-sm border border-gray-100">
             <h1 className="text-lg md:text-2xl font-bold text-gray-700">
               공지사항
             </h1>
@@ -235,7 +250,7 @@ export default function DashboardContent({
 
     case "지원자 검색":
       return (
-        <div className="flex flex-col gap-6 bg-white rounded-xl shadow-sm border border-gray-100 h-full p-6 md:p-8">
+        <div className="flex flex-col gap-6 h-full p-6 md:p-8 bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-grow relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -368,11 +383,11 @@ export default function DashboardContent({
 
     case "설정":
       return (
-        <div className="flex flex-col md:flex-row gap-8 bg-white p-8 rounded-lg shadow-md overflow-y-auto h-full">
+        <div className="flex flex-col md:flex-row gap-8 p-8 h-full bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="w-full md:w-1/4">
             <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
             <ul className="space-y-2">
-              {["프로필", "보안"].map(tab => (
+              {["프로필", "계정 유형", "보안"].map(tab => (
                 <li key={tab}>
                   <button
                     onClick={() => setActiveSettingTab(tab)}
@@ -400,19 +415,9 @@ export default function DashboardContent({
                     >
                       이름
                     </label>
-                    <input
-                      value={profileForm.name}
-                      onChange={e =>
-                        setProfileForm(prev => ({
-                          ...prev,
-                          name: e.target.value,
-                        }))
-                      }
-                      type="text"
-                      id="name"
-                      name="name"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    />
+                    <div className="cursor-not-allowed bg-gray-50 mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                      {userData.name}
+                    </div>
                   </div>
                   <div>
                     <label
@@ -435,7 +440,7 @@ export default function DashboardContent({
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <label
                       htmlFor="dashboardName"
                       className="block text-sm font-medium text-gray-700"
@@ -455,7 +460,7 @@ export default function DashboardContent({
                       name="dashboardName"
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
-                  </div>
+                  </div> */}
                   <button
                     type="submit"
                     disabled={isSubmitting || showSuccess}
@@ -483,6 +488,136 @@ export default function DashboardContent({
                     )}
                   </button>
                 </form>
+              </div>
+            )}
+
+            {activeSettingTab === "계정 유형" && (
+              <div>
+                <h3 className="text-lg font-semibold mb-4">계정 유형 설정</h3>
+                <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MdBusinessCenter className="text-gray-600 w-5 h-5" />
+                    <span className="font-medium text-gray-700">
+                      현재 계정 유형:
+                    </span>
+                    <span className="text-orange-600 font-medium">
+                      {userData.userType === "business" ? "비즈니스" : "일반"}
+                    </span>
+                  </div>
+                  {userData.userType !== "business" && (
+                    <p className="text-sm text-gray-600">
+                      비즈니스 계정으로 전환하면 추가 기능을 사용할 수 있습니다.
+                    </p>
+                  )}
+                </div>
+
+                {userData.userType !== "business" && !showBusinessForm && (
+                  <button
+                    onClick={() => setShowBusinessForm(true)}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+                  >
+                    비즈니스 계정으로 전환
+                  </button>
+                )}
+
+                {showBusinessForm && (
+                  <form
+                    onSubmit={async e => {
+                      e.preventDefault();
+                      setIsBusinessSubmitting(true);
+                      // try {
+                      //   const result = await updateUserType(
+                      //     userData.id,
+                      //     "business",
+                      //     businessForm
+                      //   );
+                      //   if (result.success) {
+                      //     alert("비즈니스 계정으로 전환되었습니다.");
+                      //     window.location.reload();
+                      //   }
+                      // } catch (error) {
+                      //   console.error(error);
+                      //   alert("계정 전환 중 오류가 발생했습니다.");
+                      // } finally {
+                      //   setIsBusinessSubmitting(false);
+                      // }
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        사업자등록번호
+                      </label>
+                      <input
+                        type="text"
+                        value={businessForm.businessNumber}
+                        onChange={e =>
+                          setBusinessForm(prev => ({
+                            ...prev,
+                            businessNumber: e.target.value,
+                          }))
+                        }
+                        required
+                        placeholder="000-00-00000"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        대표자명
+                      </label>
+                      <input
+                        type="text"
+                        value={businessForm.representativeName}
+                        onChange={e =>
+                          setBusinessForm(prev => ({
+                            ...prev,
+                            representativeName: e.target.value,
+                          }))
+                        }
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        상호명
+                      </label>
+                      <input
+                        type="text"
+                        value={businessForm.businessName}
+                        onChange={e =>
+                          setBusinessForm(prev => ({
+                            ...prev,
+                            businessName: e.target.value,
+                          }))
+                        }
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={isBusinessSubmitting}
+                        className={`px-4 py-2 rounded-lg text-white ${
+                          isBusinessSubmitting
+                            ? "bg-orange-400 cursor-not-allowed"
+                            : "bg-orange-600 hover:bg-orange-700"
+                        }`}
+                      >
+                        {isBusinessSubmitting ? "처리중..." : "전환 신청"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowBusinessForm(false)}
+                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             )}
 
@@ -595,7 +730,7 @@ export default function DashboardContent({
     //             <thead className="bg-gray-50">
     //               <tr>
     //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-    //                   부��
+    //                   부서
     //                 </th>
     //                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
     //                   테스트 수
