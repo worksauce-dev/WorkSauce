@@ -12,7 +12,7 @@ export default function DashboardHeader({
   deadline,
 }: DashboardHeaderProps) {
   return (
-    <div className="flex items-center justify-between rounded-xl p-6 shadow-sm border border-gray-100 bg-white">
+    <div className="flex items-center justify-between p-6 ">
       <div className="flex flex-col">
         <h1 className="text-xl font-semibold md:text-2xl text-gray-800">
           {isDeadline ? `${name} 그룹 대시보드` : `${name}님의 대시보드`}
