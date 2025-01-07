@@ -237,7 +237,7 @@ export const useTestLogic = (
     for (let i = startIndex; i < endIndex; i++) {
       const key = `${currentCategoryIndex}-${i}`;
       if (!answers[key]) {
-        newAnswers[key] = 3; // 미답변 문항을 3점(보통)으로 설정
+        newAnswers[key] = 5; // 미답변 문항을 5점(매우 좋음)으로 설정
       }
     }
     setAnswers(newAnswers);
