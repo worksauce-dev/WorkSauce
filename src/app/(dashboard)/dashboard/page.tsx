@@ -6,7 +6,7 @@ import { getUserData } from "@/api/firebase/getUserData";
 import { User } from "@/types/user";
 import { getGroup } from "@/api/firebase/getGroup";
 import { Group } from "@/types/group";
-import { optoutUser } from "@/api/firebase/optoutUser";
+import { optoutUser } from "@/api/firebase/users/optoutUser";
 import { updateUserProfile } from "@/api/firebase/updateUserProfile";
 
 export const metadata: Metadata = {
