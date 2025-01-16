@@ -1,7 +1,7 @@
 "use client";
 import { ResultFields, SauceResultType } from "@/types/test";
 import { useState } from "react";
-import { MdSave, MdSync } from "react-icons/md";
+import { MdSave, MdSync, MdAdd, MdClose } from "react-icons/md";
 
 interface SauceResultEditorProps {
   initialData: SauceResultType;
@@ -21,6 +21,8 @@ function SauceResultEditor({
   const [activeSubType, setActiveSubType] = useState<string>(firstSubType);
   const [editedData, setEditedData] = useState<SauceResultType>(initialData);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  const INTERVIEW_QUESTIONS_COUNT = 3;
 
   const handleUpdate = async () => {
     if (!window.confirm("변경사항을 저장하시겠습니까?")) {
@@ -98,13 +100,37 @@ function SauceResultEditor({
 
     if (typeof mainTypeData === "string") return;
 
-    if (isArrayField(field) && index !== undefined) {
-      mainTypeData[activeSubType][field][index] = value as string;
-    } else if (!isArrayField(field)) {
+    if (isArrayField(field)) {
+      if (index !== undefined) {
+        const currentArray = [...mainTypeData[activeSubType][field]];
+        currentArray[index] = value as string;
+        mainTypeData[activeSubType][field] = currentArray;
+      } else {
+        mainTypeData[activeSubType][field] = value as string[];
+      }
+    } else {
       mainTypeData[activeSubType][field] = value as string;
     }
 
     setEditedData(newData);
+  };
+
+  const handleAddKeyword = () => {
+    const mainTypeData = editedData[activeMainType];
+    if (typeof mainTypeData === "string") return;
+
+    const newKeywords = [...mainTypeData[activeSubType].keywords, ""];
+    handleFieldChange("keywords", newKeywords);
+  };
+
+  const handleRemoveKeyword = (index: number) => {
+    const mainTypeData = editedData[activeMainType];
+    if (typeof mainTypeData === "string") return;
+
+    const newKeywords = mainTypeData[activeSubType].keywords.filter(
+      (_, i) => i !== index
+    );
+    handleFieldChange("keywords", newKeywords);
   };
 
   return (
@@ -183,22 +209,39 @@ function SauceResultEditor({
             </div>
 
             <div className="bg-white rounded-xl p-3 shadow-sm">
-              <h3 className="text-md font-semibold text-gray-800 mb-2">
-                Keywords
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-md font-semibold text-gray-800">
+                  Keywords
+                </h3>
+                <button
+                  onClick={handleAddKeyword}
+                  className="p-1 text-blue-500 hover:text-blue-600 rounded-lg transition-colors duration-200"
+                  title="키워드 추가"
+                >
+                  <MdAdd size={20} />
+                </button>
+              </div>
+              <div className="space-y-2">
                 {currentData.keywords.map((keyword, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
-                    value={keyword}
-                    onChange={e => {
-                      const newKeywords = [...currentData.keywords];
-                      newKeywords[index] = e.target.value;
-                      handleFieldChange("keywords", newKeywords);
-                    }}
-                  />
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+                      value={keyword}
+                      onChange={e => {
+                        const newKeywords = [...currentData.keywords];
+                        newKeywords[index] = e.target.value;
+                        handleFieldChange("keywords", newKeywords);
+                      }}
+                    />
+                    <button
+                      onClick={() => handleRemoveKeyword(index)}
+                      className="p-2 text-gray-400 hover:text-red-500 rounded-lg transition-colors duration-200"
+                      title="키워드 삭제"
+                    >
+                      <MdClose size={20} />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -226,20 +269,35 @@ function SauceResultEditor({
               <h3 className="text-md font-semibold text-gray-800 mb-2">
                 Interview Questions
               </h3>
-              {currentData.interviewQuestions.map((question, index) => (
-                <div key={index} className="mb-2">
-                  <textarea
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
-                    value={question}
-                    onChange={e => {
-                      const newQuestions = [...currentData.interviewQuestions];
-                      newQuestions[index] = e.target.value;
-                      handleFieldChange("interviewQuestions", newQuestions);
-                    }}
-                    rows={2}
-                  />
-                </div>
-              ))}
+              <div className="space-y-2">
+                {Array(INTERVIEW_QUESTIONS_COUNT)
+                  .fill(null)
+                  .map((_, index) => (
+                    <div key={index} className="mb-2">
+                      <textarea
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+                        value={currentData.interviewQuestions[index] || ""}
+                        onChange={e => {
+                          const newQuestions = [
+                            ...currentData.interviewQuestions,
+                          ];
+                          while (
+                            newQuestions.length < INTERVIEW_QUESTIONS_COUNT
+                          ) {
+                            newQuestions.push("");
+                          }
+                          newQuestions[index] = e.target.value;
+                          handleFieldChange(
+                            "interviewQuestions",
+                            newQuestions.slice(0, INTERVIEW_QUESTIONS_COUNT)
+                          );
+                        }}
+                        placeholder={`Interview Question ${index + 1}`}
+                        rows={2}
+                      />
+                    </div>
+                  ))}
+              </div>
             </div>
 
             {/* Onboarding Steps */}
