@@ -20,7 +20,9 @@ export const getContactGroups = async (userId: string) => {
 
     return { groups, total: groups.length };
   } catch (error) {
-    console.error("Error fetching contact groups:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching contact groups:", error);
+    }
     throw error;
   }
 };

@@ -57,7 +57,9 @@ export const deleteContact = async (userId: string, contactId: string) => {
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting contact:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error deleting contact:", error);
+    }
     throw error;
   }
 };
@@ -77,7 +79,9 @@ export const moveContactToGroup = async (
 
     return { success: true };
   } catch (error) {
-    console.error("Error moving contact to group:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error moving contact to group:", error);
+    }
     throw error;
   }
 };

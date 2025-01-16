@@ -36,7 +36,9 @@ export const getContacts = async (userId: string, groupId?: string) => {
 
     return { contacts, total: contacts.length };
   } catch (error) {
-    console.error("Error fetching contacts:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching contacts:", error);
+    }
     throw error;
   }
 };
