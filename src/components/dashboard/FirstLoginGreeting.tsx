@@ -8,8 +8,7 @@ import {
   MdCheckCircle,
   MdOutlineRefresh,
 } from "react-icons/md";
-import { isValidEmail } from "@/utils/isValidEmail";
-import { isValidPhoneNumber } from "@/utils/isValidPhoneNumber";
+import { isValidEmail } from "@/utils/validation";
 
 interface FirstLoginGreetingProps {
   user: User;
@@ -20,8 +19,6 @@ export default function FirstLoginGreeting({
   user,
   saveUserData,
 }: FirstLoginGreetingProps) {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [phoneError, setPhoneError] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,17 +26,6 @@ export default function FirstLoginGreeting({
   const [emailError, setEmailError] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [position, setPosition] = useState("");
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, "");
-    setPhoneNumber(value);
-
-    if (value && !isValidPhoneNumber(value)) {
-      setPhoneError("올바른 전화번호 형식이 아닙니다 (예: 010 1234 5678)");
-    } else {
-      setPhoneError("");
-    }
-  };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -62,7 +48,6 @@ export default function FirstLoginGreeting({
     try {
       await saveUserData(user.id, {
         userType: "individual",
-        phoneNumber,
         companyName,
         position,
         agreeTerms,
@@ -156,19 +141,6 @@ export default function FirstLoginGreeting({
                 />
                 {emailError && (
                   <p className="text-red-500 text-sm">{emailError}</p>
-                )}
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={handlePhoneChange}
-                  placeholder="전화번호 *"
-                  required
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    phoneError ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
-                {phoneError && (
-                  <p className="text-red-500 text-sm">{phoneError}</p>
                 )}
               </div>
 
