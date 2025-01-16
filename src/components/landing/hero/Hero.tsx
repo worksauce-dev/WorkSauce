@@ -16,39 +16,11 @@ export const Hero = () => {
               transition={{ duration: 0.8 }}
               className="text-center md:text-left"
             >
-              <h1 className="flex flex-col gap-3">
-                <span className="text-3xl sm:text-4xl lg:text-6xl font-extrabold">
-                  <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">
-                    인재 선발
-                  </span>
-                  부터{" "}
-                  <span className="relative">
-                    <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">
-                      조직 성장
-                    </span>
-                    <span className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"></span>
-                  </span>
-                  까지
-                </span>
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-semibold text-orange-500 mb-4">
+                채용에 필요한 특별한 소스
               </h1>
-              <p className="text-lg sm:text-xl lg:text-2xl mt-6 mb-10 text-gray-600 font-medium tracking-tight">
-                <span className="text-gray-800">중소기업</span>을 위한{" "}
-                <span className="relative inline-block">
-                  HR 진단도구 솔루션
-                  <svg
-                    className="absolute -bottom-1 left-0 w-full"
-                    height="3"
-                    viewBox="0 0 100 3"
-                    preserveAspectRatio="none"
-                  >
-                    <path
-                      d="M0,1 Q50,2 100,1"
-                      stroke="rgb(249, 115, 22)"
-                      strokeWidth="2"
-                      fill="none"
-                    />
-                  </svg>
-                </span>
+              <p className="text-lg sm:text-xl lg:text-2xl mb-8 text-gray-600">
+                당신의 팀에 딱 맞는 인재를 찾는 비법
               </p>
               <motion.a
                 href="/login"
