@@ -1,8 +1,10 @@
 import { firestore } from "@/api/firebase/initFirebase";
 import { doc, getDoc } from "firebase/firestore";
-import { User } from "@/types/user";
+import { BusinessUser, User } from "@/types/user";
 
-export async function getUserData(userId: string): Promise<User | null> {
+export async function getUserData(
+  userId: string
+): Promise<User | BusinessUser | null> {
   const userRef = doc(firestore, "users", userId);
   const userDoc = await getDoc(userRef);
 
