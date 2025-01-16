@@ -11,6 +11,7 @@ import {
   MdCheck,
   MdOutlineRefresh,
   MdBusinessCenter,
+  MdClose,
 } from "react-icons/md";
 import { User } from "@/types/user";
 import { signOut } from "next-auth/react";
@@ -22,7 +23,8 @@ interface DashboardContentProps {
   optoutUser: (
     userId: string,
     accessToken: string,
-    refreshToken: string
+    refreshToken: string,
+    password?: string
   ) => Promise<{ success: boolean }>;
   accessToken: string;
   refreshToken: string;
@@ -67,6 +69,10 @@ export default function DashboardContent({
     businessName: "",
   });
   const [isBusinessSubmitting, setIsBusinessSubmitting] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   const filteredApplicants = groupData
     .map(group => {
@@ -111,6 +117,30 @@ export default function DashboardContent({
       );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteAccount = async (password?: string) => {
+    try {
+      setIsDeleting(true);
+      setDeleteError("");
+
+      if (userData.provider === "credentials") {
+        if (!password) {
+          setDeleteError("비밀번호를 입력해주세요.");
+          return;
+        }
+        // 비밀번호 확인 로직 추가 필요
+        // 예: await verifyPassword(password);
+      }
+
+      await optoutUser(userData.id, accessToken, refreshToken, password);
+      await signOut({ callbackUrl: "/" });
+    } catch (error) {
+      setDeleteError("회원 탈퇴 중 오류가 발생했습니다.");
+      console.error(error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -215,7 +245,7 @@ export default function DashboardContent({
                   </h6>
                 </div>
                 <p className="text-xs md:text-sm text-blue-600">
-                  현재 워크소스는 배타버전으로 운영하고 있습니다. 따라서 결제
+                  현재 워크소스는 베타버전으로 운영하고 있습니다. 따라서 결제
                   시스템은 현재 준비중입니다.
                 </p>
               </div>
@@ -631,29 +661,71 @@ export default function DashboardContent({
                   없습니다. 신중하게 결정해 주세요.
                 </p>
                 <button
-                  onClick={async () => {
+                  onClick={() => {
                     if (
                       window.confirm(
                         "정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
                       )
                     ) {
-                      try {
-                        await optoutUser(
-                          userData.id,
-                          accessToken,
-                          refreshToken
-                        );
-                        await signOut({ callbackUrl: "/" });
-                      } catch (error) {
-                        alert("회원 탈퇴 중 오류가 발생했습니다.");
-                        console.error(error);
+                      if (userData.provider === "credentials") {
+                        setShowPasswordModal(true);
+                      } else {
+                        handleDeleteAccount();
                       }
                     }
                   }}
+                  disabled={isDeleting}
                   className="px-4 py-2 border border-red-600 text-sm font-medium rounded-md text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
                 >
-                  계정 삭제
+                  {isDeleting ? "처리중..." : "계정 삭제"}
                 </button>
+
+                {/* 비밀번호 확인 모달 */}
+                {showPasswordModal && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold">비밀번호 확인</h3>
+                        <button
+                          onClick={() => setShowPasswordModal(false)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          <MdClose className="w-6 h-6" />
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-4">
+                        계정 삭제를 진행하기 위해 비밀번호를 입력해주세요.
+                      </p>
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        placeholder="비밀번호 입력"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-red-500"
+                      />
+                      {deleteError && (
+                        <p className="text-sm text-red-600 mb-4">
+                          {deleteError}
+                        </p>
+                      )}
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => setShowPasswordModal(false)}
+                          className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
+                        >
+                          취소
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAccount(password)}
+                          disabled={isDeleting}
+                          className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:bg-red-400"
+                        >
+                          {isDeleting ? "처리중..." : "확인"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             {/* 여기에 다른 설정 탭들의 내용을 추가할 수 있습니다 */}

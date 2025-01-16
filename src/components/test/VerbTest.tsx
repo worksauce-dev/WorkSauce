@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { verbQuestions } from "@/constant/test";
-import { RefreshCw, Send } from "lucide-react";
+import { MdRefresh, MdSend } from "react-icons/md";
 import { ScoreType, VerbType } from "@/types/test";
 import { sendSubmissionCompleteEmail } from "@/utils/sendEmail";
 
@@ -322,7 +322,7 @@ export const VerbTest = ({
                 className="py-2 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 
                   border border-gray-300 text-gray-700 hover:bg-gray-50"
               >
-                <RefreshCw size={18} />
+                <MdRefresh size={18} />
                 다시하기
               </motion.button>
             </div>
@@ -388,7 +388,7 @@ export const VerbTest = ({
             onClick={() => step === 5 && handleSubmit()}
             disabled={step !== 5}
           >
-            <Send size={18} />
+            <MdSend size={18} />
             {isSubmitting ? "제출 중..." : "제출하기"}
           </motion.button>
         </div>

@@ -10,6 +10,7 @@ import { getServerSession } from "next-auth";
 import { getUserData } from "@/api/firebase/getUserData";
 import { ERROR_MESSAGES } from "@/types/error";
 import { handleAppError } from "@/utils/errorHandler";
+import { BusinessUser } from "@/types/user";
 
 export const metadata: Metadata = {
   title: "소스테스트",
@@ -41,8 +42,11 @@ export default async function TestPage({
   const session = await getServerSession(authOptions);
   const userData = session ? await getUserData(session.user.id) : null;
   const isAdmin = userData?.isAdmin ?? false;
-  const companyName = userData?.companyName ?? userData?.name ?? "";
   const userType = userData?.userType ?? "individual";
+  const companyName =
+    userType === "business"
+      ? (userData as BusinessUser).companyInfo.companyName
+      : userData?.name ?? "";
 
   return (
     <>

@@ -2,7 +2,7 @@
 
 import { Contact, ContactGroup } from "@/types/contacts";
 import { useState, useEffect } from "react";
-import { isValidEmail } from "@/utils/isValidEmail";
+import { isValidEmail } from "@/utils/validation";
 
 interface ContactDetailProps {
   contact: Contact | null;

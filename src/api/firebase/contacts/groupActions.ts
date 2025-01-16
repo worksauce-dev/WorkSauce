@@ -25,7 +25,9 @@ export const createGroup = async (
 
     return { id: newGroup.id };
   } catch (error) {
-    console.error("Error creating group:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error creating group:", error);
+    }
     throw error;
   }
 };
@@ -44,7 +46,9 @@ export const updateGroup = async (
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating group:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error updating group:", error);
+    }
     throw error;
   }
 };
@@ -57,7 +61,9 @@ export const deleteGroup = async (userId: string, groupId: string) => {
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting group:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error deleting group:", error);
+    }
     throw error;
   }
 };

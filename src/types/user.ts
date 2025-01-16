@@ -10,13 +10,39 @@ export interface User {
   lastLoginAt: string;
   updatedAt: string;
   groups: string[];
-  companyName: string;
-  position: string;
-  address?: string;
   plan: string;
   userType: "individual" | "business";
-  businessNumber?: string;
-  representativeName?: string;
   agreeTerms: boolean;
-  phoneNumber: string;
+}
+
+export interface EmailUser extends User {
+  provider: "credentials";
+  password: string;
+}
+
+export interface BusinessUser extends User {
+  companyInfo: {
+    businessNumber: string;
+    representativeName: string;
+    address: string;
+    companyName: string;
+    businessType: string;
+    companyAddress: string;
+  };
+  managerInfo: {
+    position: string;
+    department: string;
+    workEmail: string;
+    workPhone: string;
+  };
+  additionalInfo?: {
+    companyWebsite?: string;
+    companySize?: string;
+    establishedYear?: string;
+    serviceUsage?: string;
+    recruitmentField?: string;
+    annualRecruitmentPlan?: string;
+    serviceUtilizationPlan?: string;
+  };
+  provider: "email";
 }

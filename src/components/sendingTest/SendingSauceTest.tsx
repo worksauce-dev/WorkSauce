@@ -23,8 +23,8 @@ import Tooltip from "../common/Tooltip";
 import { Group } from "@/types/group";
 import { sendEmail } from "@/utils/sendEmail";
 import { useRouter } from "next/navigation";
-import { isValidEmail } from "@/utils/isValidEmail";
-
+import { isValidEmail } from "@/utils/validation";
+import { BusinessUser } from "@/types/user";
 interface SendingTestProps {
   user: User;
   createGroup: (group: Group, userId: string) => Promise<string>;
@@ -217,19 +217,40 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
       user.id
     );
 
-    for (const applicant of applicants) {
-      const success = await sendEmail({
-        to: applicant.email,
-        applicantName: applicant.name,
-        groupId: groupId,
-        userName: user.name,
-        companyName: user.companyName,
-        deadline: deadline,
-        userType: user.userType,
-      });
+    if (user.userType === "business") {
+      const businessUser = user as BusinessUser;
+      for (const applicant of applicants) {
+        const success = await sendEmail({
+          to: applicant.email,
+          applicantName: applicant.name,
+          groupId: groupId,
+          userName: user.name,
+          companyName: businessUser.companyInfo.companyName,
+          deadline: deadline,
+          userType: user.userType,
+        });
 
-      if (!success) {
-        alert("이메일 전송 실패. 다시 시도해주세요.");
+        if (!success) {
+          alert("이메일 전송 실패. 다시 시도해주세요.");
+        }
+      }
+    }
+
+    if (user.userType === "individual") {
+      for (const applicant of applicants) {
+        const success = await sendEmail({
+          to: applicant.email,
+          applicantName: applicant.name,
+          groupId: groupId,
+          userName: user.name,
+          companyName: "",
+          deadline: deadline,
+          userType: user.userType,
+        });
+
+        if (!success) {
+          alert("이메일 전송 실패. 다시 시도해주세요.");
+        }
       }
     }
 

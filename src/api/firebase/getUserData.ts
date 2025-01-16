@@ -1,8 +1,10 @@
 import { firestore } from "@/api/firebase/initFirebase";
 import { doc, getDoc } from "firebase/firestore";
-import { User } from "@/types/user";
+import { BusinessUser, User } from "@/types/user";
 
-export async function getUserData(userId: string): Promise<User | null> {
+export async function getUserData(
+  userId: string
+): Promise<User | BusinessUser | null> {
   const userRef = doc(firestore, "users", userId);
   const userDoc = await getDoc(userRef);
 
@@ -13,9 +15,6 @@ export async function getUserData(userId: string): Promise<User | null> {
   const userData = userDoc.data();
 
   return {
-    companyName: userData.companyName,
-    position: userData.position,
-    address: userData.address,
     plan: userData.plan,
     id: userData.id,
     name: userData.name,
@@ -30,6 +29,5 @@ export async function getUserData(userId: string): Promise<User | null> {
     groups: userData.groups,
     userType: userData.userType,
     agreeTerms: userData.agreeTerms,
-    phoneNumber: userData.phoneNumber,
   };
 }
