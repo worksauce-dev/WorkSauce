@@ -46,6 +46,8 @@ const TestContainer = ({
     verbTestData,
   } = useTestLogic(testData);
 
+  console.log(getFinalScores());
+
   if (isTestCompleted) {
     return (
       <VerbTest
