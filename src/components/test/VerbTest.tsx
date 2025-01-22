@@ -50,17 +50,19 @@ export const VerbTest = ({
   const [step, setStep] = useState(0);
   const [scores, setScores] = useState(prevScores);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
+  const [selectedVerbTypes, setSelectedVerbTypes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
 
+  // 180문항 총점 13500점 , 동사 총점 6000점 총합 19500점
   const SCORE_WEIGHTS = {
-    start: 100,
-    advance: 150,
-    utility: 200,
-    communicate: 250,
-    expert: 300,
+    start: 600, // 600점
+    advance: 675, // 1,350점 (675 × 2)
+    utility: 675, // 1,350점 (675 × 2)
+    communicate: 675, // 1,350점 (675 × 2)
+    expert: 675, // 1,350점 (675 × 2)
   };
 
   // 현재 단계의 타입을 반환하는 함수
@@ -81,16 +83,10 @@ export const VerbTest = ({
     }
   };
 
-  // 현재 단계의 단어를 가져오는 함수
-  const getWordForCurrentStep = (item: TestItem): string => {
+  // 현재 단계의 단어들을 가져오는 함수 수정
+  const getWordsForCurrentStep = (item: TestItem): string[] => {
     const stepType = getStepType(step);
-    return stepType === "start" ? item.start : item[stepType][0];
-  };
-
-  // 단어가 선택되었는지 확인하는 함수
-  const isWordSelected = (item: TestItem): boolean => {
-    const word = getWordForCurrentStep(item);
-    return selectedAnswers.includes(word);
+    return stepType === "start" ? [item.start] : item[stepType];
   };
 
   // 단계 레이블을 가져오는 함수
@@ -125,6 +121,13 @@ export const VerbTest = ({
 
     if (!isSelected && currentStepAnswers.length >= 2) {
       return;
+    }
+
+    // start 동사 선택 시 유형 저장
+    if (stepType === "start" && !isSelected) {
+      setSelectedVerbTypes(prev => [...prev, target.sort]);
+    } else if (stepType === "start" && isSelected) {
+      setSelectedVerbTypes(prev => prev.filter(type => type !== target.sort));
     }
 
     const scoreChange = isSelected
@@ -163,10 +166,47 @@ export const VerbTest = ({
     );
   };
 
+  const handleSkip = () => {
+    const currentStepAnswers = selectedAnswers.filter(
+      (_, index) => Math.floor(index / 2) === Math.floor(step)
+    );
+
+    // 현재 단계에서 선택되지 않은 개수만큼 자동으로 5점(매우 그렇다) 처리
+    const remainingSelections = 2 - currentStepAnswers.length;
+    if (remainingSelections > 0) {
+      const stepType = getStepType(step);
+      const availableWords = verbTestData
+        .filter(el => {
+          if (stepType === "start") return true;
+          if (step > 0) {
+            const selectedNames = verbTestData
+              .filter(item => selectedVerbTypes.includes(item.sort))
+              .map(item => item.name);
+            return selectedNames.includes(el.name);
+          }
+          return true;
+        })
+        .flatMap(el => getWordsForCurrentStep(el))
+        .filter(word => !selectedAnswers.includes(word));
+
+      // 남은 선택 수만큼 첫 번째 단어부터 순차적으로 선택 (랜덤 제거)
+      for (
+        let i = 0;
+        i < remainingSelections && i < availableWords.length;
+        i++
+      ) {
+        setSelectedAnswers(prev => [...prev, availableWords[i]]);
+      }
+    }
+
+    setStep(prev => prev + 1);
+  };
+
   const clickReset = () => {
     setStep(0);
     setScores(prevScores);
     setSelectedAnswers([]);
+    setSelectedVerbTypes([]);
     setSubmitStatus("idle");
   };
 
@@ -286,24 +326,35 @@ export const VerbTest = ({
 
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-6">
-        {verbTestData.map(el => (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleSelect(el, getWordForCurrentStep(el))}
-            key={el.sort}
-            className={`
-              py-3 px-6 rounded-lg font-medium transition-all duration-200
-              ${
-                isWordSelected(el)
-                  ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-orange-50"
-              }
-            `}
-          >
-            {getWordForCurrentStep(el)}
-          </motion.button>
-        ))}
+        {verbTestData
+          .filter(el => {
+            const stepType = getStepType(step);
+            if (stepType === "start") return true;
+            if (step > 0) {
+              return selectedVerbTypes.includes(el.sort);
+            }
+            return true;
+          })
+          .flatMap(el =>
+            getWordsForCurrentStep(el).map(word => (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleSelect(el, word)}
+                key={`${el.sort}-${word}`}
+                className={`
+                  py-3 px-6 rounded-lg font-medium transition-all duration-200
+                  ${
+                    selectedAnswers.includes(word)
+                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md"
+                      : "bg-white border border-gray-200 text-gray-700 hover:bg-orange-50"
+                  }
+                `}
+              >
+                {word}
+              </motion.button>
+            ))
+          )}
       </div>
     );
   };

@@ -53,7 +53,6 @@ export interface useTestLogicReturnInterface {
   isFirstHalfCompleted: boolean;
   handleNextHalf: () => void;
   canProceedToNext: boolean;
-  calculateFinalScore: (questionIndex: number) => number;
   progress: Progress;
   handleSkip: () => void;
   isTestCompleted: boolean;

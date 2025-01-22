@@ -139,7 +139,7 @@ export default function AdminReports({ results }: { results: UserResult[] }) {
                           {topResults[0]?.sort}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {((topResults[0]?.score / 6400) * 100).toFixed(1)}%
+                          {((topResults[0]?.score / 20005) * 100).toFixed(1)}%
                         </div>
                       </td>
                       <td className="p-3">
@@ -147,7 +147,7 @@ export default function AdminReports({ results }: { results: UserResult[] }) {
                           {topResults[1]?.sort}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {((topResults[1]?.score / 6400) * 100).toFixed(1)}%
+                          {((topResults[1]?.score / 20005) * 100).toFixed(1)}%
                         </div>
                       </td>
                       <td className="p-3 text-center">

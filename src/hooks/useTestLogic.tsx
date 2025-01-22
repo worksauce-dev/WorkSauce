@@ -75,22 +75,6 @@ export const useTestLogic = (
     [currentCategoryIndex]
   );
 
-  // 최종 점수 계산 함수
-  const calculateFinalScore = useCallback(
-    (questionIndex: number) => {
-      const key = `${currentCategoryIndex}-${questionIndex}`;
-      const selectedScore = answers[key];
-      if (!selectedScore) return 0;
-
-      const question =
-        categories[currentCategoryIndex].questions[questionIndex];
-      const baseScore = question.score;
-      const normalizedScore = (selectedScore - 1) / 4;
-      return Math.round(baseScore * normalizedScore * 100);
-    },
-    [currentCategoryIndex, answers, categories]
-  );
-
   // 현재 섹션의 모든 문제가 답변되었는지 확인
   const checkCanProceed = useCallback(() => {
     const currentCategory = categories[currentCategoryIndex];
@@ -210,56 +194,45 @@ export const useTestLogic = (
   ]);
 
   // 스킵 처리 함수
-  const handleSkip = useCallback(() => {
-    if (!isFirstHalfCompleted) {
-      // 첫 번째 9문제를 스킵하면 두 번째 9문제로
-      setIsFirstHalfCompleted(true);
-    } else {
-      // 두 번째 9문제를 스킵하면 다음 카테고리로
-      if (currentCategoryIndex < categories.length - 1) {
-        setCurrentCategoryIndex(prev => prev + 1);
-        setIsFirstHalfCompleted(false);
-      } else {
-        // 마지막 카테고리의 마지막 섹션이면 VerbTest로 전환
-        setIsTestCompleted(true);
-      }
+  const handleSkip = () => {
+    // 마지막 카테고리인지 체크
+    if (currentCategoryIndex >= categories.length - 1) {
+      setIsTestCompleted(true);
+      return;
     }
 
-    // 현재 섹션의 답변되지 않은 문제들을 3점(보통)으로 자동 설정
-    const currentCategory = categories[currentCategoryIndex];
-    const halfQuestions = Math.ceil(currentCategory.questions.length / 2);
-    const startIndex = isFirstHalfCompleted ? halfQuestions : 0;
-    const endIndex = isFirstHalfCompleted
-      ? currentCategory.questions.length
-      : halfQuestions;
-
+    // 현재 카테고리의 모든 문항을 5점(매우 그렇다)으로 처리
+    const currentQuestions = categories[currentCategoryIndex].questions;
     const newAnswers = { ...answers };
-    for (let i = startIndex; i < endIndex; i++) {
-      const key = `${currentCategoryIndex}-${i}`;
-      if (!answers[key]) {
-        newAnswers[key] = 5; // 미답변 문항을 5점(매우 좋음)으로 설정
-      }
-    }
+
+    // 조건 체크 없이 모든 문항을 5점으로 처리
+    currentQuestions.forEach((_, index) => {
+      const key = `${currentCategoryIndex}-${index}`;
+      newAnswers[key] = 5; // 매우 그렇다 = 5점
+    });
+
     setAnswers(newAnswers);
-  }, [currentCategoryIndex, categories, isFirstHalfCompleted, answers]);
+    setCurrentCategoryIndex(prev => prev + 1);
+    setIsFirstHalfCompleted(false); // 새 카테고리의 첫 번째 섹션으로 초기화
+  };
 
   // 최종 점수 계산 및 결과 반환
   const getFinalScores = useCallback(() => {
-    const finalScores = categories.map(category => ({
+    const finalScores = categories.map((category, categoryIndex) => ({
       sort: category.sort,
       score: category.questions.reduce((total, _, index) => {
-        const key = `${currentCategoryIndex}-${index}`;
+        const key = `${categoryIndex}-${index}`;
         const selectedScore = answers[key];
         if (!selectedScore) return total;
 
-        const question = categories[currentCategoryIndex].questions[index];
+        const question = categories[categoryIndex].questions[index];
         const baseScore = question.score;
         const normalizedScore = (selectedScore - 1) / 4;
-        return total + Math.round(baseScore * normalizedScore * 100);
+        return total + Math.round(baseScore * normalizedScore * 222.25);
       }, 0),
     }));
     return finalScores;
-  }, [categories, currentCategoryIndex, answers]);
+  }, [categories, answers]);
 
   // 진행도 관련 값들 반환
   const getProgress = useCallback((): Progress => {
@@ -296,7 +269,6 @@ export const useTestLogic = (
     currentCategoryData: getCurrentCategoryData(),
     handleAnswer,
     selectedAnswers: answers,
-    calculateFinalScore,
     isFirstHalfCompleted,
     handleNextHalf,
     canProceedToNext,
