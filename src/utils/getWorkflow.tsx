@@ -1,8 +1,8 @@
 import { determineApplicantType } from "@/utils/applicantAnalysis";
+import { motion } from "framer-motion";
 
 export function getWorkflow(
-  applicantType: ReturnType<typeof determineApplicantType>,
-  applicantName: string
+  applicantType: ReturnType<typeof determineApplicantType>
 ) {
   const workflowContent = {
     기준윤리형: {
@@ -237,31 +237,58 @@ export function getWorkflow(
 
   return (
     <div className="space-y-6">
-      <div className="text-lg font-medium text-gray-900">
-        {applicantType.primaryType}의 동사 흐름 :
-        <span className="text-primary-accent ml-2">{content.verbs}</span>
+      {/* 헤더 섹션 */}
+      <div className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 border-b border-orange-100/50 bg-orange-50/95 backdrop-blur-sm rounded-t-lg">
+        <span className="text-lg">⚡️</span>
+        <h4 className="font-medium text-gray-900">
+          {applicantType.primaryType}의 워크플로우
+        </h4>
       </div>
 
-      <div className="bg-white/50 p-4 rounded-lg">
-        <p className="text-gray-600 italic mb-4">
-          소스테스트의 결과를 바탕으로 {applicantName}님이 일을 할 때 선호하는
-          흐름(업무 추진 방향성)을 안내드립니다.
-        </p>
-
-        <ul className="space-y-2 text-gray-700">
-          {content.steps.map((step, index) => (
-            <li key={index} className="flex items-start">
-              <span className="mr-2">•</span>
-              {step.action}{" "}
-              <span className="font-medium mx-1">
-                &ldquo;{step.content}&rdquo;
+      {/* 동사 흐름 섹션 */}
+      <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-orange-100/50">
+        <div className="text-sm text-gray-500 mb-2">동사 흐름</div>
+        <div className="flex gap-3 items-center">
+          {content.verbs.split(" - ").map((verb, index) => (
+            <div key={index} className="flex items-center">
+              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 text-gray-700">
+                {verb}
               </span>
-            </li>
+              {index < content.verbs.split(" - ").length - 1 && (
+                <span className="ml-3 text-orange-300">→</span>
+              )}
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
-      <div className="bg-orange-50 p-4 rounded-lg">
+      {/* 단계별 설명 섹션 */}
+      <div className="space-y-4">
+        {content.steps.map((step, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="relative flex gap-4 items-start"
+          >
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white flex items-center justify-center font-medium">
+              {index + 1}
+            </div>
+            <div className="flex-1 bg-white/80 backdrop-blur-sm rounded-lg p-4 border border-orange-100/50">
+              <div className="text-sm text-gray-500 mb-1">{step.action}</div>
+              <div className="text-gray-700">{step.content}</div>
+            </div>
+            {index < content.steps.length - 1 && (
+              <div className="absolute left-4 top-8 w-[1px] h-[calc(100%+1rem)] bg-gradient-to-b from-orange-200 to-red-200 -z-10" />
+            )}
+          </motion.div>
+        ))}
+      </div>
+
+      {/* 안내 문구 섹션 */}
+      <div className="bg-orange-50/80 backdrop-blur-sm p-4 rounded-lg border border-orange-100/50">
+        <div className="text-sm text-gray-500 mb-2">참고사항</div>
         <ol className="list-decimal list-inside space-y-2 text-gray-700">
           <li>
             업무 추진 방향성은 지원자와 우리 회사 업무 흐름의 유사성을 파악하고

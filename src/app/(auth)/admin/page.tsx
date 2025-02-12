@@ -10,6 +10,8 @@ import {
 import { getAdminStats } from "@/api/firebase/getAdminStats";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
+import { saveResult } from "@/api/firebase/onlyDev";
+import DevOnlyButton from "@/components/admin/DevOnlyButton";
 
 export const metadata: Metadata = {
   title: "관리자 대시보드",
@@ -96,6 +98,7 @@ export default async function AdminDashboard() {
               icon={<MdBarChart size={24} />}
               href="/admin/reports"
             />
+            <DevOnlyButton saveResult={saveResult} />
           </div>
         </div>
       </div>

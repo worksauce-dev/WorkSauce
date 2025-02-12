@@ -1,14 +1,9 @@
-import { SauceResultType } from "@/types/test";
+import { SauceResultType, SauceType } from "@/types/test";
+import { TestData } from "@/types/sauceTestResult";
 
-interface ApplicantType {
-  title: string;
-  keywords: string[];
-  description: string;
-  weaknesses: string;
-  interviewQuestions: string[];
-  onboardingSteps: string;
-  primaryType?: string;
-  secondaryType?: string;
+interface ApplicantType extends TestData {
+  primaryType: SauceType;
+  secondaryType: SauceType;
 }
 
 type TestResult = {
@@ -22,14 +17,11 @@ export const determineApplicantType = (
   testResults: TestResult[],
   sauceResult: SauceResultType
 ): ApplicantType => {
-  const primaryType = testResults[0].sort;
-  const secondaryType = testResults[1].sort;
+  const primaryType = testResults[0].sort as SauceType;
+  const secondaryType = testResults[1].sort as SauceType;
 
   const applicantType = (
-    sauceResult[primaryType as keyof SauceResultType] as Record<
-      string,
-      ApplicantType
-    >
+    sauceResult[primaryType] as Record<SauceType, TestData>
   )[secondaryType];
 
   return {

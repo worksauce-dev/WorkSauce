@@ -42,14 +42,11 @@ export default async function ApplicantPage({
     return handleAppError(ERROR_MESSAGES.APPLICANT.NOT_FOUND);
   }
 
-  const sauceResult = await getSauceResult();
+  const sauceResult = (await getSauceResult()) as SauceResultType;
+
   return (
     <div className="w-full bg-[#F7F7F9] px-4 sm:px-6 sm:py-6 mx-auto lg:px-8 py-6 flex flex-col h-screen gap-4">
-      <ApplicantScoreCard
-        applicant={applicant}
-        keywords={group.keywords}
-        sauceResult={sauceResult as SauceResultType}
-      />
+      <ApplicantScoreCard applicant={applicant} sauceResult={sauceResult} />
     </div>
   );
 }
