@@ -1,3 +1,5 @@
+import { TestData } from "./sauceTestResult";
+
 export interface QuestionType {
   text: string;
   score: number;
@@ -66,17 +68,20 @@ export interface TestDBType {
   [key: string]: CategoryType | string;
 }
 
-export type ResultFields = {
-  title: string;
-  keywords: string[];
-  description: string;
-  weaknesses: string;
-  interviewQuestions: string[];
-  onboardingSteps: string;
-};
+export type SauceType =
+  | "예술융합형"
+  | "예술느낌형"
+  | "이해관리형"
+  | "이해연구형"
+  | "소통도움형"
+  | "소통조화형"
+  | "기준윤리형"
+  | "기준심미형"
+  | "도전확장형"
+  | "도전목표형";
 
 export interface SauceResultType {
   updatedAt: string;
   createdAt: string;
-  [mainType: string]: { [subType: string]: ResultFields } | string;
+  [key: string]: Record<SauceType, TestData> | string;
 }
