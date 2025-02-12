@@ -3,20 +3,20 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { User } from "@/types/user";
 import {
-  FiMail,
-  FiSend,
-  FiPlus,
-  FiTrash2,
-  FiTag,
-  FiCalendar,
-  FiChevronLeft,
-  FiChevronRight,
-  FiUpload,
-  FiUser,
-  FiCheck,
-  FiChevronDown,
-  FiX,
-} from "react-icons/fi";
+  MdEmail,
+  MdSend,
+  MdAdd,
+  MdDelete,
+  MdLabel,
+  MdCalendarMonth,
+  MdChevronLeft,
+  MdChevronRight,
+  MdFileUpload,
+  MdPerson,
+  MdCheck,
+  MdKeyboardArrowDown,
+  MdClose,
+} from "react-icons/md";
 import * as XLSX from "xlsx";
 import { keyword } from "@/constant/test";
 import Tooltip from "../common/Tooltip";
@@ -70,9 +70,9 @@ const InputField: React.FC<InputFieldProps> = ({
         </label>
         <div className="flex items-center">
           {id === "groupName" ? (
-            <FiTag className="mr-2 text-[#F97316]" />
+            <MdLabel className="mr-2 text-[#F97316]" />
           ) : (
-            <FiCalendar className="mr-2 text-[#F97316]" />
+            <MdCalendarMonth className="mr-2 text-[#F97316]" />
           )}
           <input
             type={type}
@@ -381,7 +381,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
               <InputField
                 id="applicantName"
                 label="지원자 이름"
-                icon={<FiUser className="h-5 w-5" />}
+                icon={<MdPerson className="h-5 w-5" />}
                 value={currentApplicant.name}
                 onChange={e =>
                   setCurrentApplicant({
@@ -394,7 +394,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
               <InputField
                 id="applicantEmail"
                 label="지원자 이메일"
-                icon={<FiMail className="h-5 w-5" />}
+                icon={<MdEmail className="h-5 w-5" />}
                 type="email"
                 value={currentApplicant.email}
                 onChange={e =>
@@ -413,7 +413,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                 onClick={handleAddApplicant}
                 className="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#F97316] hover:bg-[#EA580C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F97316] transition-all duration-200 shadow-md hover:shadow-lg"
               >
-                <FiPlus className="mr-2 -ml-1 h-5 w-5" aria-hidden="true" />
+                <MdAdd className="mr-2 -ml-1 h-5 w-5" aria-hidden="true" />
                 지원자 추가
               </button>
             </div>
@@ -453,7 +453,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                       </span>
                     )}
                   </div>
-                  <FiChevronDown className="ml-2 flex-shrink-0 text-gray-400" />
+                  <MdKeyboardArrowDown className="ml-2 flex-shrink-0 text-gray-400" />
                 </button>
               </Tooltip>
             ) : (
@@ -479,7 +479,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                     </span>
                   )}
                 </div>
-                <FiChevronDown className="ml-2 flex-shrink-0" />
+                <MdKeyboardArrowDown className="ml-2 flex-shrink-0" />
               </button>
             )}
 
@@ -499,7 +499,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                 onClick={() => document.getElementById("excel-upload")?.click()}
               >
                 <div className="space-y-1 text-center">
-                  <FiUpload
+                  <MdFileUpload
                     className={`mx-auto h-12 w-12 ${
                       isDragging ? "text-[#F97316]" : "text-gray-400"
                     } transition-colors duration-200`}
@@ -557,7 +557,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                       }
                       className="text-gray-400 hover:text-red-500 transition-colors duration-200 p-2 rounded-full hover:bg-red-50"
                     >
-                      <FiTrash2 className="h-5 w-5" />
+                      <MdDelete className="h-5 w-5" />
                     </button>
                   </div>
                 ))}
@@ -571,7 +571,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                   disabled={currentPage === 1}
                   className="px-4 py-2 rounded-md bg-white text-[#F97316] border border-[#F97316] disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400 transition-all duration-200 hover:bg-[#FFF1E7]"
                 >
-                  <FiChevronLeft className="h-5 w-5" />
+                  <MdChevronLeft className="h-5 w-5" />
                 </button>
                 <span className="font-medium text-gray-700">
                   {currentPage} / {totalPages}
@@ -583,7 +583,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                   disabled={currentPage === totalPages}
                   className="px-4 py-2 rounded-md bg-white text-[#F97316] border border-[#F97316] disabled:opacity-50 disabled:border-gray-200 disabled:text-gray-400 transition-all duration-200 hover:bg-[#FFF1E7]"
                 >
-                  <FiChevronRight className="h-5 w-5" />
+                  <MdChevronRight className="h-5 w-5" />
                 </button>
               </div>
             )}
@@ -624,7 +624,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                 </>
               ) : (
                 <>
-                  <FiSend className="mr-2 text-white" />
+                  <MdSend className="mr-2 text-white" />
                   {selectedKeywordGroups.length !== 3
                     ? "키워드 3개를 선택해주세요"
                     : "이메일 전송하고 그룹 생성"}
@@ -647,7 +647,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                 onClick={() => setIsTypeModalOpen(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <FiX className="h-5 w-5" />
+                <MdClose className="h-5 w-5" />
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -687,7 +687,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
                     </div>
                     {isSelected && (
                       <div className="absolute top-2 right-2 text-[#F97316]">
-                        <FiCheck className="h-4 w-4" />
+                        <MdCheck className="h-4 w-4" />
                       </div>
                     )}
                   </div>
