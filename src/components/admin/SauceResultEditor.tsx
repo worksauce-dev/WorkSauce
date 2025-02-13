@@ -109,7 +109,7 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
                 key={type}
                 onClick={() => handleMainTypeChange(type)}
                 className={`
-                    px-4 py-2 rounded-lg transition-all
+                    px-4 py-2 rounded-lg transition-all text-sm
                     ${
                       activeMainType === type
                         ? "bg-orange-50 text-orange-600 font-medium shadow-sm"
@@ -121,22 +121,15 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
               </button>
             ))}
           </div>
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            <MdSave />
-            {isSaving ? "저장 중..." : "저장"}
-          </button>
         </div>
-        <div className="flex gap-2">
-          {(Object.keys(editedData[activeMainType] || {}) as SauceType[]).map(
-            type => (
-              <button
-                key={type}
-                onClick={() => setActiveSubType(type)}
-                className={`
+        <div className="flex justify-between items-center">
+          <div className="flex gap-2">
+            {(Object.keys(editedData[activeMainType] || {}) as SauceType[]).map(
+              type => (
+                <button
+                  key={type}
+                  onClick={() => setActiveSubType(type)}
+                  className={`
                 px-3 py-1.5 rounded-lg transition-all text-sm
                 ${
                   activeSubType === type
@@ -144,11 +137,20 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
                     : "text-gray-600 hover:bg-gray-100"
                 }
               `}
-              >
-                {type}
-              </button>
-            )
-          )}
+                >
+                  {type}
+                </button>
+              )
+            )}
+          </div>
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-4 py-2 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            <MdSave />
+            {isSaving ? "저장 중..." : "저장"}
+          </button>
         </div>
       </div>
 
