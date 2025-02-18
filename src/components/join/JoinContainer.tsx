@@ -318,8 +318,8 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
               <h2 className="text-2xl font-bold text-gray-900">회원가입</h2>
             </div>
 
-            {/* 회원 유형 선택 탭 */}
-            <div>
+            {/* 회원 유형 선택 탭 일시적 비활성화*/}
+            {/* <div>
               <div className="flex bg-white shadow-sm border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setUserType("individual")}
@@ -342,7 +342,7 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                   기업회원
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <form onSubmit={handleSubmit} className="h-[calc(80vh-120px)]">
