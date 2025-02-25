@@ -10,7 +10,7 @@ import {
 import { getAdminStats } from "@/api/firebase/getAdminStats";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-import { saveResult } from "@/api/firebase/onlyDev";
+import { saveResult, saveSugartest } from "@/api/firebase/onlyDev";
 import DevOnlyButton from "@/components/admin/DevOnlyButton";
 
 export const metadata: Metadata = {
@@ -98,7 +98,7 @@ export default async function AdminDashboard() {
               icon={<MdBarChart size={24} />}
               href="/admin/reports"
             />
-            <DevOnlyButton saveResult={saveResult} />
+            <DevOnlyButton saveSugartest={saveSugartest} />
           </div>
         </div>
       </div>

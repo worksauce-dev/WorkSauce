@@ -4,7 +4,7 @@
 import React from "react";
 import { Applicant } from "@/types/group";
 import { determineApplicantType } from "@/utils/applicantAnalysis";
-import { SauceResultType } from "@/types/test";
+import { SauceResultType } from "@/types/saucetest/test";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";

@@ -5,7 +5,7 @@ import { User } from "@/types/user";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
 import { getSauceResult } from "@/api/firebase/getSauceResult";
-import { SauceResultType } from "@/types/test";
+import { SauceResultType } from "@/types/saucetest/test";
 import { Metadata } from "next";
 import { handleAppError } from "@/utils/errorHandler";
 import { ERROR_MESSAGES } from "@/types/error";

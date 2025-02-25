@@ -1,5 +1,5 @@
-import { SauceResultType, SauceType } from "@/types/test";
-import { TestData } from "@/types/sauceTestResult";
+import { SauceResultType, SauceType } from "@/types/saucetest/test";
+import { TestData } from "@/types/saucetest/sauceTestResult";
 
 interface ApplicantType extends TestData {
   primaryType: SauceType;

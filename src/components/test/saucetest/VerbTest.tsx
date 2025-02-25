@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { verbQuestions } from "@/constant/test";
 import { MdRefresh, MdSend } from "react-icons/md";
-import { ScoreType, VerbType } from "@/types/test";
-import { sendSubmissionCompleteEmail } from "@/utils/sendEmail";
+import { ScoreType, VerbType } from "@/types/saucetest/test";
+import { sendSubmissionCompleteEmail } from "@/utils/email/submissionEmail";
 
 interface VerbTestProps {
   prevScores: {

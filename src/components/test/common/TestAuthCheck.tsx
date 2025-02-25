@@ -1,107 +1,44 @@
 "use client";
 
-import { QuestionSection } from "./QuestionSection";
-import { useTestLogic } from "@/hooks/useTestLogic";
-import { ProgressSection } from "./ProgressSection";
-import { VerbTest } from "./VerbTest";
-import { useState } from "react";
 import { Group } from "@/types/group";
-import { ScoreType, TestDBType } from "@/types/test";
+import { useState } from "react";
+import { SauceTestContainer } from "../saucetest/SauceTestContainer";
+import { SugarTestContainer } from "../sugartest/SugarTestContainer";
+import { ScoreType, SauceTest } from "@/types/saucetest/test";
+import { SugarTest } from "@/types/sugartest/test";
+import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
 
-const TestContainer = ({
-  name,
-  email,
-  groupId,
-  submitTest,
-  testData,
-  isAdmin,
-  companyName,
-  userType,
-}: {
-  name: string;
-  email: string;
-  groupId: string;
-  testData: TestDBType;
-  submitTest: (
-    groupId: string,
-    email: string,
-    name: string,
-    testResult: ScoreType[]
-  ) => void;
-  isAdmin: boolean;
-  companyName: string;
-  userType: string;
-}) => {
-  const {
-    handleAnswer,
-    selectedAnswers,
-    currentCategoryData,
-    isFirstHalfCompleted,
-    progress,
-    handleNextHalf,
-    handleSkip,
-    canProceedToNext,
-    isTestCompleted,
-    getFinalScores,
-    verbTestData,
-  } = useTestLogic(testData);
-
-  console.log(getFinalScores());
-
-  if (isTestCompleted) {
-    return (
-      <VerbTest
-        prevScores={getFinalScores()}
-        name={name}
-        email={email}
-        groupId={groupId}
-        submitTest={submitTest}
-        verbTestData={verbTestData}
-        companyName={companyName}
-        userType={userType}
-      />
-    );
-  }
-
-  return (
-    <div className="bg-[#F7F7F9] border-b-2 border-gray-100 min-h-screen py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
-      <QuestionSection
-        categoryData={currentCategoryData}
-        handleAnswer={handleAnswer}
-        selectedAnswers={selectedAnswers}
-        isFirstHalfCompleted={isFirstHalfCompleted}
-      />
-      <ProgressSection
-        progress={progress}
-        handleNextHalf={handleNextHalf}
-        handleSkip={handleSkip}
-        canProceedToNext={canProceedToNext}
-        isAdmin={isAdmin}
-      />
-    </div>
-  );
-};
-
-export function AuthCheck({
-  groupData,
-  submitTest,
-  testData,
-  isAdmin,
-  companyName,
-  userType,
-}: {
+interface TestAuthCheckProps {
   groupData: Group;
-  submitTest: (
-    groupId: string,
-    email: string,
-    name: string,
-    testResult: ScoreType[]
-  ) => void;
-  testData: TestDBType;
   isAdmin: boolean;
   companyName: string;
   userType: string;
-}) {
+  testType: "saucetest" | "sugartest";
+  testData: SauceTest | SugarTest;
+  submitTest:
+    | ((
+        groupId: string,
+        email: string,
+        name: string,
+        testResult: ScoreType[]
+      ) => void)
+    | ((
+        groupId: string,
+        email: string,
+        name: string,
+        testResult: SugarTestResult
+      ) => Promise<void>);
+}
+
+export function TestAuthCheck({
+  groupData,
+  isAdmin,
+  companyName,
+  userType,
+  testType,
+  testData,
+  submitTest,
+}: TestAuthCheckProps) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -131,25 +68,54 @@ export function AuthCheck({
   };
 
   if (isAuthorized) {
-    return (
-      <TestContainer
-        name={name}
-        email={email}
-        groupId={groupData.groupId}
-        submitTest={submitTest}
-        testData={testData}
-        isAdmin={isAdmin}
-        companyName={companyName}
-        userType={userType}
-      />
-    );
+    switch (testType) {
+      case "saucetest":
+        return (
+          <SauceTestContainer
+            name={name}
+            email={email}
+            groupId={groupData.groupId}
+            testData={testData as SauceTest}
+            submitTest={
+              submitTest as (
+                groupId: string,
+                email: string,
+                name: string,
+                testResult: ScoreType[]
+              ) => void
+            }
+            isAdmin={isAdmin}
+            companyName={companyName}
+            userType={userType}
+          />
+        );
+
+      case "sugartest":
+        return (
+          <SugarTestContainer
+            name={name}
+            email={email}
+            groupId={groupData.groupId}
+            testData={testData as SugarTest}
+            submitTest={
+              submitTest as (
+                groupId: string,
+                email: string,
+                name: string,
+                testResult: SugarTestResult
+              ) => Promise<void>
+            }
+            isAdmin={isAdmin}
+          />
+        );
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-[#F7F7F9] border-b-2 border-gray-100 ">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[#F7F7F9] border-b-2 border-gray-100">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          지원자 확인
+          응시자 확인
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

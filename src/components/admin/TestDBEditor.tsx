@@ -1,17 +1,17 @@
 // 클라이언트 컴포넌트로 분리
 "use client";
 import { useState } from "react";
-import { TestDBType, CategoryData, CategoryType } from "@/types/test";
+import { CategoryData, CategoryType, SauceTest } from "@/types/saucetest/test";
 import { MdSave, MdSync } from "react-icons/md";
 
 interface TestDBEditorProps {
-  initialData: TestDBType;
-  updateTestDB: (testDB: TestDBType) => Promise<void>;
+  initialData: SauceTest;
+  updateTestDB: (testDB: SauceTest) => Promise<void>;
 }
 
 function TestDBEditor({ initialData, updateTestDB }: TestDBEditorProps) {
   const [activeSort, setActiveSort] = useState<string>("기준윤리형");
-  const [editedData, setEditedData] = useState<TestDBType>(initialData);
+  const [editedData, setEditedData] = useState<SauceTest>(initialData);
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleUpdate = async () => {

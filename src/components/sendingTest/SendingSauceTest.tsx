@@ -21,7 +21,7 @@ import * as XLSX from "xlsx";
 import { keyword } from "@/constant/test";
 import Tooltip from "../common/Tooltip";
 import { Group } from "@/types/group";
-import { sendEmail } from "@/utils/sendEmail";
+import { sendSauceTestEmail } from "@/utils/email/sauceTest";
 import { useRouter } from "next/navigation";
 import { isValidEmail } from "@/utils/validation";
 import { BusinessUser } from "@/types/user";
@@ -213,6 +213,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
         createdBy: { id: user.id, name: user.name },
         updatedBy: { id: user.id, name: user.name },
         groupId: "",
+        testType: "sauce",
       },
       user.id
     );
@@ -220,7 +221,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
     if (user.userType === "business") {
       const businessUser = user as BusinessUser;
       for (const applicant of applicants) {
-        const success = await sendEmail({
+        const success = await sendSauceTestEmail({
           to: applicant.email,
           applicantName: applicant.name,
           groupId: groupId,
@@ -238,7 +239,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
 
     if (user.userType === "individual") {
       for (const applicant of applicants) {
-        const success = await sendEmail({
+        const success = await sendSauceTestEmail({
           to: applicant.email,
           applicantName: applicant.name,
           groupId: groupId,

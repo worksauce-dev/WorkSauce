@@ -1,9 +1,9 @@
 "use server";
 
-import { TestData } from "@/types/sauceTestResult";
+import { TestData } from "@/types/saucetest/sauceTestResult";
 import { firestore } from "./initFirebase";
 import { doc, updateDoc } from "firebase/firestore";
-
+import { SugarTest } from "@/types/sugartest/test";
 const saveResult = async (
   mainType:
     | "예술융합형"
@@ -44,4 +44,21 @@ const saveResult = async (
   }
 };
 
-export { saveResult };
+const saveSugartest = async (testData: SugarTest) => {
+  try {
+    const testRef = doc(firestore, "tests", "sugartest");
+
+    await updateDoc(testRef, {
+      ...testData,
+      updatedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating test result:", error);
+    return { success: false, error };
+  }
+};
+
+export { saveResult, saveSugartest };

@@ -1,4 +1,4 @@
-import { TestDBType } from "@/types/test";
+import { SauceTest } from "@/types/saucetest/test";
 
 import TestDBEditor from "@/components/admin/TestDBEditor";
 import { updateSauceTest } from "@/api/firebase/updateSauceTest";
@@ -10,7 +10,7 @@ export default async function EditSauceTest() {
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row  ">
       <TestDBEditor
-        initialData={testDB as TestDBType}
+        initialData={testDB as SauceTest}
         updateTestDB={updateSauceTest}
       />
     </div>
