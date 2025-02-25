@@ -19,7 +19,7 @@ export default function KeywordAnalysis({
   selectedKeyword,
 }: KeywordAnalysisProps) {
   const keywordMatchAnalysis = useMemo(() => {
-    return group.keywords
+    return (group.keywords ?? [])
       .map(keyword => {
         const matchedApplicants = group.applicants.filter(applicant => {
           if (applicant.testStatus !== "completed" || !applicant.testResult) {

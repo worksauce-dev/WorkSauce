@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { ScoreButton } from "./ScoreButton";
-import { CategoryType } from "@/types/test";
+import { CategoryType } from "@/types/saucetest/test";
 
 interface QuestionSectionProps {
   categoryData: CategoryType;

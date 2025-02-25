@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Progress } from "@/types/test";
+import { Progress } from "@/types/saucetest/test";
 
 interface ProgressSectionProps {
   progress: Progress;

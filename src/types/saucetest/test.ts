@@ -62,7 +62,7 @@ export interface useTestLogicReturnInterface {
 }
 
 // FireStore 데이터 타입
-export interface TestDBType {
+export interface SauceTest {
   createdAt: string;
   updatedAt: string;
   [key: string]: CategoryType | string;

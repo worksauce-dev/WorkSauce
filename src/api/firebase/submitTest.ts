@@ -2,13 +2,21 @@
 
 import { doc, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
-import { ScoreType } from "@/types/test";
+import { ScoreType } from "@/types/saucetest/test";
+import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+
+// 테스트 결과 타입 가드
+function isSugarTestResult(result: any): result is SugarTestResult {
+  return (
+    result.hasOwnProperty("categories") && result.hasOwnProperty("metadata")
+  );
+}
 
 export async function submitTest(
   groupId: string,
   email: string,
   name: string,
-  testResult: ScoreType[]
+  testResult: ScoreType[] | SugarTestResult
 ) {
   const groupRef = doc(firestore, "groups", groupId);
 
@@ -51,7 +59,14 @@ export async function submitTest(
 
     // Create unique document ID using name and email
     const documentId = `${name}-${email.replace("@", "-at-")}`;
-    const testResultRef = doc(firestore, "sauceTestResults", documentId);
+
+    // Determine collection path based on test type
+    const collectionPath = isSugarTestResult(testResult)
+      ? "sugarTestResults"
+      : "sauceTestResults";
+
+    // Save to appropriate collection
+    const testResultRef = doc(firestore, collectionPath, documentId);
     await setDoc(testResultRef, {
       email,
       name,

@@ -39,11 +39,23 @@ const testCards: TestCard[] = [
     description:
       "소스테스트는 지원자의 업무 스타일과 성향을 파악할 수 있는 진단도구입니다.",
     icon: <MdPersonOutline size={24} />,
-    duration: "30분",
+    duration: "20분",
     questions: 190,
     path: "/sending-test/sauce",
     isReady: true,
     category: "recruitment",
+  },
+  {
+    id: "sugar",
+    title: "슈가 테스트",
+    description:
+      "직무 스트레스를 5가지 주요 차원에서 측정하여 직장에서의 심리적, 정서적 상태를 진단하는 진단도구입니다.",
+    icon: <MdMood size={24} />,
+    duration: "20분",
+    questions: 100,
+    path: "/sending-test/sugar",
+    isReady: true,
+    category: "development",
   },
   {
     id: "cream",
@@ -57,18 +69,7 @@ const testCards: TestCard[] = [
     isReady: false,
     category: "onboarding",
   },
-  {
-    id: "sugar",
-    title: "슈가 테스트",
-    description:
-      "직무 스트레스를 5가지 주요 차원에서 측정하여 직장에서의 심리적, 정서적 상태를 진단하는 진단도구입니다.",
-    icon: <MdMood size={24} />,
-    duration: "45분",
-    questions: 40,
-    path: "/sending-test/sugar",
-    isReady: false,
-    category: "development",
-  },
+
   {
     id: "blended",
     title: "블렌디드 테스트",

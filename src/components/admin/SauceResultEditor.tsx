@@ -3,8 +3,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdSave } from "react-icons/md";
-import { TestData } from "@/types/sauceTestResult";
-import { SauceResultType, SauceType } from "@/types/test";
+import { TestData } from "@/types/saucetest/sauceTestResult";
+import { SauceResultType, SauceType } from "@/types/saucetest/test";
 import { useState } from "react";
 
 interface SauceResultEditorProps {

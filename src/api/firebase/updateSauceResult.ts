@@ -1,6 +1,6 @@
 "use server";
 
-import { SauceResultType } from "@/types/test";
+import { SauceResultType } from "@/types/saucetest/test";
 import { doc, updateDoc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
 

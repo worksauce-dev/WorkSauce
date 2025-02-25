@@ -3,13 +3,13 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import {
   useTestLogicReturnInterface,
-  TestDBType,
+  SauceTest,
   CategoryType,
   Progress,
-} from "@/types/test";
+} from "@/types/saucetest/test";
 
 export const useTestLogic = (
-  testData: TestDBType
+  testData: SauceTest
 ): useTestLogicReturnInterface => {
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: number }>({});
