@@ -37,7 +37,7 @@ export const Header = ({ user }: { user: User | null }) => {
         "https://worksauce.gitbook.io/infomation",
       label: "도움말",
     },
-    { href: "dashboard", label: "대시보드" },
+    { href: "/dashboard", label: "대시보드" },
     ...(user?.isAdmin ? [{ href: "admin", label: "관리자 페이지" }] : []),
     {
       label: "로그아웃",
