@@ -50,7 +50,7 @@ export default function GroupHeader({
         {isAdmin && (
           <button
             onClick={handleDeleteClick}
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg
+            className="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg
           transition-all duration-200 hover:bg-red-100 hover:scale-105 
           focus:outline-none focus:ring-2 focus:ring-red-200 active:scale-95"
           >
