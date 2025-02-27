@@ -14,14 +14,18 @@ export default function StatCard({ title, value, icon, color }: StatCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-gray-500 text-xs">{title}</p>
-          <p className="text-xl font-bold mt-0.5">{value}</p>
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm px-4 py-3 sm:p-4 md:p-6">
+      <div className="flex items-start sm:items-center gap-3 sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <p className="text-xs md:text-sm text-gray-500 mb-0.5 truncate">
+            {title}
+          </p>
+          <p className="text-xs sm:text-lg md:text-xl font-bold truncate">
+            {value}
+          </p>
         </div>
         <div
-          className={`p-2 rounded-full ${
+          className={`hidden sm:block shrink-0 p-2 sm:p-2 rounded-full ${
             colorClasses[color as keyof typeof colorClasses]
           }`}
         >
