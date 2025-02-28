@@ -15,6 +15,7 @@ import {
 } from "react-icons/md";
 import { User } from "@/types/user";
 import { signOut } from "next-auth/react";
+import { StatusBadge } from "@/components/common/StatusBadge";
 
 interface DashboardContentProps {
   activeTab: "대시보드" | "지원자 검색" | "설정";
@@ -183,7 +184,7 @@ export default function DashboardContent({
 
                     return (
                       <Link
-                        href={`/group/${group.groupId}`}
+                        href={`/group/${group.testType}/${group.groupId}`}
                         key={group.groupId}
                         className="block group border border-gray-100 rounded-lg p-4 hover:border-gray-200 hover:bg-orange-50 transition-all duration-200 hover:shadow-sm"
                       >
@@ -357,34 +358,27 @@ export default function DashboardContent({
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <Link
-                            href={`/group/${applicant.groupId}`}
+                            href={`/group/${
+                              groupData.find(
+                                g => g.groupId === applicant.groupId
+                              )?.testType
+                            }/${applicant.groupId}`}
                             className="text-blue-600 hover:text-blue-900 transition-colors duration-200"
                           >
                             {applicant.groupName}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${
-                              applicant.testStatus === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : applicant.testStatus === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {applicant.testStatus === "completed"
-                              ? "완료"
-                              : applicant.testStatus === "pending"
-                              ? "진행 중"
-                              : "만료"}
-                          </span>
+                          <StatusBadge status={applicant.testStatus} />
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {applicant.testStatus === "completed" && (
                             <Link
-                              href={`/group/${applicant.groupId}/${applicant.name}`}
+                              href={`/group/${
+                                groupData.find(
+                                  g => g.groupId === applicant.groupId
+                                )?.testType
+                              }/${applicant.groupId}/${applicant.name}`}
                               className="text-blue-600 hover:text-blue-900 transition-colors duration-200 font-medium"
                             >
                               상세보기
@@ -417,7 +411,7 @@ export default function DashboardContent({
           <div className="w-full md:w-1/4">
             <h2 className="text-xl font-bold text-gray-800 mb-4">설정</h2>
             <ul className="space-y-2">
-              {["프로필", "계정 유형", "보안"].map(tab => (
+              {["프로필", "보안"].map(tab => (
                 <li key={tab}>
                   <button
                     onClick={() => setActiveSettingTab(tab)}
@@ -521,7 +515,7 @@ export default function DashboardContent({
               </div>
             )}
 
-            {activeSettingTab === "계정 유형" && (
+            {/* {activeSettingTab === "계정 유형" && (
               <div>
                 <h3 className="text-lg font-semibold mb-4">계정 유형 설정</h3>
                 <div className="bg-gray-50 p-4 rounded-lg mb-6">
@@ -649,7 +643,7 @@ export default function DashboardContent({
                   </form>
                 )}
               </div>
-            )}
+            )} */}
 
             {activeSettingTab === "보안" && (
               <div>

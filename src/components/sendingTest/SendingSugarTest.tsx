@@ -284,7 +284,7 @@ export const SendingSugarTest = ({
     setApplicants([]);
     setCurrentPage(1);
 
-    router.push(`/group/${groupId}`);
+    router.push(`/group/sugar/${groupId}`);
   };
 
   const paginatedApplicants = applicants.slice(

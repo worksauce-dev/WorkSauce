@@ -13,6 +13,13 @@ export interface User {
   plan: string;
   userType: "individual" | "business";
   agreeTerms: boolean;
+  sugarMetaData: {
+    averageScore: number;
+    categoryScores: Record<string, { total: number; average: number }>;
+    lastGroupId: string;
+    lastTestAt: string;
+    testCount: number;
+  };
 }
 
 export interface EmailUser extends User {
