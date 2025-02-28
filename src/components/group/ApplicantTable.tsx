@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Applicant, Group } from "@/types/group";
-import { getStatusColor, getStatusText } from "@/utils/groupUtils";
 import { getApplicantType } from "@/utils/getApplicantTypeForGroup";
 import { memo, useMemo } from "react";
-
+import { formatDateToKorean } from "@/utils/dateUtils";
+import { StatusBadge } from "@/components/common/StatusBadge";
 interface ApplicantTableProps {
   group: Group;
   groupId: string;
@@ -17,17 +17,19 @@ const ApplicantRow = memo(
     applicant,
     index,
     groupId,
+    groupData,
   }: {
     applicant: Applicant;
     index: number;
     groupId: string;
+    groupData: Group;
   }) => {
     const types = useMemo(
       () => getApplicantType(applicant.testResult),
       [applicant.testResult]
     );
     const isCompleted = applicant.testStatus === "completed";
-    const href = isCompleted ? `/group/${groupId}/${applicant.name}` : "#";
+    const href = isCompleted ? applicant : "#";
 
     // 모바일 카드 뷰
     return (
@@ -58,27 +60,17 @@ const ApplicantRow = memo(
         </td>
         <td className="md:border-b md:border-orange-200 px-6 py-4">
           <div className="md:hidden font-semibold text-gray-500 mb-1">상태</div>
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-              applicant.testStatus
-            )}`}
-          >
-            {getStatusText(applicant.testStatus)}
-          </span>
+          <StatusBadge status={applicant.testStatus} />
         </td>
         <td className="md:border-b md:border-orange-200 px-6 py-4">
           <div className="md:hidden font-semibold text-gray-500 mb-1">
             완료일
           </div>
           <div>
-            {applicant.completedAt
-              ? `${new Date(applicant.completedAt).getMonth() + 1}월 ${new Date(
-                  applicant.completedAt
-                ).getDate()}일`
-              : "-"}
+            {formatDateToKorean(applicant.completedAt)}
             {applicant.testStatus === "completed" && (
               <Link
-                href={href}
+                href={isCompleted ? `${groupId}/${applicant.name}` : "#"}
                 className="ml-2 text-xs text-orange-500 hover:bg-orange-100 px-1 py-0.5 rounded transition-colors"
               >
                 (결과 보기)
@@ -144,6 +136,7 @@ export default function ApplicantTable({
                 applicant={applicant}
                 index={index}
                 groupId={groupId}
+                groupData={group}
               />
             ))}
           </tbody>

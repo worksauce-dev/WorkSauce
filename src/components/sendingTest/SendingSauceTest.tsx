@@ -261,7 +261,7 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
     setApplicants([]);
     setCurrentPage(1);
 
-    router.push(`/group/${groupId}`);
+    router.push(`/group/sauce/${groupId}`);
   };
 
   const handleFileUpload = useCallback((file: File) => {

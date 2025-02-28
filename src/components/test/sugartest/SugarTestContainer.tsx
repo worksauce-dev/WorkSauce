@@ -5,6 +5,8 @@ import { SugarTest } from "@/types/sugartest/test";
 import { SugarQuestionSection } from "./SugarQuestionSection";
 import { SugarProgressSection } from "./SugarProgressSection";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+import { CATEGORIES } from "@/constants/sugartest";
+
 interface SugarTestContainerProps {
   name: string;
   email: string;
@@ -18,14 +20,6 @@ interface SugarTestContainerProps {
     testResult: SugarTestResult
   ) => Promise<void>;
 }
-
-const CATEGORIES = [
-  "strain",
-  "uncertainty",
-  "grievance",
-  "autonomy",
-  "recognition",
-] as const;
 
 export const SugarTestContainer = ({
   name,

@@ -29,5 +29,6 @@ export async function getUserData(
     groups: userData.groups,
     userType: userData.userType,
     agreeTerms: userData.agreeTerms,
+    sugarMetaData: userData.sugarMetaData,
   };
 }
