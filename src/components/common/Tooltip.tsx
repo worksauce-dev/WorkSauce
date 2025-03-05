@@ -21,7 +21,7 @@ const Tooltip: FC<TooltipProps> & {
   };
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block w-full">
       <div
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}

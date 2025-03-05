@@ -25,9 +25,9 @@ export default function KeywordAnalysis({
           if (applicant.testStatus !== "completed" || !applicant.testResult) {
             return false;
           }
-          const sortedResults = applicant.testResult.sort(
-            (a, b) => b.score - a.score
-          );
+          const sortedResults = Array.isArray(applicant.testResult)
+            ? applicant.testResult.sort((a, b) => b.score - a.score)
+            : [];
 
           const topTwoResults = sortedResults.slice(0, 2);
           return topTwoResults.some(
@@ -39,10 +39,10 @@ export default function KeywordAnalysis({
           if (applicant.testStatus !== "completed" || !applicant.testResult) {
             return false;
           }
-          const highestResult = applicant.testResult.sort(
-            (a, b) => b.score - a.score
-          )[0];
-          return highestResult.sort.trim() === keyword.trim();
+          const highestResult = Array.isArray(applicant.testResult)
+            ? applicant.testResult.sort((a, b) => b.score - a.score)[0]
+            : null;
+          return highestResult?.sort.trim() === keyword.trim();
         });
 
         const subMatches = matchedApplicants.filter(

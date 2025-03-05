@@ -273,6 +273,13 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
           groups: [],
           plan: "free",
           agreeTerms: true,
+          sugarMetaData: {
+            averageScore: 0,
+            categoryScores: {},
+            lastGroupId: "",
+            lastTestAt: "",
+            testCount: 0,
+          },
         };
 
         await createUser(data);

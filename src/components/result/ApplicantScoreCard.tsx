@@ -4,7 +4,7 @@
 import React from "react";
 import { Applicant } from "@/types/group";
 import { determineApplicantType } from "@/utils/applicantAnalysis";
-import { SauceResultType } from "@/types/saucetest/test";
+import { SauceResultType, ScoreType } from "@/types/saucetest/test";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdArrowBack } from "react-icons/md";
@@ -15,6 +15,7 @@ import { getWorkflow } from "@/utils/getWorkflow";
 interface ApplicantScoreCardProps {
   applicant: Applicant;
   sauceResult: SauceResultType;
+  testResult: ScoreType[];
 }
 
 type TabType =
@@ -43,11 +44,16 @@ const TAB_CONFIG = [
 const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   applicant,
   sauceResult,
+  testResult,
 }) => {
   const [activeTab, setActiveTab] = React.useState<TabType>("type");
-  const topResults = [...applicant.testResult]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+
+  const topResults = Array.isArray(applicant.testResult)
+    ? [...applicant.testResult]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(result => ({ ...result, maxScore: 100 }))
+    : [];
   const applicantType = determineApplicantType(topResults, sauceResult);
   const keywords = applicantType.typeDescription.keywords;
 
