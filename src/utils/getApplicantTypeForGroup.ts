@@ -1,7 +1,7 @@
 import { Applicant } from "@/types/group";
 
 export function getApplicantType(testResult: Applicant["testResult"]) {
-  if (!testResult || testResult.length === 0) {
+  if (!testResult || !Array.isArray(testResult) || testResult.length === 0) {
     return { main: null, sub: null };
   }
 

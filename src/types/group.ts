@@ -1,15 +1,13 @@
+import { SugarTestResult } from "./sugartest/sugarTestResult";
+import { ScoreType } from "./saucetest/test";
+
 export interface Applicant {
   name: string;
   email: string;
   groupId: string;
   testStatus: "pending" | "completed" | "expired";
   completedAt: string | null;
-  testResult: {
-    sort: string;
-    score: number;
-    maxScore: number;
-    color?: string;
-  }[];
+  testResult: SugarTestResult | ScoreType[];
   groupName: string;
 }
 
