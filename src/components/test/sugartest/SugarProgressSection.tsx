@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+
 interface SugarProgress {
   currentCategory: number;
   totalCategories: number;
@@ -24,9 +24,6 @@ interface SugarProgressSectionProps {
 }
 
 export const SugarProgressSection = ({
-  name,
-  email,
-  groupId,
   progress,
   handleNextCategory,
   handleSkip,

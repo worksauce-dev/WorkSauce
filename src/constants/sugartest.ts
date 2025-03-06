@@ -163,7 +163,6 @@ export const ANALYSIS_DATA: StressAnalysis = {
           "업무 우선순위 전면 재검토",
           "불필요한 업무 축소 및 위임",
           "규칙적인 휴식 시간 확보",
-          "스트레스 해소를 위한 활동 계획",
         ],
       },
       longTerm: {
@@ -173,7 +172,6 @@ export const ANALYSIS_DATA: StressAnalysis = {
           "업무 프로세스 개선 제안",
           "역량 강화를 위한 교육 참여",
           "멘토링 또는 코칭 프로그램 활용",
-          "건강관리 계획 수립",
         ],
       },
     },
@@ -215,7 +213,6 @@ export const ANALYSIS_DATA: StressAnalysis = {
         items: [
           "관리자와 긴급 면담 진행",
           "핵심 업무 외 부가 업무 중단",
-          "스트레스 해소를 위한 즉각적 활동 시작",
           "건강 검진 고려",
         ],
       },
@@ -224,7 +221,6 @@ export const ANALYSIS_DATA: StressAnalysis = {
         period: "2-4주",
         items: [
           "업무 재분배 및 조정",
-          "스트레스 관리 프로그램 참여",
           "근무 환경 개선 요청",
           "정기적 상담 일정 수립",
         ],

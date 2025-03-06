@@ -82,15 +82,12 @@ export const SugarTestContainer = ({
 
   // 스킵 기능 (관리자용)
   const handleSkip = useCallback(() => {
-    // 현재 카테고리의 모든 문항을 자동 입력
+    // 현재 카테고리의 모든 문항을 1점으로 자동 입력
     const categoryQuestions = testData[currentCategory];
     const newAnswers = { ...selectedAnswers };
 
-    // 마지막 섹션이면 5점, 아니면 3점으로 설정
-    const defaultScore = currentCategoryIndex === CATEGORIES.length - 1 ? 5 : 3;
-
     categoryQuestions.forEach((_, index) => {
-      newAnswers[`${currentCategory}-${index}`] = defaultScore;
+      newAnswers[`${currentCategory}-${index}`] = 1;
     });
 
     setSelectedAnswers(newAnswers);
