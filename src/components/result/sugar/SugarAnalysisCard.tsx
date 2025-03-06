@@ -28,9 +28,9 @@ function getScoreBackground(score: string) {
 
 export function SugarAnalysisCard({ score, name }: SugarAnalysisCardProps) {
   function getStressLevel(score: number) {
-    if (score < 2.1) return "LOW";
-    if (score > 2.1 && score < 3.1) return "MODERATE";
-    if (score > 3.1 && score < 4.1) return "HIGH";
+    if (score <= 2.0) return "LOW";
+    if (score <= 3.0) return "MODERATE";
+    if (score <= 4.0) return "HIGH";
     return "CRITICAL";
   }
 
