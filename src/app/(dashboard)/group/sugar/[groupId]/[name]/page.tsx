@@ -7,7 +7,7 @@ import { Metadata } from "next";
 import { handleAppError } from "@/utils/errorHandler";
 import { ERROR_MESSAGES } from "@/types/error";
 import { SugarTestResult as SugarTestResultType } from "@/types/sugartest/sugarTestResult";
-import SugarTestResult from "@/components/result/sugar/SugarTestResult";
+import SugarTestResult from "@/components/test/sugartest/result/SugarTestResult";
 
 export const metadata: Metadata = {
   title: "슈가테스트 결과",

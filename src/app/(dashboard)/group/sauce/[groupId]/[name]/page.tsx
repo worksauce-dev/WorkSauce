@@ -1,6 +1,6 @@
 import { getGroup } from "@/api/firebase/getGroup";
 import { Group } from "@/types/group";
-import ApplicantScoreCard from "@/components/result/ApplicantScoreCard";
+import ApplicantScoreCard from "@/components/test/saucetest/result/ApplicantScoreCard";
 import { User } from "@/types/user";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authOptions";
