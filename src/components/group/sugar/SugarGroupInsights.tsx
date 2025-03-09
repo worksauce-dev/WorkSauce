@@ -144,7 +144,7 @@ export default function SugarGroupInsights({
                       {category.name}
                     </span>
                     <span className="text-sm font-medium text-orange-600">
-                      {Number.isNaN(category.score)
+                      {completedApplicants.length === 0
                         ? "알 수 없음"
                         : category.score.toFixed(1)}
                     </span>
@@ -175,13 +175,13 @@ export default function SugarGroupInsights({
                 <div className="space-y-2">
                   <p className="text-sm text-gray-600 py-2">
                     관리 대상:{" "}
-                    {Number.isNaN(riskAnalysis.riskPercentage)
+                    {completedApplicants.length === 0
                       ? "알 수 없음"
                       : `${riskAnalysis.riskPercentage}%`}
                   </p>
                   <p className="text-sm text-gray-600 py-2">
                     평균 대비:{" "}
-                    {Number.isNaN(categoryAverages)
+                    {completedApplicants.length === 0
                       ? "알 수 없음"
                       : getComparisonText(categoryAverages)}
                   </p>
@@ -195,28 +195,36 @@ export default function SugarGroupInsights({
                 개선 제안
               </h4>
               <div className="space-y-4 bg-gray-50/50 p-4 rounded-lg">
-                {generateRecommendations(riskAnalysis).map((rec, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <div className="bg-emerald-100/80 p-1.5 rounded-md mt-0.5">
-                      <svg
-                        className="w-3.5 h-3.5 text-emerald-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {rec}
+                {!riskAnalysis || !completedApplicants.length ? (
+                  <div className="flex items-center justify-center py-6 text-gray-500">
+                    <p className="text-sm">
+                      아직 테스트가 완료되지 않았습니다.
                     </p>
                   </div>
-                ))}
+                ) : (
+                  generateRecommendations(riskAnalysis).map((rec, index) => (
+                    <div key={index} className="flex items-center gap-4">
+                      <div className="bg-emerald-100/80 p-1.5 rounded-md mt-0.5">
+                        <svg
+                          className="w-3.5 h-3.5 text-emerald-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-gray-600 leading-relaxed">
+                        {rec}
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </>
@@ -343,11 +351,19 @@ function generateInsights(
   return insights;
 }
 
-function getComparisonText(categoryAverages: { [key: string]: number }) {
-  const avgScore =
-    Object.values(categoryAverages).reduce((a: number, b: number) => a + b, 0) /
-    Object.values(categoryAverages).length;
-  return avgScore > 7 ? "주의 필요" : avgScore > 5 ? "평균 수준" : "양호";
+function getComparisonText(categoryAverages: { [key: string]: number | null }) {
+  const validScores = Object.values(categoryAverages).filter(
+    (value): value is number => value !== null
+  );
+
+  if (validScores.length === 0) return "알 수 없음";
+
+  const avgScore = validScores.reduce((a, b) => a + b, 0) / validScores.length;
+
+  if (avgScore > 4.0) return "위험";
+  if (avgScore > 3.0) return "주의 필요";
+  if (avgScore > 2.0) return "평균 수준";
+  return "양호";
 }
 
 function generateRecommendations(riskAnalysis: any) {
