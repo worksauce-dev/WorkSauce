@@ -34,9 +34,6 @@ export const Hero = ({ isLogin }: HeroProps) => {
                   까지
                 </span>
                 <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold">
-                  <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">
-                    중소기업{" "}
-                  </span>
                   <span className="relative">
                     <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">
                       HR 진단도구 솔루션
