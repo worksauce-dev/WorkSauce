@@ -18,7 +18,7 @@ import {
   MdClose,
 } from "react-icons/md";
 import * as XLSX from "xlsx";
-import { keyword } from "@/constant/test";
+import { keyword } from "@/constants/saucetest";
 import Tooltip from "../common/Tooltip";
 import { Group } from "@/types/group";
 import { sendSauceTestEmail } from "@/utils/email/sauceTest";
