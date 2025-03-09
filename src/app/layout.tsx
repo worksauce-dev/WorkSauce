@@ -23,6 +23,12 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <meta
+          name="naver-site-verification"
+          content="9af28a4c3ff8920f6f1ed0a4ef357358e2e748c9"
+        />
+      </head>
       <body
         className={`relative ${pretendard.variable} font-pretendard text-[#1C1C1E] font-normal`}
       >
