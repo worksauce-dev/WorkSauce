@@ -7,6 +7,7 @@ import { SugarTestContainer } from "../sugartest/SugarTestContainer";
 import { ScoreType, SauceTest } from "@/types/saucetest/test";
 import { SugarTest } from "@/types/sugartest/test";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+import SugarTestCompletionResult from "../sugartest/result/SugarTestCompletionResult";
 
 interface TestAuthCheckProps {
   groupData: Group;
@@ -43,6 +44,8 @@ export function TestAuthCheck({
   const [name, setName] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [error, setError] = useState("");
+  const [completedTestResult, setCompletedTestResult] =
+    useState<SugarTestResult | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,15 +60,26 @@ export function TestAuthCheck({
     );
 
     if (applicant) {
-      if (applicant.testStatus === "completed") {
-        setError("이미 테스트를 완료하셨습니다.");
-        return;
+      if (
+        applicant.testStatus === "completed" &&
+        testType === "sugartest" &&
+        applicant.testResult
+      ) {
+        // 슈가 테스트가 이미 완료된 경우 결과 데이터 설정
+        setCompletedTestResult(applicant.testResult as SugarTestResult);
       }
       setIsAuthorized(true);
     } else {
       setError("입력하신 정보와 일치하는 지원자를 찾을 수 없습니다.");
     }
   };
+
+  // 이미 완료된 슈가 테스트 결과 표시
+  if (isAuthorized && testType === "sugartest" && completedTestResult) {
+    return (
+      <SugarTestCompletionResult name={name} testResult={completedTestResult} />
+    );
+  }
 
   if (isAuthorized) {
     switch (testType) {
