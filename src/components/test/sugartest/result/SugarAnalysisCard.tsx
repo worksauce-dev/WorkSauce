@@ -1,40 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ANALYSIS_DATA } from "@/constants/sugartest";
-
-const TAB_CONFIG = [
-  { id: "current", label: "현재 상태", icon: "📊" },
-  { id: "potential", label: "조직 생활", icon: "🌱" },
-  { id: "suggestion", label: "제안 사항", icon: "💡" },
-  { id: "overall", label: "종합 의견", icon: "📝" },
-] as const;
-
-type TabType = (typeof TAB_CONFIG)[number]["id"];
+import { stressUtils } from "../utils/getStressLevel";
 
 interface SugarAnalysisCardProps {
   score: number;
   name: string;
 }
 
-function getScoreBackground(score: string) {
-  const scoreNumber = Number(score);
-  if (scoreNumber < 2.1) return "from-emerald-400 to-emerald-500";
-  if (scoreNumber < 3.1) return "from-amber-400 to-amber-500";
-  if (scoreNumber < 4.1) return "from-orange-400 to-orange-500";
-  return "from-red-400 to-red-500";
-}
-
 export function SugarAnalysisCard({ score, name }: SugarAnalysisCardProps) {
-  function getStressLevel(score: number) {
-    if (score <= 2.0) return "LOW";
-    if (score <= 3.0) return "MODERATE";
-    if (score <= 4.0) return "HIGH";
-    return "CRITICAL";
-  }
-
-  const level = getStressLevel(score);
+  const level = stressUtils.getLevel(score);
   const analysis = ANALYSIS_DATA[level](name, score.toFixed(1));
 
   return (
@@ -43,7 +19,7 @@ export function SugarAnalysisCard({ score, name }: SugarAnalysisCardProps) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`relative overflow-hidden bg-gradient-to-br ${getScoreBackground(
+        className={`relative overflow-hidden bg-gradient-to-br ${stressUtils.getColorClass(
           analysis.currentStatus.score
         )} rounded-xl m-3 p-3 sm:p-4 text-white flex-shrink-0`}
       >

@@ -2,6 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Tooltip from "@/components/common/Tooltip";
+import {
+  stressLevelInfo,
+  StressLevel,
+  stressUtils,
+} from "../utils/getStressLevel";
 
 const CATEGORIES = {
   strain: {
@@ -115,24 +120,19 @@ const BarGraph: React.FC<{
 };
 
 interface StressLevelBadgeProps {
-  level: "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+  level: StressLevel;
 }
 
 const StressLevelBadge: React.FC<StressLevelBadgeProps> = ({ level }) => {
-  const config = {
-    LOW: { bg: "bg-green-50", text: "text-green-600", label: "낮음" },
-    MODERATE: { bg: "bg-yellow-50", text: "text-yellow-600", label: "보통" },
-    HIGH: { bg: "bg-orange-50", text: "text-orange-600", label: "높음" },
-    CRITICAL: { bg: "bg-red-50", text: "text-red-600", label: "위험" },
-  };
-
-  const style = config[level];
-
   return (
     <span
-      className={`${style.bg} ${style.text} text-[10px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full`}
+      className={`${stressUtils.getColorClass(
+        level
+      )} ${stressUtils.getColorClass(
+        level
+      )} text-[10px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full`}
     >
-      {style.label}
+      {stressLevelInfo.getLabel(level)}
     </span>
   );
 };
@@ -153,32 +153,7 @@ const CircularProgress: React.FC<{ score: number }> = ({ score }) => {
     return () => clearTimeout(timer);
   }, [targetOffset]);
 
-  const getColors = (score: number) => {
-    if (score <= 2) {
-      return {
-        from: "#34d399", // green-400
-        to: "#10b981", // green-500
-      };
-    }
-    if (score <= 3) {
-      return {
-        from: "#fbbf24", // amber-400
-        to: "#f59e0b", // amber-500
-      };
-    }
-    if (score <= 4) {
-      return {
-        from: "#fb923c", // orange-400
-        to: "#f97316", // orange-500
-      };
-    }
-    return {
-      from: "#f87171", // red-400
-      to: "#ef4444", // red-500
-    };
-  };
-
-  const colors = getColors(score);
+  const colors = stressUtils.getColors(score);
 
   return (
     <div className="relative w-[160px] h-[160px]">
@@ -243,7 +218,7 @@ const CircularProgress: React.FC<{ score: number }> = ({ score }) => {
 
 interface SugarScoreCardProps {
   score: number;
-  stressLevel: "LOW" | "MODERATE" | "HIGH" | "CRITICAL";
+  stressLevel: StressLevel;
   categoryScores: Record<string, { total: number; average: number }>;
 }
 
@@ -252,6 +227,8 @@ export default function SugarScoreCard({
   stressLevel,
   categoryScores,
 }: SugarScoreCardProps) {
+  const colors = stressUtils.getColors(score);
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
       <div className="px-3 py-2 border-b border-gray-100 flex-shrink-0">

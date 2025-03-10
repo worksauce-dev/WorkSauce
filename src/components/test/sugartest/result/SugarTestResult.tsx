@@ -6,6 +6,8 @@ import { MdArrowBack } from "react-icons/md";
 import { SugarTestResult as SugarTestResultType } from "@/types/sugartest/sugarTestResult";
 import SugarScoreCard from "./SugarScoreCard";
 import { SugarAnalysisCard } from "./SugarAnalysisCard";
+import { stressUtils } from "../utils/getStressLevel";
+
 interface SugarTestResultProps {
   testResult: SugarTestResultType;
   groupName: string;
@@ -21,13 +23,6 @@ export default function SugarTestResult({
   completedAt,
   groupId,
 }: SugarTestResultProps) {
-  function getStressLevel(score: number) {
-    if (score <= 2.0) return "LOW";
-    if (score <= 3.0) return "MODERATE";
-    if (score <= 4.0) return "HIGH";
-    return "CRITICAL";
-  }
-
   return (
     <div className="flex flex-col h-[calc(100vh-theme(spacing.16))]">
       {/* 상단 정보 카드 */}
@@ -79,7 +74,7 @@ export default function SugarTestResult({
         <div className="col-span-12 sm:col-span-8 md:col-span-6 lg:col-span-4 xl:col-span-3">
           <SugarScoreCard
             score={testResult.metadata.averageScore}
-            stressLevel={getStressLevel(testResult.metadata.averageScore)}
+            stressLevel={stressUtils.getLevel(testResult.metadata.averageScore)}
             categoryScores={testResult.metadata.categoryScores}
           />
         </div>

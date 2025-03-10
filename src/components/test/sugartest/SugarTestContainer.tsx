@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { SugarTest } from "@/types/sugartest/test";
 import { SugarQuestionSection } from "./SugarQuestionSection";
 import { SugarProgressSection } from "./SugarProgressSection";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
 import { CATEGORIES } from "@/constants/sugartest";
-
+import SugarTestCompletionResult from "./result/SugarTestCompletionResult";
+import TestLoadingAnimation from "../common/TestLoadingAnimation";
 interface SugarTestContainerProps {
   name: string;
   email: string;
@@ -36,13 +37,14 @@ export const SugarTestContainer = ({
   const [selectedAnswers, setSelectedAnswers] = useState<{
     [key: string]: number;
   }>({});
-
-  // 상태 추가
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // 현재 카테고리
   const currentCategory = CATEGORIES[currentCategoryIndex];
+
+  const [isTestCompleted, setIsTestCompleted] = useState(false);
+  const [testResult, setTestResult] = useState<SugarTestResult | null>(null);
 
   // 전체 진행률 계산
   const getTotalProgress = useCallback(() => {
@@ -180,6 +182,12 @@ export const SugarTestContainer = ({
       setError(null);
       setIsSubmitting(true);
 
+      // 로딩 시작 시간 기록
+      const loadingStartTime = Date.now();
+
+      // 최소 로딩 시간 (밀리초)
+      const MIN_LOADING_TIME = 10000; // 10초
+
       // 데이터 유효성 검사
       if (!validateTestData()) {
         throw new Error("모든 질문에 답변해주세요.");
@@ -187,6 +195,22 @@ export const SugarTestContainer = ({
 
       const resultData = prepareResultData();
       await submitTest(groupId, email, name, resultData);
+
+      // 테스트 결과 저장
+      setTestResult(resultData);
+
+      // 경과 시간 계산
+      const elapsedTime = Date.now() - loadingStartTime;
+
+      // 최소 로딩 시간보다 적게 걸렸다면 차이만큼 대기
+      if (elapsedTime < MIN_LOADING_TIME) {
+        await new Promise(resolve =>
+          setTimeout(resolve, MIN_LOADING_TIME - elapsedTime)
+        );
+      }
+
+      // 최소 로딩 시간이 지난 후 완료 상태로 변경
+      setIsTestCompleted(true);
     } catch (err) {
       setError(
         err instanceof Error
@@ -197,6 +221,16 @@ export const SugarTestContainer = ({
       setIsSubmitting(false);
     }
   };
+
+  // 테스트가 완료되었으면 결과 컴포넌트 렌더링
+  if (isTestCompleted && testResult) {
+    return <SugarTestCompletionResult name={name} testResult={testResult} />;
+  }
+
+  // 제출 중이면 로딩 컴포넌트 렌더링
+  if (isSubmitting) {
+    return <TestLoadingAnimation name={name} />;
+  }
 
   return (
     <div className="bg-[#F7F7F9] border-b-2 border-gray-100 min-h-screen py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 flex flex-col lg:flex-row gap-8 justify-center">
