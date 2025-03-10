@@ -172,9 +172,11 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
     const selectedDate = new Date(e.target.value);
     const today = new Date();
     today.setHours(0, 0, 0, 0); // 시간을 제외한 날짜만 비교하기 위해
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    if (selectedDate < today) {
-      setDeadlineError("마감기한은 현재 날짜보다 이후여야 합니다.");
+    if (selectedDate < tomorrow) {
+      setDeadlineError("마감기한은 내일 이후여야 합니다.");
     } else {
       setDeadlineError("");
     }
@@ -186,9 +188,11 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
     const selectedDate = new Date(deadline);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    if (selectedDate < today) {
-      setDeadlineError("마감기한은 현재 날짜보다 이후여야 합니다.");
+    if (selectedDate < tomorrow) {
+      setDeadlineError("마감기한은 내일 이후여야 합니다.");
       return;
     }
 
