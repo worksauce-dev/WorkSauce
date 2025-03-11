@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import errorAnimation from "../../../public/404.json";
+import errorAnimation from "../../../public/animations/404.json";
 import Lottie from "react-lottie-player";
 
 interface ErrorPageProps {
