@@ -14,6 +14,11 @@ import {
   moveContactToGroup,
 } from "@/api/firebase/contacts/contactActions";
 import ContactsContainer from "@/components/dashboard/contacts/ContactsContainer";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "연락처 관리",
+};
 
 export default async function ContactsPage() {
   const session = await getServerSession(authOptions);

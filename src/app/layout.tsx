@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     template: "%s | 워크소스",
     default: "워크소스",
   },
+  description: "인재 선발부터 조직 성장까지 HR 진단도구 솔루션",
 };
 
 export default async function RootLayout({

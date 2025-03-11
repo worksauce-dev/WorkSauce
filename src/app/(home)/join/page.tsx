@@ -4,7 +4,6 @@ import { createUser } from "@/api/firebase/users/createUser";
 
 export const metadata: Metadata = {
   title: "회원가입",
-  description: "워크소스 회원가입",
 };
 
 export default function JoinPage() {
