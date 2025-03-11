@@ -12,6 +12,8 @@ import signupAnimation from "../../../public/animations/signupAnimation.json";
 import { EmailUser } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
+import Link from "next/link";
+
 interface FileState {
   businessLicense: File | null;
   employmentCertificate: File | null;
@@ -480,8 +482,21 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                       <div className="bg-orange-50 rounded-lg p-4 flex items-start space-x-3 mb-6">
                         <MdInfo className="flex-shrink-0 h-5 w-5 text-orange-500 mt-0.5" />
                         <p className="text-sm text-orange-700">
-                          회원가입 시 워크소스의 이용약관 및 개인정보처리방침에
-                          동의하게 됩니다.
+                          회원가입 시 워크소스의{" "}
+                          <Link
+                            href={`${process.env.NEXT_PUBLIC_TERMS_AND_CONDITIONS_URL}`}
+                            className="underline hover:text-orange-600"
+                          >
+                            이용약관
+                          </Link>{" "}
+                          및{" "}
+                          <Link
+                            href={`${process.env.NEXT_PUBLIC_PRIVACY_POLICY_URL}`}
+                            className="underline hover:text-orange-600"
+                          >
+                            개인정보처리방침
+                          </Link>
+                          에 동의하게 됩니다.
                         </p>
                       </div>
 
@@ -943,8 +958,15 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                     <div className="bg-orange-50 rounded-lg p-4 flex items-start space-x-3 mb-6">
                       <MdInfo className="flex-shrink-0 h-5 w-5 text-orange-500 mt-0.5" />
                       <p className="text-sm text-orange-700">
-                        회원가입 시 워크소스의 이용약관 및 개인정보처리방침에
-                        동의하게 됩니다.
+                        회원가입 시 워크소스의{" "}
+                        <Link href="/terms" className="underline">
+                          이용약관
+                        </Link>{" "}
+                        및{" "}
+                        <Link href="/privacy" className="underline">
+                          개인정보처리방침
+                        </Link>
+                        에 동의하게 됩니다.
                       </p>
                     </div>
 
