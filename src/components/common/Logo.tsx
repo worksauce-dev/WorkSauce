@@ -1,5 +1,5 @@
 import Image from "next/image";
-import imagelogo from "../../../public/로고시안1.png";
+import imagelogo from "../../../public/images/로고시안1.png";
 
 export const Logo = () => {
   return (

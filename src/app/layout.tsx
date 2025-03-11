@@ -15,6 +15,33 @@ export const metadata: Metadata = {
     default: "워크소스",
   },
   description: "인재 선발부터 조직 성장까지 HR 진단도구 솔루션",
+  openGraph: {
+    images: [
+      {
+        url: "/images/OG_orangebg.png",
+      },
+    ],
+    title: "워크소스",
+    description: "인재 선발부터 조직 성장까지 HR 진단도구 솔루션",
+    siteName: "워크소스 | worksauce",
+    locale: "ko",
+    type: "website",
+    url: "https://www.worksource.kr",
+  },
+  keywords: ["워크소스", "worksauce", "인재 선발", "조직 성장", "HR 진단도구"],
+  robots: {
+    index: true,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: true,
+      follow: false,
+      nocache: true,
+    },
+  },
+  alternates: {
+    canonical: "https://www.worksauce.kr",
+  },
 };
 
 export default async function RootLayout({

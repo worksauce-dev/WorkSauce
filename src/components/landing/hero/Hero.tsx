@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Lottie from "react-lottie-player";
-import heroAnimation from "../../../../public/heroPick2.json";
+import heroAnimation from "../../../../public/animations/heroPick2.json";
 
 interface HeroProps {
   isLogin: boolean;
