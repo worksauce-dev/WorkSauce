@@ -8,7 +8,7 @@ import {
   formatBusinessNumber,
 } from "@/utils/validation";
 import Lottie from "react-lottie-player";
-import signupAnimation from "../../../public/signupAnimation.json";
+import signupAnimation from "../../../public/animations/signupAnimation.json";
 import { EmailUser } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";

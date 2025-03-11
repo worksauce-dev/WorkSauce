@@ -10,6 +10,7 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.worksauce.kr"),
   title: {
     template: "%s | 워크소스",
     default: "워크소스",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "워크소스 | worksauce",
     locale: "ko",
     type: "website",
-    url: "https://www.worksource.kr",
+    url: "https://www.worksauce.kr",
   },
   keywords: ["워크소스", "worksauce", "인재 선발", "조직 성장", "HR 진단도구"],
   robots: {
