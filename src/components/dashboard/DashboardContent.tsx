@@ -397,7 +397,7 @@ export default function DashboardContent({
                   검색 결과가 없습니다
                 </h3>
                 <p className="text-sm text-gray-500">
-                  다른 검색어나 필터를 도해보세요
+                  다른 검색어나 필터를 시도해보세요
                 </p>
               </div>
             )}
