@@ -60,7 +60,7 @@ export const Footer = () => {
           </motion.div>
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.a
-              href="/signup"
+              href="/join"
               className="bg-gray-800 text-white px-6 py-3 rounded-lg font-medium text-center flex items-center justify-center gap-2 group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -73,7 +73,7 @@ export const Footer = () => {
               <MdArrowForward className="transition-transform group-hover:translate-x-1" />
             </motion.a>
             <motion.a
-              href="/contact"
+              href="mailto:worksauce.info@gmail.com"
               className="bg-orange-500 text-white px-6 py-3 rounded-lg font-medium text-center flex items-center justify-center gap-2 group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -132,18 +132,24 @@ export const Footer = () => {
               서비스
             </h4>
             <ul className="space-y-2">
-              <FooterLink href="/service/personnel" delay={0.1}>
-                인사 관리
+              <FooterLink
+                href="https://worksauce.gitbook.io/infomation/test/sauce"
+                delay={0.1}
+              >
+                직무실행유형 진단도구 : 소스테스트
               </FooterLink>
-              <FooterLink href="/service/performance" delay={0.15}>
-                성과 관리
+              <FooterLink
+                href="https://worksauce.gitbook.io/infomation/test/sauce-1"
+                delay={0.15}
+              >
+                직무스트레스 진단도구 : 슈가테스트
               </FooterLink>
-              <FooterLink href="/service/recruitment" delay={0.2}>
+              {/* <FooterLink href="/service/recruitment" delay={0.2}>
                 채용 관리
               </FooterLink>
               <FooterLink href="/service/analytics" delay={0.25}>
                 HR 분석
-              </FooterLink>
+              </FooterLink> */}
             </ul>
           </motion.div>
           <motion.div
@@ -156,17 +162,17 @@ export const Footer = () => {
               회사
             </h4>
             <ul className="space-y-2">
-              <FooterLink href="/about" delay={0.1}>
-                회사 소개
+              <FooterLink
+                href="https://worksauce.gitbook.io/infomation/about/worksauce/vam"
+                delay={0.1}
+              >
+                비전과 미션
               </FooterLink>
-              <FooterLink href="/team" delay={0.15}>
+              <FooterLink
+                href="https://worksauce.gitbook.io/infomation/about/worksauce/people"
+                delay={0.15}
+              >
                 팀 소개
-              </FooterLink>
-              <FooterLink href="/careers" delay={0.2}>
-                채용 정보
-              </FooterLink>
-              <FooterLink href="/contact" delay={0.25}>
-                문의하기
               </FooterLink>
             </ul>
           </motion.div>
@@ -180,21 +186,15 @@ export const Footer = () => {
               리소스
             </h4>
             <ul className="space-y-2">
-              <FooterLink href="/blog" delay={0.1}>
-                블로그
-              </FooterLink>
               <FooterLink
                 href="https://worksauce.gitbook.io/infomation"
                 delay={0.15}
               >
                 도움말 센터
               </FooterLink>
-              <FooterLink href="/webinar" delay={0.2}>
-                웨비나
-              </FooterLink>
-              <FooterLink href="/case-studies" delay={0.25}>
+              {/* <FooterLink href="/case-studies" delay={0.25}>
                 고객 사례
-              </FooterLink>
+              </FooterLink> */}
             </ul>
           </motion.div>
           <motion.div
@@ -219,12 +219,12 @@ export const Footer = () => {
               >
                 개인정보 취급방침
               </FooterLink>
-              <FooterLink
+              {/* <FooterLink
                 href="https://worksauce.gitbook.io/infomation/service/refund-policy"
                 delay={0.2}
               >
                 취소 및 환불정책
-              </FooterLink>
+              </FooterLink> */}
             </ul>
           </motion.div>
         </div>
@@ -254,22 +254,22 @@ export const Footer = () => {
             </div>
 
             <div className="flex space-x-3">
-              <motion.a
+              {/* <motion.a
                 href="#"
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-orange-100 hover:text-orange-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <FaFacebook size={16} />
-              </motion.a>
-              <motion.a
+              </motion.a> */}
+              {/* <motion.a
                 href="#"
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-orange-100 hover:text-orange-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <FaInstagram size={16} />
-              </motion.a>
+              </motion.a> */}
               <motion.a
                 href="#"
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-orange-100 hover:text-orange-500 transition-colors"
