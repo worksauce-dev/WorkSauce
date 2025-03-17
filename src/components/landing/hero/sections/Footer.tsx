@@ -208,8 +208,7 @@ export const Footer = () => {
           transition={{ duration: 0.5 }}
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 gap-4 sm:gap-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-              <Logo className="h-6 w-auto hidden sm:block" />
+            <div className="flex flex-col items-start sm:items-center gap-2 sm:gap-4">
               <div>
                 <p className="text-xs sm:text-sm text-gray-500">
                   <span className="font-medium">워크소스</span> | 대표: 나요한 |
@@ -228,7 +227,7 @@ export const Footer = () => {
 
             <div className="flex space-x-3 mt-3 sm:mt-0">
               <motion.a
-                href="#"
+                href="https://www.linkedin.com/company/%EC%9B%8C%ED%81%AC%EC%86%8C%EC%8A%A4/"
                 className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-orange-100 hover:text-orange-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}

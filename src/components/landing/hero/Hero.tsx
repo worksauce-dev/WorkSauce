@@ -180,7 +180,7 @@ export const Hero = ({ isLogin }: HeroProps) => {
   }, [activeSection, goToSection]);
 
   return (
-    <div className="relative overflow-hidden h-screen">
+    <div className="relative">
       <div
         ref={containerRef}
         className="w-full transition-transform duration-1000 ease-in-out"

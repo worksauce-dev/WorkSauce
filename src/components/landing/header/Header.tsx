@@ -15,18 +15,7 @@ type MenuItem = {
 
 export const Header = ({ user }: { user: User | null }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  // 스크롤 감지
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // 메뉴 외부 클릭 감지
   useEffect(() => {
@@ -100,11 +89,7 @@ export const Header = ({ user }: { user: User | null }) => {
   };
 
   return (
-    <header
-      className={`z-[99] bg-white w-full fixed top-0 transition-all duration-300 ${
-        scrolled ? "shadow-md py-2" : "py-4"
-      }`}
-    >
+    <header className="z-[99] bg-white w-full fixed top-0 shadow-sm py-3">
       <nav className="mx-auto px-6 flex justify-between items-center container">
         <Logo className="h-8 w-auto" />
 
