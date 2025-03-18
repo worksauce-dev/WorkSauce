@@ -17,7 +17,7 @@ export default async function Home() {
 
   return (
     <>
-      <div className="sm:hidden flex flex-col">
+      <div className="sm:hidden flex flex-col ">
         <HeroMobile isLogin={isLogin} />
       </div>
 
