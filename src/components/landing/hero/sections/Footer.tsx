@@ -40,8 +40,8 @@ const FooterLink: React.FC<FooterLinkProps> = ({
 
 export const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-white to-gray-50 min-h-screen w-full flex items-center py-8 sm:py-12 lg:py-24">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-10 lg:py-16">
+    <footer className="bg-gradient-to-b from-white to-gray-50 min-h-screen w-full flex items-center px-4 sm:px-6 lg:px-8 py-14 sm:py-10 lg:py-16">
+      <div className="container mx-auto ">
         {/* 상단 섹션: 제목 및 CTA 버튼 */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 sm:mb-16 gap-6">
           <motion.div
