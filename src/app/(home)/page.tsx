@@ -1,4 +1,5 @@
 import { Hero } from "@/components/landing/hero/Hero";
+import { HeroMobile } from "@/components/landing/hero/HeroMobile";
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 
@@ -16,7 +17,13 @@ export default async function Home() {
 
   return (
     <>
-      <Hero isLogin={isLogin} />
+      <div className="sm:hidden flex flex-col">
+        <HeroMobile isLogin={isLogin} />
+      </div>
+
+      <div className="hidden sm:block">
+        <Hero isLogin={isLogin} />
+      </div>
     </>
   );
 }
