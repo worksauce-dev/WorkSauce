@@ -1,31 +1,36 @@
-// 신규 유저 회원가입
+// 신규 유저 회원가입 - 데이터 구조 개선 버전
 "use server";
 
-import { EmailUser } from "@/types/user";
 import { auth, firestore } from "../initFirebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
+import { UserBase } from "@/types/user";
 
-export async function createUser(userData: EmailUser) {
+export async function createUser(userData: UserBase, password: string) {
   try {
-    // Authentication 계정 생성
+    // 1. Authentication 계정 생성
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       userData.email,
-      userData.password
+      password
     );
 
-    // displayName 설정
+    const userId = userCredential.user.uid;
+
+    // 2. 디스플레이 이름 설정
     await updateProfile(userCredential.user, {
       displayName: userData.name,
     });
 
-    // Firestore에 사용자 정보 저장
-    await setDoc(doc(firestore, "users", userCredential.user.uid), {
+    // 3. 사용자 정보 저장 (users 컬렉션)
+
+    await setDoc(doc(firestore, "users", userId), {
       ...userData,
-      id: userCredential.user.uid,
+      id: userId,
     });
+
+    return { success: true, userId };
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.error("Error creating user:", error);
