@@ -8,31 +8,27 @@ import { ScoreType, SauceTest } from "@/types/saucetest/test";
 import { SugarTest } from "@/types/sugartest/test";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
 import SugarTestCompletionResult from "../sugartest/result/SugarTestCompletionResult";
-
+import { TestInfo } from "@/types/user";
 interface TestAuthCheckProps {
-  groupData: Group;
+  dashboardId: string;
+  targetTest: TestInfo;
   isAdmin: boolean;
   companyName: string;
   userType: string;
   testType: "saucetest" | "sugartest";
   testData: SauceTest | SugarTest;
-  submitTest:
-    | ((
-        groupId: string,
-        email: string,
-        name: string,
-        testResult: ScoreType[]
-      ) => void)
-    | ((
-        groupId: string,
-        email: string,
-        name: string,
-        testResult: SugarTestResult
-      ) => Promise<void>);
+  submitTest: (
+    dashboardId: string,
+    testId: string,
+    email: string,
+    name: string,
+    testResult: ScoreType[] | SugarTestResult
+  ) => Promise<{ success: boolean }>;
 }
 
 export function TestAuthCheck({
-  groupData,
+  dashboardId,
+  targetTest,
   isAdmin,
   companyName,
   userType,
@@ -55,7 +51,7 @@ export function TestAuthCheck({
       return;
     }
 
-    const applicant = groupData.applicants.find(
+    const applicant = targetTest.applicants.find(
       a => a.email === email && a.name === name
     );
 
@@ -88,16 +84,10 @@ export function TestAuthCheck({
           <SauceTestContainer
             name={name}
             email={email}
-            groupId={groupData.groupId}
+            dashboardId={dashboardId}
+            testId={targetTest.testId}
             testData={testData as SauceTest}
-            submitTest={
-              submitTest as (
-                groupId: string,
-                email: string,
-                name: string,
-                testResult: ScoreType[]
-              ) => void
-            }
+            submitTest={submitTest}
             isAdmin={isAdmin}
             companyName={companyName}
             userType={userType}
@@ -109,16 +99,10 @@ export function TestAuthCheck({
           <SugarTestContainer
             name={name}
             email={email}
-            groupId={groupData.groupId}
+            dashboardId={dashboardId}
+            testId={targetTest.testId}
             testData={testData as SugarTest}
-            submitTest={
-              submitTest as (
-                groupId: string,
-                email: string,
-                name: string,
-                testResult: SugarTestResult
-              ) => Promise<void>
-            }
+            submitTest={submitTest}
             isAdmin={isAdmin}
           />
         );

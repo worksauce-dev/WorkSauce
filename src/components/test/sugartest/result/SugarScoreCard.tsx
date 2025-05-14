@@ -144,6 +144,8 @@ const CircularProgress: React.FC<{ score: number }> = ({ score }) => {
   const [currentOffset, setCurrentOffset] = useState(circumference);
   const targetOffset = circumference - (progress / 100) * circumference;
 
+  console.log(currentOffset, targetOffset);
+
   useEffect(() => {
     // 마운트 직후 애니메이션 시작을 위한 약간의 지연
     const timer = setTimeout(() => {
@@ -208,7 +210,7 @@ const CircularProgress: React.FC<{ score: number }> = ({ score }) => {
             WebkitTextFillColor: "transparent",
           }}
         >
-          {score.toFixed(1)}
+          {/* {score.toFixed(1)} */}
         </span>
         <span className="text-sm text-gray-500">/5.0</span>
       </div>
@@ -217,18 +219,10 @@ const CircularProgress: React.FC<{ score: number }> = ({ score }) => {
 };
 
 interface SugarScoreCardProps {
-  score: number;
-  stressLevel: StressLevel;
-  categoryScores: Record<string, { total: number; average: number }>;
+  scores: Record<string, number>;
 }
 
-export default function SugarScoreCard({
-  score,
-  stressLevel,
-  categoryScores,
-}: SugarScoreCardProps) {
-  const colors = stressUtils.getColors(score);
-
+export default function SugarScoreCard({ scores }: SugarScoreCardProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
       <div className="px-3 py-2 border-b border-gray-100 flex-shrink-0">
@@ -241,7 +235,7 @@ export default function SugarScoreCard({
         <div className="p-3 space-y-3">
           {/* 총점 섹션 */}
           <div className="flex justify-center -mt-1">
-            <CircularProgress score={score} />
+            <CircularProgress score={scores.average} />
           </div>
 
           {/* 스트레스 레벨 섹션 */}
@@ -250,16 +244,16 @@ export default function SugarScoreCard({
               <span className="text-xs font-medium text-gray-700">
                 스트레스 레벨
               </span>
-              <StressLevelBadge level={stressLevel} />
+              <StressLevelBadge level={stressUtils.getLevel(scores.average)} />
             </div>
             <p className="text-[11px] text-gray-600 px-2.5 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
-              {stressLevel === "LOW" &&
+              {stressUtils.getLevel(scores.average) === "LOW" &&
                 "현재 스트레스 수준이 양호합니다. 현재 상태를 유지해주세요."}
-              {stressLevel === "MODERATE" &&
+              {stressUtils.getLevel(scores.average) === "MODERATE" &&
                 "적정 수준의 스트레스 상태입니다. 주기적인 관리가 필요합니다."}
-              {stressLevel === "HIGH" &&
+              {stressUtils.getLevel(scores.average) === "HIGH" &&
                 "스트레스 수준이 높습니다. 적극적인 관리가 필요합니다."}
-              {stressLevel === "CRITICAL" &&
+              {stressUtils.getLevel(scores.average) === "CRITICAL" &&
                 "위험 수준의 스트레스 상태입니다. 즉각적인 조치가 필요합니다."}
             </p>
           </div>
@@ -271,8 +265,10 @@ export default function SugarScoreCard({
             </span>
             <div className="divide-y divide-gray-100 border border-gray-100 rounded-lg">
               {SUGAR_ORDER.map(key => {
+                const score = scores[key];
+                const level = stressUtils.getLevel(score);
                 const description = getDescriptionByScore(
-                  categoryScores[key].average,
+                  score,
                   key as keyof typeof CATEGORIES
                 );
 
@@ -302,10 +298,10 @@ export default function SugarScoreCard({
                             </span>
                           </div>
                           <span className="text-[11px] font-medium text-gray-900 ml-1">
-                            {categoryScores[key].average.toFixed(1)}
+                            {score.toFixed(1)}
                           </span>
                           <BarGraph
-                            score={categoryScores[key].average}
+                            score={score}
                             color={
                               CATEGORIES[key as keyof typeof CATEGORIES].color
                             }

@@ -1,6 +1,12 @@
+"use client";
+
 import { motion } from "framer-motion";
-import Lottie from "react-lottie-player";
 import heroAnimation from "../../../../../public/animations/heroPick2.json";
+import dynamic from "next/dynamic";
+
+const LottiePlayer = dynamic(() => import("react-lottie-player"), {
+  ssr: false,
+});
 
 export const HeroSection = () => {
   return (
@@ -14,13 +20,13 @@ export const HeroSection = () => {
               transition={{ duration: 0.5 }}
               className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6 md:mb-8"
             >
-              인재 선발부터
+              채용부터
               <br className="md:hidden" />
               <span className="hidden md:inline ">&nbsp;</span>
-              조직 성장까지
+              조직 문화까지
               <br />
               <span className="text-orange-500 mt-2 md:mt-3 inline-block">
-                HR 진단도구 솔루션
+                HR 진단키트, 워크소스
               </span>
             </motion.h1>
 
@@ -54,7 +60,7 @@ export const HeroSection = () => {
               transition={{ duration: 0.5 }}
               className="px-4 md:px-0"
             >
-              <Lottie
+              <LottiePlayer
                 loop
                 animationData={heroAnimation}
                 play

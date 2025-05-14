@@ -174,6 +174,84 @@ export const stressUtils = {
   levelInfo: stressLevelInfo,
 };
 
-// 기존 함수명 유지 (하위 호환성)
-
 export { getScoreColorClass as getScoreColor };
+
+import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+
+// 기존 함수들은 그대로 두고, testResult 객체를 받아서 카테고리별로 결과를 반환하는 함수 추가
+
+export function getStressLevelByTestResult(testResult: SugarTestResult) {
+  const result: Record<string, StressLevel> = {};
+  (
+    Object.keys(testResult.categories) as Array<
+      keyof typeof testResult.categories
+    >
+  ).forEach(category => {
+    const arr = testResult.categories[category];
+    const avg = arr.length
+      ? arr.reduce((a: number, b: number) => a + b, 0) / arr.length
+      : 0;
+    result[category] = getStressLevel(avg);
+  });
+  return result;
+}
+
+export function getStressLevelDataByTestResult(testResult: SugarTestResult) {
+  const result: Record<string, StressLevelData> = {};
+  (
+    Object.keys(testResult.categories) as Array<
+      keyof typeof testResult.categories
+    >
+  ).forEach(category => {
+    const arr = testResult.categories[category];
+    const avg = arr.length
+      ? arr.reduce((a: number, b: number) => a + b, 0) / arr.length
+      : 0;
+    result[category] = getStressLevelData(avg);
+  });
+  return result;
+}
+
+export function getStressColorsByTestResult(testResult: SugarTestResult) {
+  const result: Record<string, StressLevelData["colors"]> = {};
+  (
+    Object.keys(testResult.categories) as Array<
+      keyof typeof testResult.categories
+    >
+  ).forEach(category => {
+    const arr = testResult.categories[category];
+    const avg = arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    result[category] = getStressColors(avg);
+  });
+  return result;
+}
+
+export function getScoreColorClassByTestResult(testResult: SugarTestResult) {
+  const result: Record<string, string> = {};
+  (
+    Object.keys(testResult.categories) as Array<
+      keyof typeof testResult.categories
+    >
+  ).forEach(category => {
+    const arr = testResult.categories[category];
+    const avg = arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    result[category] = getScoreColorClass(avg);
+  });
+  return result;
+}
+
+export function calculateCategoryScore(testResult: SugarTestResult) {
+  const result: Record<string, number> = {};
+  (
+    Object.keys(testResult.categories) as Array<
+      keyof typeof testResult.categories
+    >
+  ).forEach(category => {
+    const arr = testResult.categories[category];
+    const avg = arr.length
+      ? arr.reduce((a: number, b: number) => a + b, 0) / arr.length
+      : 0;
+    result[category] = avg;
+  });
+  return result;
+}

@@ -15,3 +15,16 @@ export const formatDateToKorean = (
 
   return `${date.getMonth() + 1}월 ${date.getDate()}일`;
 };
+
+// 날짜 포맷팅 함수
+export const formatDate = (dateString: string) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  return date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};

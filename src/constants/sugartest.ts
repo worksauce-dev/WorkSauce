@@ -15,16 +15,24 @@ export const STRESS_LEVELS = [
   { label: "심각한 스트레스", min: 4.1, max: 5.0 },
 ] as const;
 
-export const CATEGORY_TRANSLATIONS = {
+export const CATEGORY_KR_TRANSLATIONS = {
   strain: "업무 부담",
   uncertainty: "불확실성",
   grievance: "대인관계 갈등",
-  autonomy: "업무 자율성 부족",
-  recognition: "보상과 인정 부족",
+  autonomy: "업무 자율성",
+  recognition: "보상과 인정",
 } as const;
 
-export type CategoryKey = keyof typeof CATEGORY_TRANSLATIONS;
+export const CATEGORY_EN_TRANSLATIONS = {
+  "업무 부담": "strain",
+  불확실성: "uncertainty",
+  "대인관계 갈등": "grievance",
+  "업무 자율성": "autonomy",
+  "보상과 인정": "recognition",
+} as const;
 
+export type KRCategoryKey = keyof typeof CATEGORY_KR_TRANSLATIONS;
+export type ENCategoryKey = keyof typeof CATEGORY_EN_TRANSLATIONS;
 export const ANALYSIS_DATA: StressAnalysis = {
   LOW: (name: string, score: string) => ({
     currentStatus: {
@@ -230,5 +238,157 @@ export const ANALYSIS_DATA: StressAnalysis = {
       summary: `${name}님의 현재 상태는 즉각적인 개입이 필요한 위험 수준입니다. 개인의 건강과 업무 지속성을 위해 적극적인 조치가 반드시 필요합니다. 관리자 및 인사 담당자와의 면담을 통해 현재 상황을 공유하고, 업무 조정을 위한 구체적인 계획을 수립해야 합니다. 필요한 경우 전문가의 도움을 받아 체계적인 스트레스 관리 방안을 수립하시기를 강력히 권고드립니다.`,
     },
   }),
-  // ... other levels
 };
+
+export const CATEGORY_DESCRIPTIONS = {
+  S: {
+    name: "Strain",
+    description: "업무 부담",
+    levels: {
+      LOW: {
+        min: 1.0,
+        max: 2.0,
+        description:
+          "업무량이 적절히 관리되고 있으며, 스트레스가 낮은 수준입니다.",
+      },
+      MODERATE: {
+        min: 2.1,
+        max: 3.0,
+        description:
+          "업무 부담이 다소 증가하여 주의가 필요하며, 업무 배분 조정이 권장됩니다.",
+      },
+      HIGH: {
+        min: 3.1,
+        max: 4.0,
+        description:
+          "업무량과 난이도로 인한 높은 부담감이 발생하여, 업무 조정이 필요합니다.",
+      },
+      CRITICAL: {
+        min: 4.1,
+        max: 5.0,
+        description:
+          "심각한 수준의 업무 과부하 상태로, 즉각적인 업무량 조절과 지원이 필요합니다.",
+      },
+    },
+  },
+  U: {
+    name: "Uncertainty",
+    description: "불확실성",
+    levels: {
+      LOW: {
+        min: 1.0,
+        max: 2.0,
+        description:
+          "업무 방향과 목표가 명확하며, 안정적인 업무 수행이 이루어지고 있습니다.",
+      },
+      MODERATE: {
+        min: 2.1,
+        max: 3.0,
+        description:
+          "보통 수준의 불확실성이 있으며, 정기적 업데이트와 피드백이 필요합니다.",
+      },
+      HIGH: {
+        min: 3.1,
+        max: 4.0,
+        description:
+          "업무의 불확실성이 높아 불안감이 증가하고 있어, 명확한 지침 설정이 필요합니다.",
+      },
+      CRITICAL: {
+        min: 4.1,
+        max: 5.0,
+        description:
+          "극심한 불확실성으로 인한 업무 혼란이 발생하여, 즉각적인 방향성 제시가 필요합니다.",
+      },
+    },
+  },
+  G: {
+    name: "Grievance",
+    description: "대인관계 갈등",
+    levels: {
+      LOW: {
+        min: 1.0,
+        max: 2.0,
+        description:
+          "원활한 대인관계가 유지되고 있으며, 협업이 잘 이루어지고 있습니다.",
+      },
+      MODERATE: {
+        min: 2.1,
+        max: 3.0,
+        description:
+          "일부 대인관계에서 경미한 갈등이 있으나, 일상적인 수준에서 관리되고 있습니다.",
+      },
+      HIGH: {
+        min: 3.1,
+        max: 4.0,
+        description:
+          "주의가 필요한 수준의 갈등이 있어, 중재 프로그램 검토가 필요합니다.",
+      },
+      CRITICAL: {
+        min: 4.1,
+        max: 5.0,
+        description:
+          "심각한 대인관계 갈등으로 인한 업무 차질이 발생하여, 전문적 개입이 필요합니다.",
+      },
+    },
+  },
+  A: {
+    name: "Autonomy",
+    description: "업무 자율성",
+    levels: {
+      LOW: {
+        min: 1.0,
+        max: 2.0,
+        description:
+          "적절한 수준의 업무 자율성이 보장되어, 창의적인 업무 수행이 가능합니다.",
+      },
+      MODERATE: {
+        min: 2.1,
+        max: 3.0,
+        description:
+          "업무 자율성이 다소 제한되어 있으나, 기본적인 의사결정은 가능한 상태입니다.",
+      },
+      HIGH: {
+        min: 3.1,
+        max: 4.0,
+        description:
+          "업무 자율성 부족으로 인한 답답함이 크며, 의사결정 구조 개선이 필요합니다.",
+      },
+      CRITICAL: {
+        min: 4.1,
+        max: 5.0,
+        description:
+          "심각한 수준의 자율성 제한으로, 업무 효율성과 만족도가 크게 저하되었습니다.",
+      },
+    },
+  },
+  R: {
+    name: "Recognition",
+    description: "보상과 인정",
+    levels: {
+      LOW: {
+        min: 1.0,
+        max: 2.0,
+        description:
+          "노력과 성과에 대한 적절한 인정과 보상이 이루어지고 있습니다.",
+      },
+      MODERATE: {
+        min: 2.1,
+        max: 3.0,
+        description:
+          "보상과 인정이 다소 미흡하여, 공정한 평가체계 개선이 필요합니다.",
+      },
+      HIGH: {
+        min: 3.1,
+        max: 4.0,
+        description:
+          "성과에 대한 인정이 부족하여 사기가 저하되고 있으며, 보상체계 점검이 시급합니다.",
+      },
+      CRITICAL: {
+        min: 4.1,
+        max: 5.0,
+        description:
+          "심각한 수준의 보상 불균형으로 인해 이직 위험이 높아, 즉각적인 개선이 필요합니다.",
+      },
+    },
+  },
+} as const;

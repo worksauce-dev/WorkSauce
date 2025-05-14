@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "../../common/Logo";
 import { signOut } from "next-auth/react";
-import { User } from "@/types/user";
+import { UserBase } from "@/types/user";
 import { MdMenu, MdClose } from "react-icons/md";
 
 type MenuItem = {
@@ -13,7 +13,7 @@ type MenuItem = {
   onClick?: () => Promise<void>;
 };
 
-export const Header = ({ user }: { user: User | null }) => {
+export const Header = ({ userBase }: { userBase: UserBase | null }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +51,7 @@ export const Header = ({ user }: { user: User | null }) => {
       label: "도움말",
     },
     { href: "/dashboard", label: "대시보드" },
-    ...(user?.isAdmin ? [{ href: "admin", label: "관리자 페이지" }] : []),
+    ...(userBase?.isAdmin ? [{ href: "admin", label: "관리자 페이지" }] : []),
     {
       label: "로그아웃",
       onClick: handleSignOut,
@@ -59,7 +59,7 @@ export const Header = ({ user }: { user: User | null }) => {
   ];
 
   const renderMenu = (isMobile = false) => {
-    const items = user ? userMenuItems : guestMenuItems;
+    const items = userBase ? userMenuItems : guestMenuItems;
     return items.map((item, index) => (
       <motion.a
         key={index}

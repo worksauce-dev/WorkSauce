@@ -9,14 +9,16 @@ import { ScoreType, SauceTest } from "@/types/saucetest/test";
 interface SauceTestContainerProps {
   name: string;
   email: string;
-  groupId: string;
+  dashboardId: string;
+  testId: string;
   testData: SauceTest;
   submitTest: (
-    groupId: string,
+    dashboardId: string,
+    testId: string,
     email: string,
     name: string,
     testResult: ScoreType[]
-  ) => void;
+  ) => Promise<{ success: boolean }>;
   isAdmin: boolean;
   companyName: string;
   userType: string;
@@ -25,7 +27,8 @@ interface SauceTestContainerProps {
 export const SauceTestContainer = ({
   name,
   email,
-  groupId,
+  dashboardId,
+  testId,
   submitTest,
   testData,
   isAdmin,
@@ -52,7 +55,8 @@ export const SauceTestContainer = ({
         prevScores={getFinalScores()}
         name={name}
         email={email}
-        groupId={groupId}
+        dashboardId={dashboardId}
+        testId={testId}
         submitTest={submitTest}
         verbTestData={verbTestData}
         companyName={companyName}

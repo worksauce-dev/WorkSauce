@@ -15,7 +15,6 @@ import { getWorkflow } from "@/utils/getWorkflow";
 interface ApplicantScoreCardProps {
   applicant: Applicant;
   sauceResult: SauceResultType;
-  testResult: ScoreType[];
 }
 
 type TabType =
@@ -44,7 +43,6 @@ const TAB_CONFIG = [
 const ApplicantScoreCard: React.FC<ApplicantScoreCardProps> = ({
   applicant,
   sauceResult,
-  testResult,
 }) => {
   const [activeTab, setActiveTab] = React.useState<TabType>("type");
 

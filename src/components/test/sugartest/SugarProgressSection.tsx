@@ -10,7 +10,6 @@ interface SugarProgress {
 }
 
 interface SugarProgressSectionProps {
-  groupId: string;
   name: string;
   email: string;
   progress: SugarProgress;
