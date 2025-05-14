@@ -59,7 +59,7 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className={`relative ${pretendard.variable} font-pretendard text-[#1C1C1E] font-normal overflow-y-auto sm:overflow-hidden sm:h-screen min-h-screen`}
+        className={`relative ${pretendard.variable} font-pretendard text-[#1C1C1E] font-normal overflow-y-auto min-h-screen`}
       >
         {children}
         <Analytics />

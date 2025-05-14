@@ -1,4 +1,4 @@
-import { getUserData } from "@/api/firebase/getUserData";
+import { getUserData } from "@/api/firebase/users/getUserData";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
