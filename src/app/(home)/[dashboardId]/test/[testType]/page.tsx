@@ -6,12 +6,14 @@ import { Metadata } from "next";
 import { getTestDB } from "@/api/firebase/getTestDB";
 import { authOptions } from "@/utils/authOptions";
 import { getServerSession } from "next-auth";
-import { getUserData } from "@/api/firebase/getUserData";
+import { getUserData } from "@/api/firebase/users/getUserData";
 import { ERROR_MESSAGES } from "@/types/error";
 import { handleAppError } from "@/utils/errorHandler";
-import { BusinessUser } from "@/types/user";
 import { SauceTest } from "@/types/saucetest/test";
 import { SugarTest } from "@/types/sugartest/test";
+
+import { getDashboardData } from "@/api/firebase/dashboard/getDashboardData";
+import { getTestResults } from "@/api/firebase/dashboard/getTestResults";
 
 const VALID_TEST_TYPES = ["saucetest", "sugartest"] as const;
 type TestType = (typeof VALID_TEST_TYPES)[number];
@@ -24,11 +26,11 @@ const TEST_METADATA: Record<TestType, { title: string }> = {
 export async function generateMetadata({
   params,
 }: {
-  params: { testType: string };
+  params: Promise<{ dashboardId: string; testType: string }>;
 }): Promise<Metadata> {
-  const testType = params.testType as TestType;
+  const { testType } = await params;
   return {
-    title: TEST_METADATA[testType]?.title ?? "테스트",
+    title: TEST_METADATA[testType as TestType]?.title ?? "테스트",
   };
 }
 
@@ -36,22 +38,23 @@ export default async function TestPage({
   params,
   searchParams,
 }: {
-  params: { testType: string };
-  searchParams: { groupId: string };
+  params: Promise<{ dashboardId: string; testType: string }>;
+  searchParams: Promise<{ testId: string }>;
 }) {
-  if (!VALID_TEST_TYPES.includes(params.testType as TestType)) {
+  const testId = (await searchParams).testId;
+  const { dashboardId, testType } = await params;
+
+  if (!VALID_TEST_TYPES.includes(testType as TestType)) {
     return handleAppError(ERROR_MESSAGES.TEST.NOT_FOUND);
   }
 
-  const testType = params.testType as TestType;
-
-  if (Object.keys(searchParams).length === 0) {
+  if (!dashboardId) {
     return handleAppError(ERROR_MESSAGES.GROUP.NOT_FOUND);
   }
 
-  const groupData = (await getGroup(searchParams.groupId)) as Group;
+  const dashboardData = await getDashboardData(dashboardId);
 
-  if (!groupData) {
+  if (!dashboardData) {
     return handleAppError(ERROR_MESSAGES.GROUP.NOT_FOUND);
   }
 
@@ -61,23 +64,28 @@ export default async function TestPage({
     return handleAppError(ERROR_MESSAGES.TEST.NOT_FOUND);
   }
 
-  if (groupData.deadline && new Date(groupData.deadline) < new Date()) {
+  const testResults = await getTestResults(dashboardId);
+  const targetTest = testResults.find(test => test.testId === testId);
+
+  if (!targetTest) {
+    return handleAppError(ERROR_MESSAGES.TEST.NOT_FOUND);
+  }
+
+  if (targetTest.deadline && new Date(targetTest.deadline) < new Date()) {
     return handleAppError(ERROR_MESSAGES.TEST.EXPIRED);
   }
 
   const session = await getServerSession(authOptions);
-  const userData = session ? await getUserData(session.user.id) : null;
-  const isAdmin = userData?.isAdmin ?? false;
-  const userType = userData?.userType ?? "individual";
-  const companyName =
-    userType === "business"
-      ? (userData as BusinessUser).companyInfo.companyName
-      : userData?.name ?? "";
+  const userData = await getUserData(session.user.id);
+  const isAdmin = userData.isAdmin;
+  const userType = userData.userType;
+  const companyName = dashboardData.organization.companyInfo.companyName;
 
   return (
     <TestAuthCheck
-      testType={testType}
-      groupData={groupData}
+      dashboardId={dashboardId}
+      testType={testType as TestType}
+      targetTest={targetTest}
       isAdmin={isAdmin}
       companyName={companyName}
       userType={userType}
