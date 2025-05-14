@@ -1,55 +1,84 @@
-export interface User {
+import { SugarTestResult } from "./sugartest/sugarTestResult";
+
+export interface SauceResult {
+  createdAt: string;
+  updatedAt: string;
+  testId: string;
+  categories: {
+    [key: string]: number[];
+  };
+  metadata: {
+    totalScore: number;
+    categoryScores: {
+      [key: string]: {
+        total: number;
+        average: number;
+      };
+    };
+    averageScore: number;
+    history: Array<{
+      date: string;
+      categories: { [key: string]: number[] };
+      averageScore: number;
+    }>;
+  };
+}
+
+export interface UserBase {
+  id: string;
+  email: string;
+  name: string;
+  userType: "individual" | "business";
+  status: "active" | "inactive";
+  isAdmin: boolean;
+  plan: string;
+  provider: string;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt: string;
+  agreeTerms: boolean;
+  dashboardId: string;
+}
+
+export type TestStatus = "pending" | "completed" | "expired";
+
+export interface Applicant {
+  name: string;
+  email: string;
+  id: string;
+  testStatus: TestStatus;
+  completedAt: string;
+  testResult: SugarTestResult | SauceResult | null;
+  team: { name: string; id: string };
+}
+
+export interface TestInfo {
+  testId: string;
+  type: "sugar" | "sauce";
+  deadline: string;
+  status: TestStatus;
+  createdBy: { name: string; id: string };
+  applicants: Applicant[];
+  teamId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Members {
+  teamInfo: { teamId: string; name: string };
   id: string;
   name: string;
   email: string;
-  isFirstLogin: boolean;
+  testIds: string[];
+}
+
+export interface UserTeam {
+  teamId: string;
+  dashboardId: string;
+  name: string;
   createdAt: string;
-  status: "active" | "inactive";
-  isAdmin: boolean;
-  provider: string;
-  lastLoginAt: string;
   updatedAt: string;
-  groups: string[];
-  plan: string;
-  userType: "individual" | "business";
-  agreeTerms: boolean;
-  sugarMetaData: {
-    averageScore: number;
-    categoryScores: Record<string, { total: number; average: number }>;
-    lastGroupId: string;
-    lastTestAt: string;
-    testCount: number;
-  };
-}
-
-export interface EmailUser extends User {
-  provider: "credentials";
-  password: string;
-}
-
-export interface BusinessUser extends User {
-  companyInfo: {
-    businessNumber: string;
-    representativeName: string;
-    address: string;
-    companyName: string;
-    businessType: string;
-    companyAddress: string;
-  };
-  managerInfo: {
-    position: string;
-    department: string;
-    workEmail: string;
-    workPhone: string;
-  };
-  additionalInfo?: {
-    companyWebsite?: string;
-    companySize?: string;
-    establishedYear?: string;
-    serviceUsage?: string;
-    recruitmentField?: string;
-    annualRecruitmentPlan?: string;
-    serviceUtilizationPlan?: string;
-  };
-  provider: "email";
+  createdBy: { name: string; id: string };
+  members: Members[];
+  testIds: string[];
 }

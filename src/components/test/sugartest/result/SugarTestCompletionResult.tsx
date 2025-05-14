@@ -6,7 +6,11 @@ import { MdHome, MdRefresh } from "react-icons/md";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
 import SugarScoreCard from "./SugarScoreCard";
 import { SugarAnalysisCard } from "./SugarAnalysisCard";
-import { stressUtils } from "../utils/getStressLevel";
+import {
+  stressUtils,
+  getStressLevelByTestResult,
+  calculateCategoryScore,
+} from "../utils/getStressLevel";
 
 interface SugarTestCompletionResultProps {
   name: string;
@@ -17,8 +21,8 @@ const SugarTestCompletionResult = ({
   name,
   testResult,
 }: SugarTestCompletionResultProps) => {
-  const stressLevel = stressUtils.getLevel(testResult.metadata.averageScore);
-
+  const stressLevel = getStressLevelByTestResult(testResult);
+  const categoryScores = calculateCategoryScore(testResult);
   return (
     <div className="bg-[#F7F7F9] border-b-2 border-gray-100 min-h-screen py-12 px-2 sm:px-6 lg:px-16 pt-20 sm:pt-32 mx-auto">
       <div className="flex flex-col h-full min-h-[calc(100vh-theme(spacing.16))]">
@@ -76,18 +80,11 @@ const SugarTestCompletionResult = ({
         <div className="flex-1 min-h-0 grid grid-cols-12 gap-4 mt-4">
           {/* 분석 카드 */}
           <div className="col-span-12 lg:col-span-8 xl:col-span-9">
-            <SugarAnalysisCard
-              score={testResult.metadata.averageScore}
-              name={name}
-            />
+            <SugarAnalysisCard scores={categoryScores} name={name} />
           </div>
           {/* 점수 카드 */}
           <div className="col-span-12 sm:col-span-8 md:col-span-6 lg:col-span-4 xl:col-span-3">
-            <SugarScoreCard
-              score={testResult.metadata.averageScore}
-              stressLevel={stressLevel}
-              categoryScores={testResult.metadata.categoryScores}
-            />
+            <SugarScoreCard scores={categoryScores} />
           </div>
         </div>
 

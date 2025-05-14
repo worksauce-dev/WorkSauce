@@ -13,13 +13,15 @@ interface SugarTestContainerProps {
   email: string;
   testData: SugarTest;
   isAdmin: boolean;
-  groupId: string;
+  testId: string;
+  dashboardId: string;
   submitTest: (
-    groupId: string,
+    dashboardId: string,
+    testId: string,
     email: string,
     name: string,
     testResult: SugarTestResult
-  ) => Promise<void>;
+  ) => Promise<{ success: boolean }>;
 }
 
 export const SugarTestContainer = ({
@@ -27,7 +29,8 @@ export const SugarTestContainer = ({
   email,
   testData,
   isAdmin,
-  groupId,
+  testId,
+  dashboardId,
   submitTest,
 }: SugarTestContainerProps) => {
   // 현재 카테고리 인덱스 상태
@@ -130,51 +133,25 @@ export const SugarTestContainer = ({
 
   // 결과 데이터 준비 함수 개선
   const prepareResultData = useCallback((): SugarTestResult => {
-    const categories: { [key: string]: number[] } = {};
-    const categoryScores: {
-      [key: string]: { total: number; average: number };
-    } = {};
-    let totalScore = 0;
-    let totalQuestions = 0;
+    const categories = {
+      strain: [] as number[],
+      uncertainty: [] as number[],
+      grievance: [] as number[],
+      autonomy: [] as number[],
+      recognition: [] as number[],
+    };
 
-    // 카테고리별 데이터 구성
     CATEGORIES.forEach(category => {
-      const scores: number[] = [];
-      let categoryTotal = 0;
-
-      // 해당 카테고리의 모든 답변 수집
       testData[category].forEach((_, index) => {
         const score = selectedAnswers[`${category}-${index}`];
-        // 점수가 없는 경우 예외 처리
-        if (score === undefined) {
+        if (score === undefined)
           throw new Error(`Missing answer for ${category} question ${index}`);
-        }
-        scores.push(score);
-        categoryTotal += score;
+        categories[category].push(score);
       });
-
-      categories[category] = scores;
-      categoryScores[category] = {
-        total: categoryTotal,
-        // 소수점 2자리까지만 표시
-        average: Number((categoryTotal / scores.length).toFixed(2)),
-      };
-
-      totalScore += categoryTotal;
-      totalQuestions += scores.length;
     });
 
-    return {
-      createdAt: new Date().toISOString(),
-      groupId,
-      categories,
-      metadata: {
-        totalScore,
-        categoryScores,
-        averageScore: Number((totalScore / totalQuestions).toFixed(2)),
-      },
-    };
-  }, [selectedAnswers, testData, groupId]);
+    return { createdAt: new Date().toISOString(), testId, categories };
+  }, [selectedAnswers, testData, testId]);
 
   // 제출 핸들러 개선
   const handleSubmit = async () => {
@@ -194,7 +171,18 @@ export const SugarTestContainer = ({
       }
 
       const resultData = prepareResultData();
-      await submitTest(groupId, email, name, resultData);
+
+      const { success } = await submitTest(
+        dashboardId,
+        testId,
+        email,
+        name,
+        resultData
+      );
+
+      if (!success) {
+        throw new Error("테스트 제출 중 오류가 발생했습니다.");
+      }
 
       // 테스트 결과 저장
       setTestResult(resultData);
@@ -246,7 +234,6 @@ export const SugarTestContainer = ({
         selectedAnswers={selectedAnswers}
       />
       <SugarProgressSection
-        groupId={groupId}
         name={name}
         email={email}
         progress={progress}

@@ -15,13 +15,15 @@ interface VerbTestProps {
   }[];
   name: string;
   email: string;
-  groupId: string;
+  dashboardId: string;
+  testId: string;
   submitTest: (
-    groupId: string,
+    dashboardId: string,
+    testId: string,
     email: string,
     name: string,
     testResult: ScoreType[]
-  ) => void;
+  ) => Promise<{ success: boolean }>;
   verbTestData: VerbType[];
   companyName: string;
   userType: string;
@@ -41,7 +43,8 @@ export const VerbTest = ({
   prevScores,
   name,
   email,
-  groupId,
+  dashboardId,
+  testId,
   submitTest,
   verbTestData,
   companyName,
@@ -216,7 +219,7 @@ export const VerbTest = ({
 
     try {
       // 테스트 결과 제출
-      await submitTest(groupId, email, name, scores);
+      await submitTest(dashboardId, testId, email, name, scores);
 
       // 기업회원의 테스트만 제출 완료 이메일 발송
       if (userType === "business") {

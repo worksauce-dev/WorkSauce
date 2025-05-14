@@ -2,10 +2,10 @@ export interface EmailOptions {
   to: string;
   userName: string;
   applicantName: string;
-  groupId: string;
+  testId: string;
   companyName: string;
   deadline: string;
-  userType: string;
+  isVerified: "verified" | "pending" | "rejected" | "notRequested";
   subject?: string;
   html?: string;
 }

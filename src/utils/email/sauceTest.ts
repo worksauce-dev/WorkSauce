@@ -1,10 +1,11 @@
 import { EmailOptions } from "@/types/email";
 import { deployUrl, sendTestEmail } from "./common";
+import { formatDate } from "../dateUtils";
 
 export function generateSauceTestEmailTemplate(
   userName: string = "",
   applicantName: string = "",
-  groupId: string = "",
+  testId: string = "",
   deadline: string = ""
 ): string {
   return `
@@ -34,7 +35,9 @@ export function generateSauceTestEmailTemplate(
         <p style="font-size: 18px; margin-bottom: 24px;">안녕하세요, <strong style="color: #F97316;">${applicantName}</strong>님.</p>
         <p style="margin-bottom: 16px;"><strong style="color: #1E293B;">${userName}</strong>님이 발송한 소스테스트를 보내드립니다.</p>
         <p style="margin-bottom: 8px;">소스테스트 진행 가능 기한은</p>
-        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${deadline}</strong>까지입니다.</p>
+        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${formatDate(
+          deadline
+        )}</strong>까지입니다.</p>
         <p style="color: #64748B; font-size: 14px;">꼭 기한 내에 진행해 주세요. 미진행으로 인한 책임은 ${applicantName}님께 있습니다.</p>
       </div>
 
@@ -54,7 +57,7 @@ export function generateSauceTestEmailTemplate(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/saucetest?groupId=${groupId}" 
+        <a href="${deployUrl}/test/saucetest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           소스테스트 진행하기
         </a>
@@ -90,7 +93,7 @@ export function generateSauceTestEmailTemplate(
 
 export function generateSauceTestEmailTemplateForBusiness(
   applicantName: string = "",
-  groupId: string = "",
+  testId: string = "",
   companyName: string = "",
   deadline: string = ""
 ): string {
@@ -121,7 +124,9 @@ export function generateSauceTestEmailTemplateForBusiness(
         <p style="font-size: 18px; margin-bottom: 24px;">안녕하세요, <strong style="color: #F97316;">${applicantName}</strong>님.</p>
         <p style="margin-bottom: 16px;"><strong style="color: #1E293B;">${companyName}</strong>에서 발송한 소스테스트를 보내드립니다.</p>
         <p style="margin-bottom: 8px;">소스테스트 진행 가능 기한은</p>
-        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${deadline}</strong>까지입니다.</p>
+        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${formatDate(
+          deadline
+        )}</strong>까지입니다.</p>
         <p style="color: #64748B; font-size: 14px;">기한 이후에는 진행하실 수 없으니, 꼭 기한 내에 진행해 주세요.</p>
       </div>
 
@@ -143,7 +148,7 @@ export function generateSauceTestEmailTemplateForBusiness(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/saucetest?groupId=${groupId}" 
+        <a href="${deployUrl}/test/saucetest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           소스테스트 진행하기
         </a>
@@ -197,10 +202,10 @@ export const sendSauceTestEmail = async (
     to,
     userName,
     applicantName,
-    groupId,
+    testId,
     companyName,
     deadline,
-    userType,
+    isVerified,
   } = options;
 
   return sendTestEmail({
@@ -209,20 +214,20 @@ export const sendSauceTestEmail = async (
       userName,
       applicantName,
       companyName,
-      userType
+      isVerified
     ),
     html:
-      userType === "business"
+      isVerified === "verified"
         ? generateSauceTestEmailTemplateForBusiness(
             applicantName,
-            groupId,
+            testId,
             companyName,
             deadline
           )
         : generateSauceTestEmailTemplate(
             userName,
             applicantName,
-            groupId,
+            testId,
             deadline
           ),
   });

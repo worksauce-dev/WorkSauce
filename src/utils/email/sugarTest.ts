@@ -1,10 +1,11 @@
 import { EmailOptions } from "@/types/email";
 import { deployUrl, sendTestEmail } from "./common";
+import { formatDate } from "@/utils/dateUtils";
 
 export function generateSugarTestEmailTemplate(
   userName: string = "",
   applicantName: string = "",
-  groupId: string = "",
+  testId: string = "",
   deadline: string = ""
 ): string {
   return `
@@ -35,7 +36,9 @@ export function generateSugarTestEmailTemplate(
         <p style="margin-bottom: 16px;"><strong style="color: #1E293B;">${userName}</strong>님이 발송한 슈가테스트 링크를 보내드립니다.</p>
         <p style="margin-bottom: 16px; color: #475569;">슈가테스트는 일상적인 업무 환경에서 경험할 수 있는 스트레스 수준을 확인하고 관리하는데 도움을 주는 진단도구입니다.</p>
         <p style="margin-bottom: 8px;">진단 참여 가능 기한은</p>
-        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${deadline}</strong>까지입니다.</p>
+        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${formatDate(
+          deadline
+        )}</strong>까지입니다.</p>
       </div>
 
       <!-- 주의사항 섹션 -->
@@ -61,7 +64,7 @@ export function generateSugarTestEmailTemplate(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/sugartest?groupId=${groupId}" 
+        <a href="${deployUrl}/test/sugartest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           슈가테스트 진행하기
         </a>
@@ -97,7 +100,7 @@ export function generateSugarTestEmailTemplate(
 
 export function generateSugarTestEmailTemplateForBusiness(
   applicantName: string = "",
-  groupId: string = "",
+  testId: string = "",
   companyName: string = "",
   deadline: string = ""
 ): string {
@@ -129,7 +132,9 @@ export function generateSugarTestEmailTemplateForBusiness(
         <p style="margin-bottom: 16px;"><strong style="color: #1E293B;">${companyName}</strong>에서 진행하는 슈가테스트 링크를 보내드립니다.</p>
         <p style="margin-bottom: 16px; color: #475569;">슈가테스트는 구성원들의 업무 스트레스 수준을 파악하고, 더 나은 근무 환경을 만들기 위한 진단도구입니다. 수집된 정보는 직원 복지 향상을 위한 기초 자료로 활용됩니다.</p>
         <p style="margin-bottom: 8px;">진단 참여 가능 기한은</p>
-        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${deadline}</strong>까지입니다.</p>
+        <p style="font-size: 18px; color: #F97316; font-weight: bold; margin: 8px 0;"><strong>${formatDate(
+          deadline
+        )}</strong>까지입니다.</p>
       </div>
 
       <!-- 주의사항 섹션 -->
@@ -156,7 +161,7 @@ export function generateSugarTestEmailTemplateForBusiness(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/sugartest?groupId=${groupId}" 
+        <a href="${deployUrl}/test/sugartest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           슈가테스트 진행하기
         </a>
@@ -195,9 +200,9 @@ function generateEmailSubject(
   userName: string,
   applicantName: string,
   companyName: string,
-  userType: string
+  isVerified: "verified" | "pending" | "rejected" | "notRequested"
 ): string {
-  if (userType === "business") {
+  if (isVerified === "verified") {
     return `[${companyName}] ${applicantName}님 슈가테스트를 시작해주세요!`;
   }
   return `[${userName}]님이 보내신 슈가테스트를 시작해주세요!`;
@@ -210,10 +215,10 @@ export async function sendSugarTestEmail(
     to,
     userName,
     applicantName,
-    groupId,
+    testId,
     companyName,
     deadline,
-    userType,
+    isVerified,
   } = options;
 
   return sendTestEmail({
@@ -222,20 +227,20 @@ export async function sendSugarTestEmail(
       userName,
       applicantName,
       companyName,
-      userType
+      isVerified
     ),
     html:
-      userType === "business"
+      isVerified === "verified"
         ? generateSugarTestEmailTemplateForBusiness(
             applicantName,
-            groupId,
+            testId,
             companyName,
             deadline
           )
         : generateSugarTestEmailTemplate(
             userName,
             applicantName,
-            groupId,
+            testId,
             deadline
           ),
   });

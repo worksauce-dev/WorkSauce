@@ -5,13 +5,14 @@ import { ANALYSIS_DATA } from "@/constants/sugartest";
 import { stressUtils } from "../utils/getStressLevel";
 
 interface SugarAnalysisCardProps {
-  score: number;
+  scores: Record<string, number>;
+
   name: string;
 }
 
-export function SugarAnalysisCard({ score, name }: SugarAnalysisCardProps) {
-  const level = stressUtils.getLevel(score);
-  const analysis = ANALYSIS_DATA[level](name, score.toFixed(1));
+export function SugarAnalysisCard({ scores, name }: SugarAnalysisCardProps) {
+  const level = stressUtils.getLevel(scores.strain);
+  const analysis = ANALYSIS_DATA[level](name, scores.strain.toFixed(1));
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm h-full flex flex-col">
