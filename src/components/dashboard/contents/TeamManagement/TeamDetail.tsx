@@ -5,6 +5,10 @@ import Breadcrumb from "./Breadcrumb";
 import { UserTeam, Members, TestInfo } from "@/types/user";
 import { useState } from "react";
 import { formatDate } from "@/utils/dateUtils";
+import {
+  getMemberLatestTestResult,
+  getTeamTestHistoryTrend,
+} from "@/utils/teamDashboardUtils";
 
 interface TeamDetailProps {
   selectedTeam: UserTeam | null;
@@ -36,115 +40,17 @@ const TeamDetail = ({
 
     if (!member) return null;
 
-    const categoryNameMap = {
-      strain: "업무강도",
-      uncertainty: "불확실성",
-      grievance: "대인관계",
-      autonomy: "업무 자율성",
-      recognition: "보상과 인정",
-    };
+    const latestResult = getMemberLatestTestResult(
+      member,
+      fetchTests,
+      activeTab
+    );
 
     const getScoreColor = (score: number) => {
       if (score >= 4) return "bg-red-500";
       if (score >= 3) return "bg-orange-500";
       if (score >= 2) return "bg-yellow-500";
       return "bg-green-500";
-    };
-
-    const renderCategoryScore = (category: string, score: number) => (
-      <div className="flex items-center justify-between py-2" key={category}>
-        <div className="flex items-center space-x-2">
-          <div className={`w-2 h-2 rounded-full ${getScoreColor(score)}`} />
-          <span className="text-sm text-gray-700">{category}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div
-              className={`h-full ${getScoreColor(
-                score
-              )} transition-all duration-300`}
-              style={{ width: `${(score / 5) * 100}%` }}
-            />
-          </div>
-          <span className="text-sm font-medium text-gray-900">{score}</span>
-        </div>
-      </div>
-    );
-
-    const renderTestResult = (type: "sugar" | "sauce") => {
-      // 1. type이 일치하는 테스트만 필터
-      const testsOfType = fetchTests.filter(test => test.type === type);
-
-      // 2. 해당 멤버의 결과가 있는 가장 최근 테스트 찾기
-      let result;
-      let completedAt;
-      for (const test of testsOfType) {
-        const applicant = test.applicants?.find(app => app.id === member.id);
-        if (applicant && applicant.testResult) {
-          result = applicant.testResult;
-          completedAt = applicant.completedAt;
-          break; // 가장 최근(최상단) 결과만 사용
-        }
-      }
-
-      if (!result?.categories) {
-        return (
-          <div className="flex items-center justify-center h-24 bg-gray-50 rounded-lg">
-            <span className="text-sm text-gray-500">미실시</span>
-          </div>
-        );
-      }
-
-      const categories = Object.entries(result.categories).map(
-        ([name, scores]) => {
-          const total = scores.reduce((a: number, b: number) => a + b, 0);
-          const average = Math.round(total / scores.length);
-          return {
-            name: categoryNameMap[name as keyof typeof categoryNameMap] || name,
-            score: Math.min(5, Math.max(1, average)),
-          };
-        }
-      );
-
-      const averageScore = Math.round(
-        categories.reduce((acc, { score }) => acc + score, 0) /
-          categories.length
-      );
-
-      return (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-1">
-              <span
-                className={`text-sm font-semibold ${
-                  averageScore >= 4 ? "text-red-600" : "text-gray-900"
-                }`}
-              >
-                {averageScore}점
-              </span>
-              <span className="text-xs text-gray-500">/ 5점</span>
-            </div>
-            <div className="text-xs text-gray-500">
-              {completedAt ? formatDate(completedAt) : ""}
-            </div>
-          </div>
-          <div className="space-y-1">
-            {categories.map(({ name, score }) =>
-              renderCategoryScore(name, score)
-            )}
-          </div>
-          <div className="mt-3 flex items-center space-x-2 text-xs text-gray-500">
-            <span className="inline-block w-2 h-2 rounded-full bg-green-500" />{" "}
-            양호
-            <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />{" "}
-            보통
-            <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />{" "}
-            높음
-            <span className="inline-block w-2 h-2 rounded-full bg-red-500" />{" "}
-            매우 높음
-          </div>
-        </div>
-      );
     };
 
     return (
@@ -178,7 +84,71 @@ const TeamDetail = ({
           </button>
         </div>
         <div className="h-[220px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {renderTestResult(activeTab)}
+          {!latestResult?.categories || latestResult.categories.length === 0 ? (
+            <div className="flex items-center justify-center h-24 bg-gray-50 rounded-lg">
+              <span className="text-sm text-gray-500">미실시</span>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-1">
+                  <span
+                    className={`text-sm font-semibold ${
+                      latestResult.averageScore >= 4
+                        ? "text-red-600"
+                        : "text-gray-900"
+                    }`}
+                  >
+                    {latestResult.averageScore}점
+                  </span>
+                  <span className="text-xs text-gray-500">/ 5점</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {latestResult.completedAt}
+                </div>
+              </div>
+              <div className="space-y-1">
+                {latestResult.categories.map(({ name, score }) => (
+                  <div
+                    className="flex items-center justify-between py-2"
+                    key={name}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={`w-2 h-2 rounded-full ${getScoreColor(
+                          score
+                        )}`}
+                      />
+                      <span className="text-sm text-gray-700">{name}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${getScoreColor(
+                            score
+                          )} transition-all duration-300`}
+                          style={{ width: `${(score / 5) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-gray-900">
+                        {score}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 flex items-center space-x-2 text-xs text-gray-500">
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500" />{" "}
+                양호
+                <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />{" "}
+                보통
+                <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />{" "}
+                높음
+                <span className="inline-block w-2 h-2 rounded-full bg-red-500" />{" "}
+                매우 높음
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

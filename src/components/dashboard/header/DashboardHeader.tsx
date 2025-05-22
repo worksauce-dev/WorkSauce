@@ -12,7 +12,6 @@ import {
   CollaboratorNotification,
 } from "@/types/dashboard";
 import NotificationModal from "./NotificationModal";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
 import { HeaderLogo } from "@/components/common/Logo";
 import { signOut } from "next-auth/react";
 
@@ -32,7 +31,6 @@ const DashboardHeader = ({
   acceptInviteRequest,
 }: HeaderProps): JSX.Element => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const { isWelcomeScreen, setIsWelcomeScreen } = useWelcomeScreenStore();
   const [processedNotifications, setProcessedNotifications] = useState<
     Set<string>
   >(new Set());
@@ -48,10 +46,6 @@ const DashboardHeader = ({
         )
     ).length;
   }, [dashboardData.notifications, processedNotifications]);
-
-  const handleToggleWelcomeScreen = () => {
-    setIsWelcomeScreen(!isWelcomeScreen);
-  };
 
   const handleNotificationAction = async (action: "accept" | "reject") => {
     if (action === "accept") {
@@ -137,28 +131,6 @@ const DashboardHeader = ({
 
         {/* 서비스 영역 */}
         <div className="flex items-center space-x-4">
-          {/* 환영 화면 토글 버튼 */}
-
-          <button
-            type="button"
-            className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none relative"
-            onClick={handleToggleWelcomeScreen}
-            aria-label={
-              isWelcomeScreen ? "대시보드 화면으로 이동" : "환영 화면으로 이동"
-            }
-            title={
-              isWelcomeScreen ? "대시보드 화면으로 이동" : "환영 화면으로 이동"
-            }
-          >
-            <MdHome
-              size={20}
-              className={isWelcomeScreen ? "text-primary-accent" : ""}
-            />
-            {isWelcomeScreen && (
-              <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-primary-accent rounded-full"></span>
-            )}
-          </button>
-
           <button
             type="button"
             className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm font-medium text-gray-700"

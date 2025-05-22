@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User } from "@/types/user";
 import {
   MdEmail,
   MdSend,
@@ -20,11 +19,10 @@ import { Group } from "@/types/group";
 import { sendSugarTestEmail } from "@/utils/email/sugarTest";
 import { useRouter } from "next/navigation";
 import { isValidEmail } from "@/utils/validation";
-import { BusinessUser } from "@/types/user";
 import { ContactGroup, Contact } from "@/types/contacts";
-
+import { UserBase } from "@/types/user";
 interface SendingTestProps {
-  user: User;
+  userBase: UserBase;
   groups: ContactGroup[];
   createGroup: (group: Group, userId: string) => Promise<string>;
   getContacts: (
@@ -115,7 +113,7 @@ const InputField: React.FC<InputFieldProps> = ({
 };
 
 export const SendingSugarTest = ({
-  user,
+  userBase,
   groups,
   createGroup,
   getContacts,
@@ -187,7 +185,7 @@ export const SendingSugarTest = ({
 
   const handleAddFromAddressBook = async (groupId: string) => {
     try {
-      const { contacts } = await getContacts(user.id, groupId);
+      const { contacts } = await getContacts(userBase.id, groupId);
       const group = groups.find(g => g.id === groupId);
 
       const newApplicants = contacts
@@ -222,65 +220,42 @@ export const SendingSugarTest = ({
 
     setIsSending(true);
 
-    const groupId = await createGroup(
-      {
-        name: groupName,
-        deadline: new Date(deadline).toISOString(),
-        applicants: applicants.map(applicant => ({
-          name: applicant.name.trim(),
-          email: applicant.email.trim().toLowerCase(),
-          groupId: "",
-          testStatus: "pending",
-          completedAt: null,
-          testResult: [],
-          groupName: groupName,
-        })),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        createdBy: { id: user.id, name: user.name },
-        updatedBy: { id: user.id, name: user.name },
-        groupId: "",
-        testType: "sugar",
-      },
-      user.id
-    );
+    // if (user.userType === "business") {
+    //   const businessUser = user as BusinessUser;
+    //   for (const applicant of applicants) {
+    //     const success = await sendSugarTestEmail({
+    //       to: applicant.email,
+    //       applicantName: applicant.name,
+    //       groupId: groupId,
+    //       userName: user.name,
+    //       companyName: businessUser.companyInfo.companyName,
+    //       deadline: deadline,
+    //       userType: user.userType,
+    //     });
 
-    if (user.userType === "business") {
-      const businessUser = user as BusinessUser;
-      for (const applicant of applicants) {
-        const success = await sendSugarTestEmail({
-          to: applicant.email,
-          applicantName: applicant.name,
-          groupId: groupId,
-          userName: user.name,
-          companyName: businessUser.companyInfo.companyName,
-          deadline: deadline,
-          userType: user.userType,
-        });
+    //     if (!success) {
+    //       alert("이메일 전송 실패. 다시 시도해주세요.");
+    //     }
+    //   }
+    // }
 
-        if (!success) {
-          alert("이메일 전송 실패. 다시 시도해주세요.");
-        }
-      }
-    }
+    // if (user.userType === "individual") {
+    //   for (const applicant of applicants) {
+    //     const success = await sendSugarTestEmail({
+    //       to: applicant.email,
+    //       applicantName: applicant.name,
+    //       groupId: groupId,
+    //       userName: user.name,
+    //       companyName: "",
+    //       deadline: deadline,
+    //       userType: user.userType,
+    //     });
 
-    if (user.userType === "individual") {
-      for (const applicant of applicants) {
-        const success = await sendSugarTestEmail({
-          to: applicant.email,
-          applicantName: applicant.name,
-          groupId: groupId,
-          userName: user.name,
-          companyName: "",
-          deadline: deadline,
-          userType: user.userType,
-        });
-
-        if (!success) {
-          alert("이메일 전송 실패. 다시 시도해주세요.");
-        }
-      }
-    }
+    //     if (!success) {
+    //       alert("이메일 전송 실패. 다시 시도해주세요.");
+    //     }
+    //   }
+    // }
 
     setIsSending(false);
     setGroupName("");
@@ -288,7 +263,7 @@ export const SendingSugarTest = ({
     setApplicants([]);
     setCurrentPage(1);
 
-    router.push(`/group/sugar/${groupId}`);
+    router.push(`/dashboard/${userBase.dashboardId}`);
   };
 
   const paginatedApplicants = applicants.slice(

@@ -12,14 +12,12 @@ import {
   MdBusinessCenter,
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { User } from "@/types/user";
+import { UserBase } from "@/types/user";
 import { IoGridOutline, IoListOutline } from "react-icons/io5";
 import { IoSearchOutline } from "react-icons/io5";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
-import TeamDashboard from "./TeamDashboard";
 
 interface TestSelectorProps {
-  user: User;
+  userBase: UserBase;
 }
 
 interface TestCard {
@@ -124,9 +122,8 @@ const testCards: TestCard[] = [
   },
 ];
 
-export const TestSelector = ({ user }: TestSelectorProps) => {
+export const TestSelector = ({ userBase }: TestSelectorProps) => {
   const router = useRouter();
-  const { isWelcomeScreen, setIsWelcomeScreen } = useWelcomeScreenStore();
   const [selectedCategory, setSelectedCategory] = useState<
     "all" | "recruitment" | "onboarding" | "development"
   >("all");
@@ -135,15 +132,9 @@ export const TestSelector = ({ user }: TestSelectorProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const testsPerPage = 8;
 
-  useEffect(() => {
-    setIsWelcomeScreen(true);
-  }, [setIsWelcomeScreen]);
-
   const handleCardClick = (card: TestCard) => {
     if (card.isReady) {
-      router.push(
-        `/devtest/${user.userBase.dashboardId}/testSelector/${card.id}`
-      );
+      router.push(`/devtest/${userBase.dashboardId}/testSelector/${card.id}`);
     }
   };
 
@@ -170,7 +161,7 @@ export const TestSelector = ({ user }: TestSelectorProps) => {
     { id: "development", label: "개발 진단" },
   ] as const;
 
-  return isWelcomeScreen ? (
+  return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 overflow-y-auto h-full scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
       {/* Search and View Toggle */}
       <div className="flex justify-between items-center mb-6">
@@ -371,7 +362,5 @@ export const TestSelector = ({ user }: TestSelectorProps) => {
         </div>
       )}
     </div>
-  ) : (
-    <TeamDashboard user={user} />
   );
 };

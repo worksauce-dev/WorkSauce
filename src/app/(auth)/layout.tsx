@@ -15,9 +15,9 @@ export default async function AdminLayout({
     redirect("/login?callbackUrl=/admin");
   }
 
-  const user = await getUserData(session.user.id);
+  const userBase = await getUserData(session.user.id);
 
-  const isAdmin = user?.isAdmin;
+  const isAdmin = userBase.isAdmin;
 
   if (!isAdmin) {
     redirect("/");
@@ -25,7 +25,7 @@ export default async function AdminLayout({
 
   return (
     <div className="w-full h-screen flex flex-col lg:flex-row bg-[#F7F7F9]">
-      <AdminSidebar user={user} />
+      <AdminSidebar userBase={userBase} />
       {children}
     </div>
   );

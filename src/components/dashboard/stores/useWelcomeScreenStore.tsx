@@ -1,15 +1,15 @@
-import { create } from "zustand";
+// import { create } from "zustand";
 
-interface WelcomeScreenStore {
-  isWelcomeScreen: boolean;
-  setIsWelcomeScreen: (isWelcomeScreen: boolean) => void;
-}
+// interface WelcomeScreenStore {
+//   isWelcomeScreen: boolean;
+//   setIsWelcomeScreen: (isWelcomeScreen: boolean) => void;
+// }
 
-const useWelcomeScreenStore = create<WelcomeScreenStore>(set => ({
-  isWelcomeScreen: true,
-  setIsWelcomeScreen: isWelcomeScreen => {
-    set({ isWelcomeScreen });
-  },
-}));
+// const useWelcomeScreenStore = create<WelcomeScreenStore>(set => ({
+//   isWelcomeScreen: true,
+//   setIsWelcomeScreen: isWelcomeScreen => {
+//     set({ isWelcomeScreen });
+//   },
+// }));
 
-export default useWelcomeScreenStore;
+// export default useWelcomeScreenStore;

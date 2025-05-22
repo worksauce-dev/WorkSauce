@@ -150,7 +150,12 @@ export const SugarTestContainer = ({
       });
     });
 
-    return { createdAt: new Date().toISOString(), testId, categories };
+    return {
+      createdAt: new Date().toISOString(),
+      testId,
+      categories,
+      type: "sugar",
+    };
   }, [selectedAnswers, testData, testId]);
 
   // 제출 핸들러 개선
