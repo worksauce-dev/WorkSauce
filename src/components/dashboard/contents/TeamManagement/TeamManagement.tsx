@@ -372,7 +372,7 @@ const TeamManagement = ({
               <CustomDropdown
                 options={[
                   { id: "sugar", name: "슈가 테스트" },
-                  { id: "sauce", name: "소스 테스트" },
+                  // { id: "sauce", name: "소스 테스트" },
                 ]}
                 selectedOption={selectedTestType}
                 onSelect={option =>
