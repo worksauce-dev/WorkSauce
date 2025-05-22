@@ -8,4 +8,5 @@ export interface EmailOptions {
   isVerified: "verified" | "pending" | "rejected" | "notRequested";
   subject?: string;
   html?: string;
+  dashboardId: string;
 }
