@@ -177,6 +177,8 @@ export const stressUtils = {
 export { getScoreColorClass as getScoreColor };
 
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+import { TestResult, SauceResult } from "@/types/test";
+import { isSugarTestResult, isSauceResult } from "@/utils/typeGuards";
 
 // 기존 함수들은 그대로 두고, testResult 객체를 받아서 카테고리별로 결과를 반환하는 함수 추가
 
@@ -240,18 +242,29 @@ export function getScoreColorClassByTestResult(testResult: SugarTestResult) {
   return result;
 }
 
-export function calculateCategoryScore(testResult: SugarTestResult) {
-  const result: Record<string, number> = {};
-  (
-    Object.keys(testResult.categories) as Array<
-      keyof typeof testResult.categories
-    >
-  ).forEach(category => {
-    const arr = testResult.categories[category];
-    const avg = arr.length
-      ? arr.reduce((a: number, b: number) => a + b, 0) / arr.length
-      : 0;
-    result[category] = avg;
-  });
-  return result;
+export function calculateCategoryScore(
+  testResult: TestResult
+): Record<string, number> {
+  if (isSugarTestResult(testResult)) {
+    const result: Record<string, number> = {};
+    Object.entries(testResult.categories).forEach(([category, scores]) => {
+      const avg = scores.length
+        ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length
+        : 0;
+      result[category] = avg;
+    });
+    return result;
+  }
+
+  if (isSauceResult(testResult)) {
+    return Object.entries(testResult.metadata.categoryScores).reduce(
+      (acc, [category, { average }]) => ({
+        ...acc,
+        [category]: average,
+      }),
+      {}
+    );
+  }
+
+  throw new Error("Invalid test result type");
 }

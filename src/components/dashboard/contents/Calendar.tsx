@@ -1,17 +1,16 @@
 "use client";
 
-import { Group } from "@/types/group";
-import { useState, useMemo, useCallback, memo, useEffect } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import React from "react";
 import { MdChevronLeft, MdChevronRight, MdClose } from "react-icons/md";
 import Link from "next/link";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
-import TeamDashboard from "./TeamDashboard";
-import { User } from "@/types/user";
+import { TestInfo, UserBase, UserTeam } from "@/types/user";
+import { processCalendarData } from "@/utils/teamDashboardUtils";
 
 interface DashboardCalendarProps {
-  user: User;
-  groups: Group[];
+  userBase: UserBase;
+  fetchTests: TestInfo[];
+  fetchTeams: UserTeam[];
 }
 
 const COLORS = [
@@ -42,11 +41,11 @@ const COLORS = [
   },
 ];
 
-// 그룹 ID에 따라 일관된 색상을 반환하는 함수
-const getGroupColor = (groupId: string) => {
-  if (!groupId) return COLORS[0];
+// 팀 ID에 따라 일관된 색상을 반환하는 함수
+const getTeamColor = (teamId: string) => {
+  if (!teamId) return COLORS[0];
 
-  const hash = groupId.split("").reduce((acc, char) => {
+  const hash = teamId.split("").reduce((acc, char) => {
     return char.charCodeAt(0) + ((acc << 5) - acc);
   }, 0);
 
@@ -56,11 +55,15 @@ const getGroupColor = (groupId: string) => {
 
 // EventIndicator 컴포넌트 메모이제이션
 const EventIndicator = memo(
-  ({ group, type }: { group: Group; type: "start" | "end" }) => {
-    const color = getGroupColor(group.groupId);
+  ({
+    event,
+  }: {
+    event: { id: string; name: string; type: "start" | "end"; teamId: string };
+  }) => {
+    const color = getTeamColor(event.teamId);
     return (
       <Link
-        href={`/group/${group.groupId}`}
+        href={`/dashboard/${event.teamId}/test/${event.id}`}
         className={`
           ${color.bg} ${color.text}
           px-2 py-0.5 rounded-full
@@ -75,69 +78,43 @@ const EventIndicator = memo(
       >
         <span
           className={`w-1.5 h-1.5 rounded-full ${
-            type === "start" ? "bg-green-500" : "bg-red-500"
+            event.type === "start" ? "bg-green-500" : "bg-red-500"
           }`}
         />
-        <span className="truncate">{group.name}</span>
+        <span className="truncate">{event.name}</span>
       </Link>
     );
   }
 );
 EventIndicator.displayName = "EventIndicator";
 
-const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
+const DashboardCalendar = ({
+  fetchTests,
+  fetchTeams,
+}: DashboardCalendarProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showModal, setShowModal] = useState(false);
   const today = useMemo(() => new Date(), []);
-  const { isWelcomeScreen, setIsWelcomeScreen } = useWelcomeScreenStore();
-
-  useEffect(() => {
-    setIsWelcomeScreen(true);
-  }, [setIsWelcomeScreen]);
 
   const MAX_VISIBLE_EVENTS = 2;
 
-  // 날짜별 그룹 필터링 최적화
-  const groupsByDate = useMemo(() => {
-    const cache = new Map<string, { starts: Group[]; ends: Group[] }>();
+  // 날짜별 테스트 필터링 최적화
+  const eventsByDate = useMemo(() => {
+    return processCalendarData(fetchTests, fetchTeams);
+  }, [fetchTests, fetchTeams]);
 
-    groups.forEach(group => {
-      // UTC 날짜를 한국 시간으로 변환
-      const startDate = new Date(group.createdAt)
-        .toLocaleString("sv", { timeZone: "Asia/Seoul" })
-        .split(" ")[0];
-      const endDate = new Date(group.deadline)
-        .toLocaleString("sv", { timeZone: "Asia/Seoul" })
-        .split(" ")[0];
-
-      // 시작일 캐싱
-      if (!cache.has(startDate)) {
-        cache.set(startDate, { starts: [], ends: [] });
-      }
-      cache.get(startDate)!.starts.push(group);
-
-      // 마감일 캐싱
-      if (!cache.has(endDate)) {
-        cache.set(endDate, { starts: [], ends: [] });
-      }
-      cache.get(endDate)!.ends.push(group);
-    });
-
-    return cache;
-  }, [groups]);
-
-  // 최적화된 getGroupsForDate
-  const getGroupsForDate = useCallback(
+  // 최적화된 getEventsForDate
+  const getEventsForDate = useCallback(
     (date: Date) => {
       if (!date) return { starts: [], ends: [] };
       // 날짜를 한국 시간 기준으로 변환
       const dateStr = date
         .toLocaleString("sv", { timeZone: "Asia/Seoul" })
         .split(" ")[0];
-      return groupsByDate.get(dateStr) || { starts: [], ends: [] };
+      return eventsByDate.get(dateStr) || { starts: [], ends: [] };
     },
-    [groupsByDate]
+    [eventsByDate]
   );
 
   // 달력 날짜 계산 최적화
@@ -182,7 +159,7 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
   const EventModal = () => {
     if (!selectedDate) return null;
 
-    const { starts, ends } = getGroupsForDate(selectedDate);
+    const { starts, ends } = getEventsForDate(selectedDate);
 
     return (
       <div
@@ -215,22 +192,22 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
-                {/* 시작하는 그룹 */}
+                {/* 시작하는 테스트 */}
                 <div>
                   <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 flex items-center">
                     <div className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                    시작하는 그룹
+                    시작하는 테스트
                   </h4>
                   <div className="space-y-1">
                     {starts.length > 0 ? (
-                      starts.map((group, idx) => (
+                      starts.map((event, idx) => (
                         <Link
                           key={`modal-start-${idx}`}
-                          href={`/group/${group.groupId}`}
+                          href={`/dashboard/${event.teamId}/test/${event.id}`}
                           className="flex items-center p-2.5 rounded-lg hover:bg-gray-50 w-full transition-all group"
                         >
                           <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors truncate">
-                            {group.name}
+                            {event.name}
                           </span>
                         </Link>
                       ))
@@ -240,22 +217,22 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
                   </div>
                 </div>
 
-                {/* 마감되는 그룹 */}
+                {/* 마감되는 테스트 */}
                 <div>
                   <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 flex items-center">
                     <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-                    마감되는 그룹
+                    마감되는 테스트
                   </h4>
                   <div className="space-y-1">
                     {ends.length > 0 ? (
-                      ends.map((group, idx) => (
+                      ends.map((event, idx) => (
                         <Link
                           key={`modal-end-${idx}`}
-                          href={`/group/${group.groupId}`}
+                          href={`/dashboard/${event.teamId}/test/${event.id}`}
                           className="flex items-center p-2.5 rounded-lg hover:bg-gray-50 w-full transition-all group"
                         >
                           <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors truncate">
-                            {group.name}
+                            {event.name}
                           </span>
                         </Link>
                       ))
@@ -280,7 +257,7 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
     });
   }, []);
 
-  return isWelcomeScreen ? (
+  return (
     <>
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 h-full overflow-hidden ">
         <div className="p-2 sm:p-4 md:p-6 h-full flex flex-col">
@@ -380,10 +357,10 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
                             )}
                           </div>
 
-                          {/* 그룹 일정 표시 */}
+                          {/* 테스트 일정 표시 */}
                           <div className="space-y-0.5 sm:space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent flex-1 min-h-0">
                             {(() => {
-                              const { starts, ends } = getGroupsForDate(date);
+                              const { starts, ends } = getEventsForDate(date);
                               const totalEvents = starts.length + ends.length;
                               const visibleStarts = starts.slice(
                                 0,
@@ -399,19 +376,17 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
 
                               return (
                                 <>
-                                  {visibleStarts.map((group, idx) => (
+                                  {visibleStarts.map((event, idx) => (
                                     <EventIndicator
                                       key={`start-${idx}`}
-                                      group={group}
-                                      type="start"
+                                      event={event}
                                     />
                                   ))}
 
-                                  {visibleEnds.map((group, idx) => (
+                                  {visibleEnds.map((event, idx) => (
                                     <EventIndicator
                                       key={`end-${idx}`}
-                                      group={group}
-                                      type="end"
+                                      event={event}
                                     />
                                   ))}
 
@@ -439,8 +414,6 @@ const DashboardCalendar = ({ user, groups }: DashboardCalendarProps) => {
       </div>
       {showModal && <EventModal />}
     </>
-  ) : (
-    <TeamDashboard user={user} />
   );
 };
 

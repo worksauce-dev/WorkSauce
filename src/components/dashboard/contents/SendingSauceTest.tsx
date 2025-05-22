@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { User } from "@/types/user";
 import {
   MdEmail,
   MdSend,
@@ -20,15 +19,11 @@ import {
 import * as XLSX from "xlsx";
 import { keyword } from "@/constants/saucetest";
 import Tooltip from "@/components/common/Tooltip";
-import { Group } from "@/types/group";
-import { sendSauceTestEmail } from "@/utils/email/sauceTest";
 import { useRouter } from "next/navigation";
 import { isValidEmail } from "@/utils/validation";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
-import TeamDashboard from "./TeamDashboard";
-
+import { UserBase } from "@/types/user";
 interface SendingTestProps {
-  user: User;
+  userBase: UserBase;
 }
 
 interface Applicant {
@@ -111,8 +106,7 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
-export const SendingSauceTest = ({ user }: SendingTestProps) => {
-  const { userBase, userTeam } = user;
+export const SendingSauceTest = ({ userBase }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
   const [currentApplicant, setCurrentApplicant] = useState<Applicant>({
@@ -131,7 +125,6 @@ export const SendingSauceTest = ({ user }: SendingTestProps) => {
     }[]
   >([]);
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
-  const { isWelcomeScreen } = useWelcomeScreenStore();
 
   const router = useRouter();
   const totalPages = Math.max(
@@ -357,7 +350,7 @@ export const SendingSauceTest = ({ user }: SendingTestProps) => {
     );
   };
 
-  return isWelcomeScreen ? (
+  return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden w-full max-w-6xl h-full mx-auto">
       <div className="flex flex-col lg:flex-row h-full">
         {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
@@ -704,7 +697,5 @@ export const SendingSauceTest = ({ user }: SendingTestProps) => {
         </div>
       )}
     </div>
-  ) : (
-    <TeamDashboard user={user} />
   );
 };

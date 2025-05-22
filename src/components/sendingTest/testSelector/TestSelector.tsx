@@ -12,13 +12,8 @@ import {
   MdBusinessCenter,
 } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { User } from "@/types/user";
 import { IoGridOutline, IoListOutline } from "react-icons/io5";
 import { IoSearchOutline } from "react-icons/io5";
-
-interface TestSelectorProps {
-  user: User;
-}
 
 interface TestCard {
   id: string;
@@ -131,7 +126,7 @@ const testCards: TestCard[] = [
   },
 ];
 
-export const TestSelector: React.FC<TestSelectorProps> = () => {
+export const TestSelector = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<
     "all" | "recruitment" | "onboarding" | "development"

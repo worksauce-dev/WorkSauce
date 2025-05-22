@@ -197,6 +197,7 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
         updatedAt: new Date().toISOString(),
         agreeTerms: true,
         dashboardId: "",
+        members: [],
       };
 
       await createUser(data, formData.password);
@@ -213,7 +214,7 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
 
       await getSession();
 
-      router.push("/devtest");
+      router.push("/dashboard");
     } catch (error) {
       setSubmitError(
         error instanceof Error

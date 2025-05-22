@@ -33,6 +33,7 @@ export const CATEGORY_EN_TRANSLATIONS = {
 
 export type KRCategoryKey = keyof typeof CATEGORY_KR_TRANSLATIONS;
 export type ENCategoryKey = keyof typeof CATEGORY_EN_TRANSLATIONS;
+
 export const ANALYSIS_DATA: StressAnalysis = {
   LOW: (name: string, score: string) => ({
     currentStatus: {

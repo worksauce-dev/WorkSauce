@@ -10,11 +10,11 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { Logo } from "@/components/common/Logo";
-import { User } from "@/types/user";
 import { signOut } from "next-auth/react";
+import { UserBase } from "@/types/user";
 
 interface SidebarProps {
-  user: User;
+  userBase: UserBase;
 }
 
 interface MenuItem {
@@ -63,11 +63,11 @@ const MenuItem: React.FC<{ item: MenuItem; isActive: boolean }> = ({
   </Link>
 );
 
-const UserInfo: React.FC<{ user: User }> = ({ user }) => (
+const UserInfo: React.FC<{ userBase: UserBase }> = ({ userBase }) => (
   <div className="flex justify-between items-center w-full px-4">
     <div className="flex flex-col gap-2 text-primary-gray">
-      <h6 className="text-base">안녕하세요 {user.name}님!</h6>
-      <h6 className="text-base">{user.email}</h6>
+      <h6 className="text-base">안녕하세요 {userBase.name}님!</h6>
+      <h6 className="text-base">{userBase.email}</h6>
     </div>
     <button
       onClick={() => signOut()}
@@ -79,13 +79,13 @@ const UserInfo: React.FC<{ user: User }> = ({ user }) => (
   </div>
 );
 
-export default function AdminSidebar({ user }: SidebarProps) {
+export default function AdminSidebar({ userBase }: SidebarProps) {
   const pathname = usePathname();
 
   return (
     <aside className="min-w-[300px] h-full hidden flex-col gap-8 px-9 py-6 bg-white lg:flex shadow-card">
       <Logo />
-      <UserInfo user={user} />
+      <UserInfo userBase={userBase} />
       <nav className="flex flex-col gap-8 border-t border-border pt-8">
         {menuItems.map(item => (
           <MenuItem

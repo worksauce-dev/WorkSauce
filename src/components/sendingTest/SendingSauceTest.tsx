@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { User } from "@/types/user";
 import {
   MdEmail,
   MdSend,
@@ -24,9 +23,9 @@ import { Group } from "@/types/group";
 import { sendSauceTestEmail } from "@/utils/email/sauceTest";
 import { useRouter } from "next/navigation";
 import { isValidEmail } from "@/utils/validation";
-import { BusinessUser } from "@/types/user";
+import { UserBase } from "@/types/user";
 interface SendingTestProps {
-  user: User;
+  userBase: UserBase;
   createGroup: (group: Group, userId: string) => Promise<string>;
 }
 
@@ -110,7 +109,10 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
-export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
+export const SendingSauceTest = ({
+  userBase,
+  createGroup,
+}: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
   const [currentApplicant, setCurrentApplicant] = useState<Applicant>({
@@ -214,50 +216,50 @@ export const SendingSauceTest = ({ user, createGroup }: SendingTestProps) => {
         })),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        createdBy: { id: user.id, name: user.name },
-        updatedBy: { id: user.id, name: user.name },
+        createdBy: { id: userBase.id, name: userBase.name },
+        updatedBy: { id: userBase.id, name: userBase.name },
         groupId: "",
         testType: "sauce",
       },
-      user.id
+      userBase.id
     );
 
-    if (user.userType === "business") {
-      const businessUser = user as BusinessUser;
-      for (const applicant of applicants) {
-        const success = await sendSauceTestEmail({
-          to: applicant.email,
-          applicantName: applicant.name,
-          groupId: groupId,
-          userName: user.name,
-          companyName: businessUser.companyInfo.companyName,
-          deadline: deadline,
-          userType: user.userType,
-        });
+    // if (userBase.userType === "business") {
+    //   const businessUser = userBase as BusinessUser;
+    //   for (const applicant of applicants) {
+    //     const success = await sendSauceTestEmail({
+    //       to: applicant.email,
+    //       applicantName: applicant.name,
+    //       groupId: groupId,
+    //       userName: user.name,
+    //       companyName: businessUser.companyInfo.companyName,
+    //       deadline: deadline,
+    //       userType: user.userType,
+    //     });
 
-        if (!success) {
-          alert("이메일 전송 실패. 다시 시도해주세요.");
-        }
-      }
-    }
+    //     if (!success) {
+    //       alert("이메일 전송 실패. 다시 시도해주세요.");
+    //     }
+    //   }
+    // }
 
-    if (user.userType === "individual") {
-      for (const applicant of applicants) {
-        const success = await sendSauceTestEmail({
-          to: applicant.email,
-          applicantName: applicant.name,
-          groupId: groupId,
-          userName: user.name,
-          companyName: "",
-          deadline: deadline,
-          userType: user.userType,
-        });
+    // if (user.userType === "individual") {
+    //   for (const applicant of applicants) {
+    //     const success = await sendSauceTestEmail({
+    //       to: applicant.email,
+    //       applicantName: applicant.name,
+    //       groupId: groupId,
+    //       userName: user.name,
+    //       companyName: "",
+    //       deadline: deadline,
+    //       userType: user.userType,
+    //     });
 
-        if (!success) {
-          alert("이메일 전송 실패. 다시 시도해주세요.");
-        }
-      }
-    }
+    //     if (!success) {
+    //       alert("이메일 전송 실패. 다시 시도해주세요.");
+    //     }
+    //   }
+    // }
 
     setIsSending(false);
     setGroupName("");

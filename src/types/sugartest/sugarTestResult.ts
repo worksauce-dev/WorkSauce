@@ -1,6 +1,7 @@
-export interface SugarTestResult {
-  createdAt: string;
-  testId: string;
+import { BaseTestResult } from "@/types/test";
+
+export interface SugarTestResult extends BaseTestResult {
+  type: "sugar";
   categories: {
     strain: number[];
     uncertainty: number[];

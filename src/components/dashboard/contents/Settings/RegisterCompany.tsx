@@ -11,22 +11,23 @@ import {
   MdPerson,
 } from "react-icons/md";
 import Link from "next/link";
-import { User } from "@/types/user";
-import TeamDashboard from "./TeamDashboard";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
+import { UserBase } from "@/types/user";
 import { Organization } from "@/types/dashboard";
 import { isValidEmail, isValidPhoneNumber } from "@/utils/validation";
-import { uploadPDF } from "../utils/uploadPDF";
+import { uploadPDF } from "../../utils/uploadPDF";
 
 interface RegisterCompanyProps {
-  user: User;
+  userBase: UserBase;
   verifyingCompany: (
     data: Organization,
     dashboardId: string
   ) => Promise<{ success: boolean; message: string }>;
 }
 
-const RegisterCompany = ({ user, verifyingCompany }: RegisterCompanyProps) => {
+const RegisterCompany = ({
+  userBase,
+  verifyingCompany,
+}: RegisterCompanyProps) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     companyInfo: {
@@ -64,11 +65,6 @@ const RegisterCompany = ({ user, verifyingCompany }: RegisterCompanyProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const { isWelcomeScreen, setIsWelcomeScreen } = useWelcomeScreenStore();
-
-  useEffect(() => {
-    setIsWelcomeScreen(true);
-  }, [setIsWelcomeScreen]);
 
   // 입력 필드 변경 핸들러
   const handleInputChange = (
@@ -304,10 +300,10 @@ const RegisterCompany = ({ user, verifyingCompany }: RegisterCompanyProps) => {
       const [businessLicenseResult, employmentCertificateResult] =
         await Promise.all([
           files.businessLicense
-            ? uploadPDF(files.businessLicense, user.userBase.dashboardId)
+            ? uploadPDF(files.businessLicense, userBase.dashboardId)
             : { success: true, result: null },
           files.employmentCertificate
-            ? uploadPDF(files.employmentCertificate, user.userBase.dashboardId)
+            ? uploadPDF(files.employmentCertificate, userBase.dashboardId)
             : { success: true, result: null },
         ]);
 
@@ -349,14 +345,14 @@ const RegisterCompany = ({ user, verifyingCompany }: RegisterCompanyProps) => {
 
       const result = await verifyingCompany(
         verificationData,
-        user.userBase.dashboardId
+        userBase.dashboardId
       );
 
       if (result.success) {
         alert("회사 인증 요청이 성공적으로 제출되었습니다.");
         setIsSuccess(true);
         setTimeout(() => {
-          router.push(`/devtest/${user.userBase.dashboardId}`);
+          router.push(`/dashboard/${userBase.dashboardId}`);
         }, 3000);
       } else {
         alert(result.message);
@@ -369,7 +365,7 @@ const RegisterCompany = ({ user, verifyingCompany }: RegisterCompanyProps) => {
     }
   };
 
-  return isWelcomeScreen ? (
+  return (
     <main className="flex-1 p-6 overflow-auto bg-gray-50 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
       <div className="max-w-6xl mx-auto">
         {isSuccess ? (
@@ -953,8 +949,6 @@ const RegisterCompany = ({ user, verifyingCompany }: RegisterCompanyProps) => {
         )}
       </div>
     </main>
-  ) : (
-    <TeamDashboard user={user} />
   );
 };
 

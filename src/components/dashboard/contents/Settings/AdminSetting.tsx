@@ -1,5 +1,4 @@
 "use client";
-import { User } from "@/types/user";
 import { useEffect, useState } from "react";
 import {
   MdPeople,
@@ -16,14 +15,8 @@ import {
   MdAdd,
   MdUndo,
 } from "react-icons/md";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
-import TeamDashboard from "./TeamDashboard";
-interface AdminSettingProps {
-  user: User;
-}
 
-const AdminSetting = ({ user }: AdminSettingProps) => {
-  const { isWelcomeScreen, setIsWelcomeScreen } = useWelcomeScreenStore();
+const AdminSetting = () => {
   const [activeTab, setActiveTab] = useState<"users" | "logs">("users");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState("");
@@ -48,10 +41,6 @@ const AdminSetting = ({ user }: AdminSettingProps) => {
       date: "2024-03-18",
     },
   ]);
-
-  useEffect(() => {
-    setIsWelcomeScreen(true);
-  }, [setIsWelcomeScreen]);
 
   // 로그 관련 상태
   const [searchQuery, setSearchQuery] = useState("");
@@ -173,7 +162,7 @@ const AdminSetting = ({ user }: AdminSettingProps) => {
     }
   };
 
-  return isWelcomeScreen ? (
+  return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 h-full overflow-hidden">
       <div className="p-4 sm:p-6 h-full flex flex-col">
         {/* 헤더 */}
@@ -503,8 +492,6 @@ const AdminSetting = ({ user }: AdminSettingProps) => {
         </div>
       )}
     </div>
-  ) : (
-    <TeamDashboard user={user} />
   );
 };
 

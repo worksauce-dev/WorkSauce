@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/types/user";
+import { UserBase } from "@/types/user";
 import React, { useState } from "react";
 import { MdLock, MdPerson, MdWarning } from "react-icons/md";
 
@@ -35,7 +35,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   );
 };
 
-const AccountSetting = ({ user }: { user: User }) => {
+const AccountSetting = ({ userBase }: { userBase: UserBase }) => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -72,7 +72,7 @@ const AccountSetting = ({ user }: { user: User }) => {
                 이름
               </label>
               <div className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-100">
-                {user.userBase.name}
+                {userBase.name}
               </div>
             </div>
             <div>
@@ -80,7 +80,7 @@ const AccountSetting = ({ user }: { user: User }) => {
                 이메일
               </label>
               <div className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-100">
-                {user.userBase.email}
+                {userBase.email}
               </div>
             </div>
           </div>

@@ -1,26 +1,11 @@
 "use client";
 
-import {
-  MdPerson,
-  MdPeople,
-  MdNote,
-  MdKeyboardArrowDown,
-  MdArrowBack,
-  MdEdit,
-} from "react-icons/md";
+import { MdPerson, MdPeople, MdNote } from "react-icons/md";
 import Breadcrumb from "./Breadcrumb";
-import {
-  STRESS_LEVELS,
-  CATEGORY_KR_TRANSLATIONS,
-  ANALYSIS_DATA,
-  CATEGORY_DESCRIPTIONS,
-  CATEGORY_EN_TRANSLATIONS,
-} from "@/constants/sugartest";
+import { STRESS_LEVELS, ANALYSIS_DATA } from "@/constants/sugartest";
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -28,11 +13,10 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { UserTeam, Members, TestInfo, SauceResult } from "@/types/user";
+import { UserTeam, Members, TestInfo } from "@/types/user";
 import { useState } from "react";
 import CustomDropdown from "@/components/common/CustomDropdown";
-import { calculateCategoryScore } from "@/components/test/sugartest/utils/getStressLevel";
-import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+import { getMemberLatestTestData } from "@/utils/teamDashboardUtils";
 interface MemberDetailProps {
   selectedMember: Members;
   selectedTeam: UserTeam | null;
@@ -42,20 +26,6 @@ interface MemberDetailProps {
   setSelectedTeam: (team: UserTeam | null) => void;
   setSelectedMember: (member: Members | null) => void;
   fetchTests: TestInfo[];
-}
-
-interface TestType {
-  id: "sugar" | "sauce";
-  name: string;
-  result?: {
-    categories: Record<string, number[]>;
-    metadata: {
-      history: Array<{
-        date: string;
-        categories: Record<string, number[]>;
-      }>;
-    };
-  };
 }
 
 const MemberDetail = ({
@@ -70,44 +40,22 @@ const MemberDetail = ({
 }: MemberDetailProps) => {
   const [selectedTest, setSelectedTest] = useState<"sugar" | "sauce">("sugar");
 
-  const { testIds } = selectedMember;
-  const matchedTests = fetchTests.filter(test => testIds.includes(test.testId));
-  const latestTest = matchedTests
-    .filter(test => test.type === selectedTest)
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )[0];
-
-  const applicant = latestTest.applicants.find(
-    app => app.id === selectedMember.id
+  // Get initial test data to set the latest test ID
+  const initialTestData = getMemberLatestTestData(
+    selectedMember,
+    fetchTests,
+    selectedTest
+  );
+  const [selectedTestId, setSelectedTestId] = useState<string>(
+    initialTestData?.selectedTestId || ""
   );
 
-  if (!applicant) {
-    return null;
-  }
-
-  const result = applicant.testResult as SugarTestResult;
-  const completedAt = applicant.completedAt;
-
-  function translateCategoryKeyToKR(key: string) {
-    return CATEGORY_KR_TRANSLATIONS[
-      key as keyof typeof CATEGORY_KR_TRANSLATIONS
-    ];
-  }
-
-  function translateCategoryKeyToEN(key: string) {
-    return CATEGORY_EN_TRANSLATIONS[
-      key as keyof typeof CATEGORY_EN_TRANSLATIONS
-    ];
-  }
-
-  const categoryScore = calculateCategoryScore(result);
-  const averageScore =
-    Object.values(categoryScore).reduce((acc, curr) => acc + curr, 0) /
-    Object.keys(categoryScore).length;
-
-  console.log(averageScore);
+  const testData = getMemberLatestTestData(
+    selectedMember,
+    fetchTests,
+    selectedTest,
+    selectedTestId
+  );
 
   return (
     <div className="">
@@ -151,9 +99,21 @@ const MemberDetail = ({
                     { id: "sauce", name: "소스 테스트" },
                   ]}
                   selectedOption={selectedTest}
-                  onSelect={option =>
-                    setSelectedTest(option as "sugar" | "sauce")
+                  onSelect={option => {
+                    setSelectedTest(option as "sugar" | "sauce");
+                    setSelectedTestId(""); // Reset selected test when changing test type
+                  }}
+                />
+                <CustomDropdown
+                  fullWidth={false}
+                  options={
+                    testData?.testHistory.map(test => ({
+                      id: test.id,
+                      name: test.name,
+                    })) || []
                   }
+                  selectedOption={selectedTestId}
+                  onSelect={option => setSelectedTestId(option as string)}
                 />
                 <button
                   onClick={() => setIsChangeTeamModalOpen(true)}
@@ -167,7 +127,7 @@ const MemberDetail = ({
           </header>
 
           <div className="space-y-8">
-            {result ? (
+            {testData ? (
               <div className="space-y-8">
                 <div className="bg-gray-50 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -176,28 +136,22 @@ const MemberDetail = ({
                         종합 진단 결과
                       </h2>
                       <p className="text-sm text-gray-500 mt-1">
-                        {completedAt
-                          ? new Date(completedAt).toLocaleDateString("ko-KR", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })
-                          : ""}
+                        {testData.completedAt}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span
                         className={`text-3xl font-bold ${
-                          averageScore >= 4.1
+                          testData.averageScore >= 4.1
                             ? "text-red-600"
-                            : averageScore >= 3.1
+                            : testData.averageScore >= 3.1
                             ? "text-orange-600"
-                            : averageScore >= 2.1
+                            : testData.averageScore >= 2.1
                             ? "text-yellow-600"
                             : "text-green-600"
                         }`}
                       >
-                        {averageScore}
+                        {testData.averageScore}
                       </span>
                       <span className="text-base text-gray-600">/ 5점</span>
                     </div>
@@ -205,11 +159,11 @@ const MemberDetail = ({
                   <div className="mt-4">
                     <div
                       className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium ${
-                        averageScore >= 4.1
+                        testData.averageScore >= 4.1
                           ? "bg-red-100 text-red-700"
-                          : averageScore >= 3.1
+                          : testData.averageScore >= 3.1
                           ? "bg-orange-100 text-orange-700"
-                          : averageScore >= 2.1
+                          : testData.averageScore >= 2.1
                           ? "bg-yellow-100 text-yellow-700"
                           : "bg-green-100 text-green-700"
                       }`}
@@ -217,24 +171,13 @@ const MemberDetail = ({
                       {
                         STRESS_LEVELS.find(
                           level =>
-                            averageScore >= level.min &&
-                            averageScore <= level.max
+                            testData.averageScore >= level.min &&
+                            testData.averageScore <= level.max
                         )?.label
                       }
                     </div>
                     <p className="text-gray-600 mt-3">
-                      {
-                        ANALYSIS_DATA[
-                          averageScore >= 4.1
-                            ? "CRITICAL"
-                            : averageScore >= 3.1
-                            ? "HIGH"
-                            : averageScore >= 2.1
-                            ? "MODERATE"
-                            : "LOW"
-                        ](selectedMember.name, averageScore.toString())
-                          .currentStatus.description
-                      }
+                      {testData.currentStatusDescription}
                     </p>
                   </div>
                 </div>
@@ -247,21 +190,7 @@ const MemberDetail = ({
                     <div className="h-[280px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
-                          data={Object.entries(result.categories).map(
-                            ([name, scores]) => {
-                              const total = (scores as number[]).reduce(
-                                (a, b) => a + b,
-                                0
-                              );
-                              const average = Math.round(
-                                total / (scores as number[]).length
-                              );
-                              return {
-                                name: translateCategoryKeyToKR(name),
-                                score: Math.min(5, Math.max(1, average)),
-                              };
-                            }
-                          )}
+                          data={testData.categories}
                           layout="vertical"
                           margin={{
                             top: 10,
@@ -279,7 +208,7 @@ const MemberDetail = ({
                           />
                           <XAxis
                             type="number"
-                            domain={[1, 5]}
+                            domain={[0, 5]}
                             tick={{ fontSize: 12 }}
                             tickLine={false}
                             axisLine={{ stroke: "#e2e8f0" }}
@@ -315,53 +244,18 @@ const MemberDetail = ({
                               if (active && payload && payload.length) {
                                 const data = payload[0].payload;
                                 const score = data.score;
-
-                                const categoryKey = translateCategoryKeyToEN(
-                                  data.name
-                                );
-
-                                // categoryKey가 없거나 빈 문자열인 경우 처리
-                                if (!categoryKey) {
-                                  return null;
-                                }
-
-                                const categoryId =
-                                  categoryKey[0].toUpperCase() as keyof typeof CATEGORY_DESCRIPTIONS;
-                                const categoryInfo =
-                                  CATEGORY_DESCRIPTIONS[categoryId];
-
-                                // categoryInfo가 없는 경우 처리
-                                if (!categoryInfo || !categoryInfo.levels) {
-                                  return null;
-                                }
-
-                                const currentLevel = Object.entries(
-                                  categoryInfo.levels
-                                ).find(
-                                  ([_, range]) =>
-                                    score >= range.min && score <= range.max
-                                )?.[1];
-
-                                if (!currentLevel) {
-                                  return null;
-                                }
+                                const categoryName = data.name;
 
                                 return (
                                   <div className="bg-white px-4 py-3 border border-gray-100 rounded-lg shadow-md space-y-3 max-w-xs">
-                                    {/* 카테고리 정보 */}
                                     <div className="space-y-1">
                                       <div className="text-sm font-medium text-gray-900">
-                                        {data.name}
-                                      </div>
-                                      <div className="text-xs text-gray-500">
-                                        {categoryInfo.name}
+                                        {categoryName}
                                       </div>
                                       <div className="text-2xl font-semibold text-orange-600">
                                         {score}점
                                       </div>
                                     </div>
-
-                                    {/* 현재 상태 설명 */}
                                     <div
                                       className={`text-sm px-2 py-1.5 rounded ${
                                         score >= 4.1
@@ -373,7 +267,13 @@ const MemberDetail = ({
                                           : "bg-green-50 text-green-700"
                                       }`}
                                     >
-                                      {currentLevel.description}
+                                      {score >= 4.1
+                                        ? "심각한 수준의 스트레스가 발생하고 있습니다."
+                                        : score >= 3.1
+                                        ? "높은 수준의 스트레스가 발생하고 있습니다."
+                                        : score >= 2.1
+                                        ? "보통 수준의 스트레스가 발생하고 있습니다."
+                                        : "낮은 수준의 스트레스가 발생하고 있습니다."}
                                     </div>
                                   </div>
                                 );
@@ -382,28 +282,20 @@ const MemberDetail = ({
                             }}
                           />
                           <Bar dataKey="score" radius={[0, 4, 4, 0]}>
-                            {Object.entries(result.categories).map(
-                              ([name, scores]) => (
-                                <Cell
-                                  key={name}
-                                  fill={
-                                    scores.reduce((a, b) => a + b, 0) /
-                                      scores.length >=
-                                    4.1
-                                      ? "#ef4444"
-                                      : scores.reduce((a, b) => a + b, 0) /
-                                          scores.length >=
-                                        3.1
-                                      ? "#f97316"
-                                      : scores.reduce((a, b) => a + b, 0) /
-                                          scores.length >=
-                                        2.1
-                                      ? "#facc15"
-                                      : "#22c55e"
-                                  }
-                                />
-                              )
-                            )}
+                            {testData.categories.map(({ name, score }) => (
+                              <Cell
+                                key={name}
+                                fill={
+                                  score >= 4.1
+                                    ? "#ef4444"
+                                    : score >= 3.1
+                                    ? "#f97316"
+                                    : score >= 2.1
+                                    ? "#facc15"
+                                    : "#22c55e"
+                                }
+                              />
+                            ))}
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
@@ -422,16 +314,16 @@ const MemberDetail = ({
                       </h4>
                       <ul className="space-y-3">
                         {ANALYSIS_DATA[
-                          averageScore >= 4.1
+                          testData.averageScore >= 4.1
                             ? "CRITICAL"
-                            : averageScore >= 3.1
+                            : testData.averageScore >= 3.1
                             ? "HIGH"
-                            : averageScore >= 2.1
+                            : testData.averageScore >= 2.1
                             ? "MODERATE"
                             : "LOW"
                         ](
                           selectedMember.name,
-                          averageScore.toString()
+                          testData.averageScore.toString()
                         ).currentStatus.workManagement.items.map(
                           (item, index) => (
                             <li
@@ -453,16 +345,16 @@ const MemberDetail = ({
                       </h4>
                       <ul className="space-y-3">
                         {ANALYSIS_DATA[
-                          averageScore >= 4.1
+                          testData.averageScore >= 4.1
                             ? "CRITICAL"
-                            : averageScore >= 3.1
+                            : testData.averageScore >= 3.1
                             ? "HIGH"
-                            : averageScore >= 2.1
+                            : testData.averageScore >= 2.1
                             ? "MODERATE"
                             : "LOW"
                         ](
                           selectedMember.name,
-                          averageScore.toString()
+                          testData.averageScore.toString()
                         ).organizationalLife.current.items.map(
                           (item, index) => (
                             <li
@@ -481,147 +373,6 @@ const MemberDetail = ({
                   </div>
                 </div>
 
-                {/* {result.metadata?.history &&
-                  result.metadata.history.length > 1 && (
-                    <div className="border-t border-gray-100 pt-8">
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          스트레스 변화 추이
-                        </h3>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-500">
-                            이전 대비
-                          </span>
-                          <span
-                            className={`text-sm font-medium ${
-                              result.score >
-                              result.metadata.history[
-                                result.metadata.history.length - 2
-                              ].score
-                                ? "text-red-600"
-                                : "text-green-600"
-                            }`}
-                          >
-                            {result.score >
-                            result.metadata.history[
-                              result.metadata.history.length - 2
-                            ].score
-                              ? "+"
-                              : ""}
-                            {(
-                              result.score -
-                              result.metadata.history[
-                                result.metadata.history.length - 2
-                              ].score
-                            ).toFixed(1)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="bg-white rounded-xl border border-gray-100 p-6">
-                        <div className="h-[240px]">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart
-                              data={result.metadata.history.map(item => ({
-                                date: new Date(item.date).toLocaleDateString(
-                                  "ko-KR",
-                                  {
-                                    month: "short",
-                                    day: "numeric",
-                                  }
-                                ),
-                                score: Math.round(item.score * 10) / 10,
-                              }))}
-                              margin={{
-                                top: 10,
-                                right: 10,
-                                left: 10,
-                                bottom: 20,
-                              }}
-                            >
-                              <CartesianGrid
-                                strokeDasharray="3 3"
-                                vertical={false}
-                                stroke="#f1f5f9"
-                              />
-                              <XAxis
-                                dataKey="date"
-                                tick={{ fontSize: 12 }}
-                                tickLine={false}
-                                axisLine={{
-                                  stroke: "#e2e8f0",
-                                }}
-                              />
-                              <YAxis
-                                domain={[1, 5]}
-                                tick={{ fontSize: 12 }}
-                                tickLine={false}
-                                axisLine={{
-                                  stroke: "#e2e8f0",
-                                }}
-                                tickCount={5}
-                              />
-                              <Tooltip
-                                content={({ active, payload, label }) => {
-                                  if (active && payload && payload.length) {
-                                    const score = payload[0].value as number;
-                                    const level = STRESS_LEVELS.find(
-                                      level =>
-                                        score >= level.min && score <= level.max
-                                    );
-                                    return (
-                                      <div className="bg-white px-4 py-3 border border-gray-100 rounded-lg shadow-md space-y-2">
-                                        <div className="space-y-1">
-                                          <div className="text-sm text-gray-600">
-                                            {label}
-                                          </div>
-                                          <div className="text-2xl font-semibold text-orange-600">
-                                            {score}점
-                                          </div>
-                                        </div>
-                                        <div
-                                          className={`text-sm px-2 py-1 rounded ${
-                                            score >= 4.1
-                                              ? "bg-red-50 text-red-700"
-                                              : score >= 3.1
-                                              ? "bg-orange-50 text-orange-700"
-                                              : score >= 2.1
-                                              ? "bg-yellow-50 text-yellow-700"
-                                              : "bg-green-50 text-green-700"
-                                          }`}
-                                        >
-                                          {level?.label}
-                                        </div>
-                                      </div>
-                                    );
-                                  }
-                                  return null;
-                                }}
-                              />
-                              <Line
-                                type="monotone"
-                                dataKey="score"
-                                stroke="#f97316"
-                                strokeWidth={2.5}
-                                dot={{
-                                  fill: "#fff",
-                                  stroke: "#f97316",
-                                  strokeWidth: 2,
-                                  r: 4,
-                                }}
-                                activeDot={{
-                                  r: 6,
-                                  fill: "#f97316",
-                                  stroke: "#fff",
-                                  strokeWidth: 2,
-                                }}
-                              />
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
-
                 <div className="border-t border-gray-100 pt-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-6">
                     개선 제안
@@ -632,43 +383,47 @@ const MemberDetail = ({
                         <h4 className="text-base font-medium text-orange-900 mb-3">
                           {
                             ANALYSIS_DATA[
-                              averageScore >= 4.1
+                              testData.averageScore >= 4.1
                                 ? "CRITICAL"
-                                : averageScore >= 3.1
+                                : testData.averageScore >= 3.1
                                 ? "HIGH"
-                                : averageScore >= 2.1
+                                : testData.averageScore >= 2.1
                                 ? "MODERATE"
                                 : "LOW"
-                            ](selectedMember.name, averageScore.toString())
-                              .suggestion.shortTerm.title
+                            ](
+                              selectedMember.name,
+                              testData.averageScore.toString()
+                            ).suggestion.shortTerm.title
                           }{" "}
                           (
                           {
                             ANALYSIS_DATA[
-                              averageScore >= 4.1
+                              testData.averageScore >= 4.1
                                 ? "CRITICAL"
-                                : averageScore >= 3.1
+                                : testData.averageScore >= 3.1
                                 ? "HIGH"
-                                : averageScore >= 2.1
+                                : testData.averageScore >= 2.1
                                 ? "MODERATE"
                                 : "LOW"
-                            ](selectedMember.name, averageScore.toString())
-                              .suggestion.shortTerm.period
+                            ](
+                              selectedMember.name,
+                              testData.averageScore.toString()
+                            ).suggestion.shortTerm.period
                           }
                           )
                         </h4>
                         <ul className="space-y-3">
                           {ANALYSIS_DATA[
-                            averageScore >= 4.1
+                            testData.averageScore >= 4.1
                               ? "CRITICAL"
-                              : averageScore >= 3.1
+                              : testData.averageScore >= 3.1
                               ? "HIGH"
-                              : averageScore >= 2.1
+                              : testData.averageScore >= 2.1
                               ? "MODERATE"
                               : "LOW"
                           ](
                             selectedMember.name,
-                            averageScore.toString()
+                            testData.averageScore.toString()
                           ).suggestion.shortTerm.items.map((item, index) => (
                             <li
                               key={index}
@@ -686,43 +441,47 @@ const MemberDetail = ({
                         <h4 className="text-base font-medium text-orange-900 mb-3">
                           {
                             ANALYSIS_DATA[
-                              averageScore >= 4.1
+                              testData.averageScore >= 4.1
                                 ? "CRITICAL"
-                                : averageScore >= 3.1
+                                : testData.averageScore >= 3.1
                                 ? "HIGH"
-                                : averageScore >= 2.1
+                                : testData.averageScore >= 2.1
                                 ? "MODERATE"
                                 : "LOW"
-                            ](selectedMember.name, averageScore.toString())
-                              .suggestion.longTerm.title
+                            ](
+                              selectedMember.name,
+                              testData.averageScore.toString()
+                            ).suggestion.longTerm.title
                           }{" "}
                           (
                           {
                             ANALYSIS_DATA[
-                              averageScore >= 4.1
+                              testData.averageScore >= 4.1
                                 ? "CRITICAL"
-                                : averageScore >= 3.1
+                                : testData.averageScore >= 3.1
                                 ? "HIGH"
-                                : averageScore >= 2.1
+                                : testData.averageScore >= 2.1
                                 ? "MODERATE"
                                 : "LOW"
-                            ](selectedMember.name, averageScore.toString())
-                              .suggestion.longTerm.period
+                            ](
+                              selectedMember.name,
+                              testData.averageScore.toString()
+                            ).suggestion.longTerm.period
                           }
                           )
                         </h4>
                         <ul className="space-y-3">
                           {ANALYSIS_DATA[
-                            averageScore >= 4.1
+                            testData.averageScore >= 4.1
                               ? "CRITICAL"
-                              : averageScore >= 3.1
+                              : testData.averageScore >= 3.1
                               ? "HIGH"
-                              : averageScore >= 2.1
+                              : testData.averageScore >= 2.1
                               ? "MODERATE"
                               : "LOW"
                           ](
                             selectedMember.name,
-                            averageScore.toString()
+                            testData.averageScore.toString()
                           ).suggestion.longTerm.items.map((item, index) => (
                             <li
                               key={index}
@@ -748,14 +507,14 @@ const MemberDetail = ({
                     <p className="text-gray-600">
                       {
                         ANALYSIS_DATA[
-                          averageScore >= 4.1
+                          testData.averageScore >= 4.1
                             ? "CRITICAL"
-                            : averageScore >= 3.1
+                            : testData.averageScore >= 3.1
                             ? "HIGH"
-                            : averageScore >= 2.1
+                            : testData.averageScore >= 2.1
                             ? "MODERATE"
                             : "LOW"
-                        ](selectedMember.name, averageScore.toString())
+                        ](selectedMember.name, testData.averageScore.toString())
                           .overallOpinion.summary
                       }
                     </p>
@@ -763,8 +522,21 @@ const MemberDetail = ({
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12 text-gray-500">
-                테스트 결과가 없습니다
+              <div className="bg-gray-50 rounded-xl p-8 text-center">
+                <div className="flex flex-col items-center space-y-4">
+                  <MdNote className="text-4xl text-gray-400" />
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      테스트 결과가 없습니다
+                    </h3>
+                    <p className="text-gray-500">
+                      {selectedTest === "sugar" ? "슈가" : "소스"} 테스트 결과가
+                      아직 없습니다.
+                      <br />
+                      테스트를 완료하면 결과를 확인할 수 있습니다.
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>

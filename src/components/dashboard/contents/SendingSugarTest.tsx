@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { User } from "@/types/user";
 import {
   MdEmail,
   MdSend,
@@ -16,17 +15,13 @@ import {
   MdClose,
   MdSearch,
 } from "react-icons/md";
-import { Group } from "@/types/group";
 import { sendSugarTestEmail } from "@/utils/email/sugarTest";
 import { useRouter } from "next/navigation";
 import { isValidEmail } from "@/utils/validation";
-
-import { ContactGroup, Contact } from "@/types/contacts";
-import useWelcomeScreenStore from "../stores/useWelcomeScreenStore";
-import TeamDashboard from "./TeamDashboard";
+import { UserTeam } from "@/types/user";
 
 interface SendingTestProps {
-  user: User;
+  fetchTeams: UserTeam[];
 }
 
 interface Applicant {
@@ -110,9 +105,7 @@ const InputField: React.FC<InputFieldProps> = ({
   );
 };
 
-export const SendingSugarTest = ({ user }: SendingTestProps) => {
-  const { userBase, userTeam } = user;
-  const { isWelcomeScreen } = useWelcomeScreenStore();
+export const SendingSugarTest = ({ fetchTeams }: SendingTestProps) => {
   const [groupName, setGroupName] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
   const [currentApplicant, setCurrentApplicant] = useState<Applicant>({
@@ -180,7 +173,7 @@ export const SendingSugarTest = ({ user }: SendingTestProps) => {
 
   const handleAddFromAddressBook = async (teamId: string) => {
     try {
-      const team = userTeam.find(t => t.id === teamId);
+      const team = fetchTeams.find(t => t.teamId === teamId);
       if (!team) return;
 
       const newApplicants = team.members
@@ -300,7 +293,7 @@ export const SendingSugarTest = ({ user }: SendingTestProps) => {
   };
 
   // 검색된 그룹 필터링
-  const filteredGroups = userTeam.filter(group =>
+  const filteredGroups = fetchTeams.filter(group =>
     group.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -321,7 +314,7 @@ export const SendingSugarTest = ({ user }: SendingTestProps) => {
     return applicants.some(applicant => applicant.fromGroup === groupName);
   };
 
-  return isWelcomeScreen ? (
+  return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden w-full max-w-6xl h-full mx-auto">
       <div className="flex flex-col lg:flex-row h-full">
         {/* 왼쪽 섹션: 그룹 정보 및 지원자 추가 */}
@@ -420,7 +413,7 @@ export const SendingSugarTest = ({ user }: SendingTestProps) => {
                     {filteredGroups.length > 0 ? (
                       filteredGroups.map(team => (
                         <div
-                          key={team.id}
+                          key={team.teamId}
                           className="group bg-white rounded-lg border border-gray-200 hover:border-[#F97316] hover:shadow-md transition-all duration-200"
                         >
                           <div className="p-4 flex justify-between items-center">
@@ -453,7 +446,7 @@ export const SendingSugarTest = ({ user }: SendingTestProps) => {
                               ) : (
                                 <button
                                   onClick={() =>
-                                    handleAddFromAddressBook(team.id)
+                                    handleAddFromAddressBook(team.teamId)
                                   }
                                   className="flex items-center gap-1 px-3 py-1.5 text-[#F97316] hover:bg-orange-50 rounded-md transition-all duration-200"
                                 >
@@ -616,7 +609,5 @@ export const SendingSugarTest = ({ user }: SendingTestProps) => {
         </div>
       </div>
     </div>
-  ) : (
-    <TeamDashboard user={user} />
   );
 };

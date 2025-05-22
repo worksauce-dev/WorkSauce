@@ -31,7 +31,7 @@ export async function loginUser(
     return {
       success: true,
       email: user.email ?? "",
-      name: "정준일" ?? "",
+      name: user.displayName ?? "",
       id: user.uid ?? "",
       accessToken: accessToken ?? "",
       refreshToken: user.refreshToken ?? "",

@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Members, UserTeam, TestInfo } from "@/types/user";
-import useWelcomeScreenStore from "@/components/dashboard/stores/useWelcomeScreenStore";
-import TeamDashboard from "@/components/dashboard/contents/TeamDashboard";
 import MemberDetail from "@/components/dashboard/contents/TeamManagement/MemberDetail";
 import TeamDetail from "@/components/dashboard/contents/TeamManagement/TeamDetail";
 import TeamsDetail from "@/components/dashboard/contents/TeamManagement/TeamsDetail";
@@ -73,7 +71,6 @@ const TeamManagement = ({
   const [selectedView, setSelectedView] = useState<"teams" | "team" | "member">(
     "teams"
   );
-  const { isWelcomeScreen, setIsWelcomeScreen } = useWelcomeScreenStore();
   const [isSendTestModalOpen, setIsSendTestModalOpen] = useState(false);
   const [selectedTestType, setSelectedTestType] = useState<"sugar" | "sauce">(
     "sugar"
@@ -86,10 +83,6 @@ const TeamManagement = ({
   });
   const [isChangeTeamModalOpen, setIsChangeTeamModalOpen] = useState(false);
   const [newTeamId, setNewTeamId] = useState("");
-
-  useEffect(() => {
-    setIsWelcomeScreen(true);
-  }, [setIsWelcomeScreen]);
 
   // 모달 외부 클릭 시 모달 닫기
   useEffect(() => {
@@ -361,7 +354,7 @@ const TeamManagement = ({
     }
   };
 
-  return isWelcomeScreen ? (
+  return (
     <>
       <MainContent />
 
@@ -597,8 +590,6 @@ const TeamManagement = ({
         </div>
       )}
     </>
-  ) : (
-    <TeamDashboard userBase={userBase} />
   );
 };
 

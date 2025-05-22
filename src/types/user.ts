@@ -1,44 +1,5 @@
 import { SugarTestResult } from "./sugartest/sugarTestResult";
-
-export interface SauceResult {
-  createdAt: string;
-  updatedAt: string;
-  testId: string;
-  categories: {
-    [key: string]: number[];
-  };
-  metadata: {
-    totalScore: number;
-    categoryScores: {
-      [key: string]: {
-        total: number;
-        average: number;
-      };
-    };
-    averageScore: number;
-    history: Array<{
-      date: string;
-      categories: { [key: string]: number[] };
-      averageScore: number;
-    }>;
-  };
-}
-
-export interface UserBase {
-  id: string;
-  email: string;
-  name: string;
-  userType: "individual" | "business";
-  status: "active" | "inactive";
-  isAdmin: boolean;
-  plan: string;
-  provider: string;
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt: string;
-  agreeTerms: boolean;
-  dashboardId: string;
-}
+import { SauceResult } from "./test";
 
 export type TestStatus = "pending" | "completed" | "expired";
 
@@ -81,4 +42,21 @@ export interface UserTeam {
   createdBy: { name: string; id: string };
   members: Members[];
   testIds: string[];
+}
+
+export interface UserBase {
+  id: string;
+  email: string;
+  name: string;
+  userType: "individual" | "business";
+  status: "active" | "inactive";
+  isAdmin: boolean;
+  plan: string;
+  provider: string;
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt: string;
+  agreeTerms: boolean;
+  dashboardId: string;
+  members: Members[];
 }
