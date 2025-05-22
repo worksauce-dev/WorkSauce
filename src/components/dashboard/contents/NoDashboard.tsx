@@ -96,7 +96,7 @@ const NoDashboardContent = ({
       userBase.email
     );
 
-    router.push(`/devtest/${dashboardId}`);
+    router.push(`/dashboard/${dashboardId}`);
   };
 
   const handleRequestClick = async () => {
