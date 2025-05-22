@@ -189,7 +189,7 @@ const DashboardHeader = ({
                   <p className="text-xs text-gray-500">{userBase.email}</p>
                 </div>
                 <a
-                  href={`/devtest/${userBase.dashboardId}/accountSetting`}
+                  href={`/dashboard/${userBase.dashboardId}/accountSetting`}
                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <MdSettings className="mr-2" size={16} />

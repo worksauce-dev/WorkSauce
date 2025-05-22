@@ -134,7 +134,7 @@ export const TestSelector = ({ userBase }: TestSelectorProps) => {
 
   const handleCardClick = (card: TestCard) => {
     if (card.isReady) {
-      router.push(`/devtest/${userBase.dashboardId}/testSelector/${card.id}`);
+      router.push(`/dashboard/${userBase.dashboardId}/testSelector/${card.id}`);
     }
   };
 
