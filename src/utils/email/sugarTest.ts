@@ -6,6 +6,7 @@ export function generateSugarTestEmailTemplate(
   userName: string = "",
   applicantName: string = "",
   testId: string = "",
+  dashboardId: string = "",
   deadline: string = ""
 ): string {
   return `
@@ -64,7 +65,7 @@ export function generateSugarTestEmailTemplate(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/sugartest?testId=${testId}" 
+        <a href="${deployUrl}/dashboard/${dashboardId}/test/sugartest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           슈가테스트 진행하기
         </a>
@@ -102,6 +103,7 @@ export function generateSugarTestEmailTemplateForBusiness(
   applicantName: string = "",
   testId: string = "",
   companyName: string = "",
+  dashboardId: string = "",
   deadline: string = ""
 ): string {
   return `
@@ -161,7 +163,7 @@ export function generateSugarTestEmailTemplateForBusiness(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/sugartest?testId=${testId}" 
+        <a href="${deployUrl}/dashboard/${dashboardId}/test/sugartest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           슈가테스트 진행하기
         </a>
@@ -219,6 +221,7 @@ export async function sendSugarTestEmail(
     companyName,
     deadline,
     isVerified,
+    dashboardId,
   } = options;
 
   return sendTestEmail({
@@ -235,12 +238,14 @@ export async function sendSugarTestEmail(
             applicantName,
             testId,
             companyName,
+            dashboardId,
             deadline
           )
         : generateSugarTestEmailTemplate(
             userName,
             applicantName,
             testId,
+            dashboardId,
             deadline
           ),
   });

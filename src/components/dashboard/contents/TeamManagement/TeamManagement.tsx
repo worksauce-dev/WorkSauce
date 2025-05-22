@@ -247,6 +247,7 @@ const TeamManagement = ({
           companyName: dashboardData.organization.companyInfo.companyName,
           deadline: selectedDeadline,
           isVerified: dashboardData.isVerified,
+          dashboardId: userBase.dashboardId,
         });
 
         if (!success) {
@@ -263,6 +264,7 @@ const TeamManagement = ({
           companyName: dashboardData.organization.companyInfo.companyName,
           deadline: selectedDeadline,
           isVerified: dashboardData.isVerified,
+          dashboardId: userBase.dashboardId,
         });
 
         if (!success) {
