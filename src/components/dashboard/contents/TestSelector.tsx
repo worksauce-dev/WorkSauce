@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   MdPersonOutline,
   MdStars,
@@ -33,17 +33,6 @@ interface TestCard {
 
 const testCards: TestCard[] = [
   {
-    id: "sauce",
-    title: "소스 테스트",
-    description:
-      "소스테스트는 지원자의 업무 스타일과 성향을 파악할 수 있는 진단도구입니다.",
-    icon: <MdPersonOutline size={24} />,
-    duration: "20분",
-    questions: 190,
-    isReady: true,
-    category: "recruitment",
-  },
-  {
     id: "sugar",
     title: "슈가 테스트",
     description:
@@ -54,6 +43,18 @@ const testCards: TestCard[] = [
     isReady: true,
     category: "development",
   },
+  {
+    id: "sauce",
+    title: "소스 테스트",
+    description:
+      "소스테스트는 지원자의 업무 스타일과 성향을 파악할 수 있는 진단도구입니다.",
+    icon: <MdPersonOutline size={24} />,
+    duration: "20분",
+    questions: 190,
+    isReady: false,
+    category: "recruitment",
+  },
+
   {
     id: "cream",
     title: "크림 테스트",
