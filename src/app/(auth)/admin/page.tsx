@@ -12,6 +12,9 @@ import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import { saveResult, saveSugartest } from "@/api/firebase/onlyDev";
 import DevOnlyButton from "@/components/admin/DevOnlyButton";
+import { getVerifyingQueue } from "@/api/firebase/admin/getVerifyingQueue";
+import { Organization } from "@/types/dashboard";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "관리자 대시보드",
@@ -20,6 +23,11 @@ export const metadata: Metadata = {
 
 export default async function AdminDashboard() {
   const stats = await getAdminStats();
+  const verifyingQueue = await getVerifyingQueue();
+
+  const pendingQueue = verifyingQueue.filter(
+    (item: Organization) => item.status === "pending"
+  );
 
   return (
     <div className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col h-screen gap-4 ">
@@ -101,6 +109,132 @@ export default async function AdminDashboard() {
             <DevOnlyButton saveSugartest={saveSugartest} />
           </div>
         </div>
+      </div>
+
+      {/* 인증 대기 목록 */}
+      <div className="bg-white p-6 rounded-lg shadow mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-[#F97316]">
+            회사 인증 대기 목록
+          </h2>
+          <span className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-sm font-medium">
+            {pendingQueue.length}건 대기중
+          </span>
+        </div>
+        {pendingQueue.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-2">대기 중인 요청이 없습니다</div>
+            <div className="text-sm text-gray-500">
+              새로운 인증 요청이 들어오면 여기에 표시됩니다
+            </div>
+          </div>
+        ) : (
+          <ul className="space-y-4">
+            {pendingQueue.map((item: Organization) => (
+              <li
+                key={item.companyInfo.businessNumber}
+                className="bg-white border border-gray-100 rounded-xl p-6 hover:shadow-lg transition-all duration-200"
+              >
+                <div className="flex flex-col md:flex-row gap-6">
+                  {/* 왼쪽: 회사 정보 */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="font-bold text-gray-800 text-lg">
+                        {item.companyInfo.companyName}
+                      </div>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                        대기중
+                      </span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <span className="w-20 text-gray-500">사업자번호</span>
+                        <span className="font-mono bg-gray-50 px-2 py-1 rounded">
+                          {item.companyInfo.businessNumber}
+                        </span>
+                      </div>
+                      {item.managerInfo.workEmail && (
+                        <div className="flex items-center text-sm text-gray-600">
+                          <span className="w-20 text-gray-500">담당자</span>
+                          <span className="font-medium">
+                            {item.managerInfo.workEmail}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 오른쪽: 첨부 이미지 썸네일 */}
+                  <div className="flex gap-4">
+                    {/* 사업자등록증 */}
+                    {item.files?.businessLicenseUrl && (
+                      <div className="flex flex-col items-center">
+                        <div className="relative group">
+                          <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-100 group-hover:border-orange-200 transition-colors">
+                            <Image
+                              src={item.files.businessLicenseUrl}
+                              alt="사업자등록증"
+                              width={96}
+                              height={96}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg" />
+                        </div>
+                        <span className="text-xs text-gray-500 mt-2">
+                          사업자등록증
+                        </span>
+                        <a
+                          href={item.files.businessLicenseUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-700 hover:underline mt-1"
+                        >
+                          새창에서 보기
+                        </a>
+                      </div>
+                    )}
+                    {/* 재직증명서 */}
+                    {item.files?.employmentCertificateUrl && (
+                      <div className="flex flex-col items-center">
+                        <div className="relative group">
+                          <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-100 group-hover:border-orange-200 transition-colors">
+                            <Image
+                              src={item.files.employmentCertificateUrl}
+                              alt="재직증명서"
+                              width={96}
+                              height={96}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg" />
+                        </div>
+                        <span className="text-xs text-gray-500 mt-2">
+                          재직증명서
+                        </span>
+                        <a
+                          href={item.files.employmentCertificateUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-blue-600 hover:text-blue-700 hover:underline mt-1"
+                        >
+                          새창에서 보기
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 인증 수락 버튼 */}
+                  <div className="flex items-center">
+                    <button className="px-4 py-2 bg-[#F97316] text-white rounded-lg hover:bg-orange-600 transition-colors font-medium">
+                      인증 수락
+                    </button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
