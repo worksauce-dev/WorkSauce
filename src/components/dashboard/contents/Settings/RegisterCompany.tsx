@@ -9,12 +9,12 @@ import {
   MdAccessTime,
   MdAutorenew,
   MdPerson,
+  MdClose,
 } from "react-icons/md";
 import Link from "next/link";
 import { UserBase } from "@/types/user";
 import { Organization } from "@/types/dashboard";
 import { isValidEmail, isValidPhoneNumber } from "@/utils/validation";
-import { uploadPDF } from "../../utils/uploadPDF";
 
 interface RegisterCompanyProps {
   userBase: UserBase;
@@ -22,11 +22,18 @@ interface RegisterCompanyProps {
     data: Organization,
     dashboardId: string
   ) => Promise<{ success: boolean; message: string }>;
+  uploadImageToStorage: (file: File, path: string) => Promise<string>;
+  updateDashboardOrganization: (
+    data: Organization,
+    dashboardId: string
+  ) => Promise<void>;
 }
 
 const RegisterCompany = ({
   userBase,
   verifyingCompany,
+  uploadImageToStorage,
+  updateDashboardOrganization,
 }: RegisterCompanyProps) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -115,11 +122,12 @@ const RegisterCompany = ({
         return;
       }
 
-      // PDF 파일 형식 검증
-      if (file.type !== "application/pdf") {
+      // 이미지 파일 형식 검증
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+      if (!allowedTypes.includes(file.type)) {
         setErrors(prev => ({
           ...prev,
-          [name]: "PDF 파일만 업로드 가능합니다.",
+          [name]: "JPG, JPEG, PNG 이미지 파일만 업로드 가능합니다.",
         }));
         return;
       }
@@ -129,6 +137,20 @@ const RegisterCompany = ({
       ...prev,
       [name]: file,
     }));
+  };
+
+  // 파일 삭제 핸들러
+  const handleFileDelete = (name: string) => {
+    setFiles(prev => ({
+      ...prev,
+      [name]: null,
+    }));
+
+    // 파일 입력 필드 초기화
+    const fileInput = document.getElementById(name) as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   // 전화번호 입력 핸들러
@@ -296,28 +318,28 @@ const RegisterCompany = ({
     try {
       setIsSubmitting(true);
 
-      // 파일 업로드
-      const [businessLicenseResult, employmentCertificateResult] =
-        await Promise.all([
-          files.businessLicense
-            ? uploadPDF(files.businessLicense, userBase.dashboardId)
-            : { success: true, result: null },
-          files.employmentCertificate
-            ? uploadPDF(files.employmentCertificate, userBase.dashboardId)
-            : { success: true, result: null },
-        ]);
+      //1. 이미지 파일 업로드
+      const [businessLicenseUrl, employmentCertificateUrl] = await Promise.all([
+        files.businessLicense
+          ? uploadImageToStorage(
+              files.businessLicense,
+              `companies/${userBase.dashboardId}/business-license`
+            )
+          : null,
+        files.employmentCertificate
+          ? uploadImageToStorage(
+              files.employmentCertificate,
+              `companies/${userBase.dashboardId}/employment-certificate`
+            )
+          : null,
+      ]);
 
-      if (
-        !businessLicenseResult.success ||
-        !employmentCertificateResult.success
-      ) {
-        throw new Error("파일 업로드에 실패했습니다.");
+      if (!businessLicenseUrl || !employmentCertificateUrl) {
+        throw new Error("필수 이미지 파일 업로드에 실패했습니다.");
       }
 
-      console.log(businessLicenseResult.result);
-      console.log(employmentCertificateResult.result);
-
-      const verificationData = {
+      //2. 회사 정보 업데이트
+      const verificationData: Organization = {
         companyInfo: {
           companyName: formData.companyInfo.companyName,
           businessNumber: formData.companyInfo.businessNumber,
@@ -336,13 +358,21 @@ const RegisterCompany = ({
           companySize: formData.additionalInfo.companySize,
           establishedYear: formData.additionalInfo.establishedYear,
           serviceUsage: formData.additionalInfo.serviceUsage,
+          recruitmentField: formData.additionalInfo.recruitmentField,
+          annualRecruitmentPlan: formData.additionalInfo.annualRecruitmentPlan,
+          serviceUtilizationPlan:
+            formData.additionalInfo.serviceUtilizationPlan,
         },
         files: {
-          businessLicenseUrl: businessLicenseResult.result,
-          employmentCertificateUrl: employmentCertificateResult.result,
+          businessLicenseUrl,
+          employmentCertificateUrl,
         },
       };
 
+      //3. 회사 인증 요청
+      await updateDashboardOrganization(verificationData, userBase.dashboardId);
+
+      //4. 관리자 큐에 등록
       const result = await verifyingCompany(
         verificationData,
         userBase.dashboardId
@@ -351,9 +381,6 @@ const RegisterCompany = ({
       if (result.success) {
         alert("회사 인증 요청이 성공적으로 제출되었습니다.");
         setIsSuccess(true);
-        setTimeout(() => {
-          router.push(`/dashboard/${userBase.dashboardId}`);
-        }, 3000);
       } else {
         alert(result.message);
       }
@@ -376,7 +403,6 @@ const RegisterCompany = ({
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
               회사 등록이 완료되었습니다!
             </h2>
-            <p className="text-gray-600 mb-4">3초 후 대시보드로 이동합니다.</p>
 
             {/* 인증 소요 시간 안내문구 */}
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4 inline-flex items-start">
@@ -555,8 +581,7 @@ const RegisterCompany = ({
                       <input
                         type="file"
                         name="businessLicense"
-                        accept=".pdf"
-                        required
+                        accept="image/*"
                         onChange={handleFileChange}
                         className="hidden"
                         id="businessLicense"
@@ -567,8 +592,8 @@ const RegisterCompany = ({
                           files.businessLicense ? "valid" : "",
                           errors.businessLicense
                         )} rounded-md shadow-sm text-sm text-gray-700 
-                        bg-white hover:bg-gray-50 cursor-pointer focus-within:outline-none focus-within:ring-2 
-                        focus-within:ring-orange-500 focus-within:border-orange-500 h-[38px]`}
+                        bg-white hover:bg-gray-50 cursor-pointer h-[38px]`}
+                        aria-required="true"
                       >
                         <div className="flex items-center justify-between h-full">
                           <span className="text-gray-500 flex-1 min-w-0 mr-2">
@@ -582,11 +607,23 @@ const RegisterCompany = ({
                             >
                               {files.businessLicense
                                 ? files.businessLicense.name
-                                : "PDF 파일 (최대 5MB)"}
+                                : "JPG, JPEG, PNG 이미지 파일 (최대 5MB)"}
                             </span>
                           </span>
                           {files.businessLicense ? (
-                            <MdCheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                            <div className="flex items-center space-x-2">
+                              <MdCheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                              <button
+                                type="button"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  handleFileDelete("businessLicense");
+                                }}
+                                className="text-gray-400 hover:text-red-500 focus:outline-none"
+                              >
+                                <MdClose className="w-5 h-5" />
+                              </button>
+                            </div>
                           ) : (
                             <span className="text-orange-600 flex-shrink-0">
                               찾아보기
@@ -610,8 +647,7 @@ const RegisterCompany = ({
                       <input
                         type="file"
                         name="employmentCertificate"
-                        accept=".pdf"
-                        required
+                        accept="image/*"
                         onChange={handleFileChange}
                         className="hidden"
                         id="employmentCertificate"
@@ -622,8 +658,8 @@ const RegisterCompany = ({
                           files.employmentCertificate ? "valid" : "",
                           errors.employmentCertificate
                         )} rounded-md shadow-sm text-sm text-gray-700 
-                        bg-white hover:bg-gray-50 cursor-pointer focus-within:outline-none focus-within:ring-2 
-                        focus-within:ring-orange-500 focus-within:border-orange-500 h-[38px]`}
+                        bg-white hover:bg-gray-50 cursor-pointer h-[38px]`}
+                        aria-required="true"
                       >
                         <div className="flex items-center justify-between h-full">
                           <span className="text-gray-500 flex-1 min-w-0 mr-2">
@@ -637,11 +673,23 @@ const RegisterCompany = ({
                             >
                               {files.employmentCertificate
                                 ? files.employmentCertificate.name
-                                : "PDF 파일 (최대 5MB)"}
+                                : "JPG, JPEG, PNG 이미지 파일 (최대 5MB)"}
                             </span>
                           </span>
                           {files.employmentCertificate ? (
-                            <MdCheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                            <div className="flex items-center space-x-2">
+                              <MdCheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                              <button
+                                type="button"
+                                onClick={e => {
+                                  e.preventDefault();
+                                  handleFileDelete("employmentCertificate");
+                                }}
+                                className="text-gray-400 hover:text-red-500 focus:outline-none"
+                              >
+                                <MdClose className="w-5 h-5" />
+                              </button>
+                            </div>
                           ) : (
                             <span className="text-orange-600 flex-shrink-0">
                               찾아보기
