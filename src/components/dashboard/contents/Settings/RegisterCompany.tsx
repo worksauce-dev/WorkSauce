@@ -27,6 +27,7 @@ interface RegisterCompanyProps {
     data: Organization,
     dashboardId: string
   ) => Promise<void>;
+  isVerified: "verified" | "pending" | "rejected" | "notRequested";
 }
 
 const RegisterCompany = ({
@@ -34,6 +35,7 @@ const RegisterCompany = ({
   verifyingCompany,
   uploadImageToStorage,
   updateDashboardOrganization,
+  isVerified,
 }: RegisterCompanyProps) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -395,7 +397,57 @@ const RegisterCompany = ({
   return (
     <main className="flex-1 p-6 overflow-auto bg-gray-50 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
       <div className="max-w-6xl mx-auto">
-        {isSuccess ? (
+        {isVerified === "pending" ? (
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 mb-4">
+              <MdAccessTime className="w-8 h-8 text-orange-500" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              회사 인증이 진행 중입니다
+            </h2>
+
+            {/* 인증 진행 상태 안내 */}
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <MdInfo className="flex-shrink-0 h-5 w-5 text-orange-500 mt-0.5" />
+                  <div className="text-left">
+                    <p className="text-orange-700 font-medium mb-1">
+                      인증 진행 상태
+                    </p>
+                    <p className="text-orange-600 text-sm">
+                      현재 회사 인증이 진행 중입니다. 인증이 완료되면 알림을
+                      통해 안내해 드립니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <MdAutorenew className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" />
+                  <div className="text-left">
+                    <p className="text-blue-700 font-medium mb-1">
+                      인증 처리 시간
+                    </p>
+                    <p className="text-blue-600 text-sm">
+                      일반적으로 2-3 영업일 내에 처리됩니다. 긴급한 문의사항이
+                      있으시면 고객센터로 연락해 주세요.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => router.push("/dashboard")}
+              className="mt-6 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            >
+              대시보드로 이동
+            </button>
+          </div>
+        ) : isSuccess ? (
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
               <MdCheckCircle className="w-8 h-8 text-green-500" />
