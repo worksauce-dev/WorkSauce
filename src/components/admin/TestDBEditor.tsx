@@ -1,7 +1,7 @@
 // 클라이언트 컴포넌트로 분리
 "use client";
 import { useState } from "react";
-import { CategoryData, CategoryType, SauceTest } from "@/types/saucetest/test";
+import { CategoryData, SauceTest } from "@/types/saucetest/test";
 import { MdSave, MdSync } from "react-icons/md";
 
 interface TestDBEditorProps {
@@ -17,20 +17,32 @@ function TestDBEditor({ initialData, updateTestDB }: TestDBEditorProps) {
   const handleUpdate = async () => {
     // 저장 전 확인
     if (!window.confirm("변경사항을 저장하시겠습니까?")) {
-      return; // 사용자가 취소를 선택하면 함수 종료
+      return;
     }
 
     try {
       setIsSaving(true);
       const currentTime = new Date().toISOString();
+
+      // 현재 카테고리의 데이터를 가져옴
+      const currentCategory = editedData[activeSort] as CategoryData;
+
+      // 업데이트할 데이터 구성
       const updatedData = {
         ...editedData,
         updatedAt: currentTime,
         [activeSort]: {
-          ...(editedData[activeSort] as CategoryType),
+          ...currentCategory,
           updatedAt: currentTime,
+          // questions 배열에 isDeleted 값이 포함된 상태로 업데이트
+          questions: currentCategory.questions.map(q => ({
+            text: q.text,
+            score: q.score,
+            isDeleted: q.isDeleted || false,
+          })),
         },
       };
+
       await updateTestDB(updatedData);
       setEditedData(updatedData);
       alert("성공적으로 저장되었습니다.");
@@ -71,17 +83,6 @@ function TestDBEditor({ initialData, updateTestDB }: TestDBEditorProps) {
     const newData = { ...editedData };
     const sortData = newData[sortKey] as CategoryData;
     (sortData[field] as string[])[index] = value;
-    setEditedData(newData);
-  };
-
-  const handleStringFieldChange = (
-    sortKey: string,
-    field: "name" | "sort" | "start",
-    value: string
-  ) => {
-    const newData = { ...editedData };
-    const sortData = newData[sortKey] as CategoryData;
-    sortData[field] = value;
     setEditedData(newData);
   };
 
@@ -192,14 +193,70 @@ function TestDBEditor({ initialData, updateTestDB }: TestDBEditorProps) {
 
             {/* 오른쪽: Questions 섹션 */}
             <div className="bg-gray-50 rounded-xl p-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-md font-semibold text-gray-800">
+                  Questions
+                </h3>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-600">
+                    활성 문항:{" "}
+                    {
+                      (editedData[activeSort] as CategoryData).questions.filter(
+                        q => !q.isDeleted
+                      ).length
+                    }
+                    개
+                  </span>
+                </div>
+              </div>
               <div className="overflow-y-auto max-h-[600px] pr-2 space-y-3 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 {(editedData[activeSort] as CategoryData).questions.map(
                   (question, qIndex) => (
                     <div
                       key={qIndex}
-                      className="p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+                      className={`p-3 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 ${
+                        question.isDeleted ? "opacity-50 bg-gray-50" : ""
+                      }`}
                     >
                       <div className="flex gap-3">
+                        {/* 체크박스 추가 */}
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            checked={question.isDeleted || false}
+                            onChange={e => {
+                              const newData = { ...editedData };
+                              const sortData = newData[
+                                activeSort
+                              ] as CategoryData;
+
+                              // 현재 삭제되지 않은 문항 수 계산
+                              const currentActiveQuestions =
+                                sortData.questions.filter(
+                                  q => !q.isDeleted
+                                ).length;
+
+                              // 체크하려는 경우 (삭제하려는 경우)
+                              if (e.target.checked) {
+                                // 삭제 후 남은 문항이 10개 미만이 되는 경우
+                                if (currentActiveQuestions <= 10) {
+                                  alert(
+                                    "각 유형당 최소 10개의 문항이 필요합니다."
+                                  );
+                                  return;
+                                }
+                              }
+
+                              // 삭제 가능한 경우에만 상태 업데이트
+                              sortData.questions[qIndex] = {
+                                ...sortData.questions[qIndex],
+                                isDeleted: e.target.checked,
+                              };
+                              setEditedData(newData);
+                            }}
+                          />
+                        </div>
                         <div className="flex-grow space-y-2">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
