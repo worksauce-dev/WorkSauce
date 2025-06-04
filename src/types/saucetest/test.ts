@@ -3,6 +3,7 @@ import { TestData } from "./sauceTestResult";
 export interface QuestionType {
   text: string;
   score: number;
+  isDeleted?: boolean;
 }
 
 export interface VerbType {
@@ -65,7 +66,7 @@ export interface useTestLogicReturnInterface {
 export interface SauceTest {
   createdAt: string;
   updatedAt: string;
-  [key: string]: CategoryType | string;
+  [key: string]: CategoryData | string;
 }
 
 export type SauceType =
