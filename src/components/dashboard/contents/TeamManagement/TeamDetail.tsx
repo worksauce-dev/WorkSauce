@@ -4,11 +4,7 @@ import { MdPeople, MdPerson, MdNote } from "react-icons/md";
 import Breadcrumb from "./Breadcrumb";
 import { UserTeam, Members, TestInfo } from "@/types/user";
 import { useState } from "react";
-import { formatDate } from "@/utils/dateUtils";
-import {
-  getMemberLatestTestResult,
-  getTeamTestHistoryTrend,
-} from "@/utils/teamDashboardUtils";
+import { getMemberLatestTestResult } from "@/utils/teamDashboardUtils";
 
 interface TeamDetailProps {
   selectedTeam: UserTeam | null;

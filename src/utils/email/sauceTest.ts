@@ -6,6 +6,7 @@ export function generateSauceTestEmailTemplate(
   userName: string = "",
   applicantName: string = "",
   testId: string = "",
+  dashboardId: string = "",
   deadline: string = ""
 ): string {
   return `
@@ -57,7 +58,7 @@ export function generateSauceTestEmailTemplate(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/saucetest?testId=${testId}" 
+        <a href="${deployUrl}/${dashboardId}/test/saucetest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           소스테스트 진행하기
         </a>
@@ -95,6 +96,7 @@ export function generateSauceTestEmailTemplateForBusiness(
   applicantName: string = "",
   testId: string = "",
   companyName: string = "",
+  dashboardId: string = "",
   deadline: string = ""
 ): string {
   return `
@@ -148,7 +150,7 @@ export function generateSauceTestEmailTemplateForBusiness(
 
       <!-- CTA 버튼 -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${deployUrl}/test/saucetest?testId=${testId}" 
+        <a href="${deployUrl}/${dashboardId}/test/saucetest?testId=${testId}" 
            style="display: inline-block; background-color: #F97316; color: white; text-decoration: none; padding: 16px 40px; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(249, 115, 22, 0.2); transition: all 0.2s ease;">
           소스테스트 진행하기
         </a>
@@ -187,9 +189,9 @@ function generateEmailSubject(
   userName: string,
   applicantName: string,
   companyName: string,
-  userType: string
+  isVerified: "verified" | "pending" | "rejected" | "notRequested"
 ): string {
-  if (userType === "business") {
+  if (isVerified === "verified") {
     return `[${companyName}] ${applicantName}님 소스테스트를 시작해주세요!`;
   }
   return `[${userName}]님이 보내신 소스테스트를 시작해주세요!`;
@@ -206,6 +208,7 @@ export const sendSauceTestEmail = async (
     companyName,
     deadline,
     isVerified,
+    dashboardId,
   } = options;
 
   return sendTestEmail({
@@ -219,15 +222,17 @@ export const sendSauceTestEmail = async (
     html:
       isVerified === "verified"
         ? generateSauceTestEmailTemplateForBusiness(
+            userName,
             applicantName,
             testId,
-            companyName,
+            dashboardId,
             deadline
           )
         : generateSauceTestEmailTemplate(
             userName,
             applicantName,
             testId,
+            dashboardId,
             deadline
           ),
   });
