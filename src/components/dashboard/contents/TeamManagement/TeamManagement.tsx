@@ -9,6 +9,7 @@ import CustomDropdown from "@/components/common/CustomDropdown";
 import { DashboardInterface } from "@/types/dashboard";
 import { sendSugarTestEmail } from "@/utils/email/sugarTest";
 import { Applicant, UserBase } from "@/types/user";
+import { sendSauceTestEmail } from "@/utils/email/sauceTest";
 
 interface AddTeamMemberResponse {
   success: boolean;
@@ -237,38 +238,50 @@ const TeamManagement = ({
       testInfo
     );
 
+    const sendTestEmail = async (member: Members) => {
+      const emailOptions = {
+        to: member.email,
+        userName: member.name,
+        applicantName: member.name,
+        testId: testInfo.testId,
+        companyName: dashboardData.organization.companyInfo.companyName,
+        deadline: selectedDeadline,
+        isVerified: dashboardData.isVerified,
+        dashboardId: userBase.dashboardId,
+      };
+
+      switch (selectedTestType) {
+        case "sugar":
+          return await sendSugarTestEmail(emailOptions);
+        case "sauce":
+          return await sendSauceTestEmail(emailOptions);
+        default:
+          throw new Error("지원하지 않는 테스트 유형입니다.");
+      }
+    };
+
     if (dashboardData.isVerified === "verified") {
       for (const member of selectedTeam.members) {
-        const success = await sendSugarTestEmail({
-          to: member.email,
-          applicantName: member.name,
-          testId: testInfo.testId,
-          userName: member.name,
-          companyName: dashboardData.organization.companyInfo.companyName,
-          deadline: selectedDeadline,
-          isVerified: dashboardData.isVerified,
-          dashboardId: userBase.dashboardId,
-        });
-
-        if (!success) {
-          alert("이메일 전송 실패. 다시 시도해주세요.");
+        try {
+          const success = await sendTestEmail(member);
+          if (!success) {
+            alert("이메일 전송 실패. 다시 시도해주세요.");
+          }
+        } catch (error) {
+          console.error("이메일 전송 중 오류 발생:", error);
+          alert("이메일 전송 중 오류가 발생했습니다.");
         }
       }
     } else {
       for (const member of selectedTeam.members) {
-        const success = await sendSugarTestEmail({
-          to: member.email,
-          applicantName: member.name,
-          testId: testInfo.testId,
-          userName: member.name,
-          companyName: dashboardData.organization.companyInfo.companyName,
-          deadline: selectedDeadline,
-          isVerified: dashboardData.isVerified,
-          dashboardId: userBase.dashboardId,
-        });
-
-        if (!success) {
-          alert("이메일 전송 실패. 다시 시도해주세요.");
+        try {
+          const success = await sendTestEmail(member);
+          if (!success) {
+            alert("이메일 전송 실패. 다시 시도해주세요.");
+          }
+        } catch (error) {
+          console.error("이메일 전송 중 오류 발생:", error);
+          alert("이메일 전송 중 오류가 발생했습니다.");
         }
       }
     }
@@ -374,7 +387,7 @@ const TeamManagement = ({
               <CustomDropdown
                 options={[
                   { id: "sugar", name: "슈가 테스트" },
-                  // { id: "sauce", name: "소스 테스트" },
+                  { id: "sauce", name: "소스 테스트" },
                 ]}
                 selectedOption={selectedTestType}
                 onSelect={option =>

@@ -207,67 +207,6 @@ export const SendingSugarTest = ({ fetchTeams }: SendingTestProps) => {
     }
 
     setIsSending(true);
-
-    // const groupId = await createGroup(
-    //   {
-    //     name: groupName,
-    //     deadline: new Date(deadline).toISOString(),
-    //     applicants: applicants.map(applicant => ({
-    //       name: applicant.name.trim(),
-    //       email: applicant.email.trim().toLowerCase(),
-    //       groupId: "",
-    //       testStatus: "pending",
-    //       completedAt: null,
-    //       testResult: [],
-    //       groupName: groupName,
-    //     })),
-    //     createdAt: new Date().toISOString(),
-    //     updatedAt: new Date().toISOString(),
-    //     createdBy: { id: user.id, name: user.name },
-    //     updatedBy: { id: user.id, name: user.name },
-    //     groupId: "",
-    //     testType: "sugar",
-    //   },
-    //   user.id
-    // );
-
-    // if (user.userType === "business") {
-    //   const businessUser = user as BusinessUser;
-    //   for (const applicant of applicants) {
-    //     const success = await sendSugarTestEmail({
-    //       to: applicant.email,
-    //       applicantName: applicant.name,
-    //       groupId: groupId,
-    //       userName: user.name,
-    //       companyName: businessUser.companyInfo.companyName,
-    //       deadline: deadline,
-    //       userType: user.userType,
-    //     });
-
-    //     if (!success) {
-    //       alert("이메일 전송 실패. 다시 시도해주세요.");
-    //     }
-    //   }
-    // }
-
-    // if (user.userType === "individual") {
-    //   for (const applicant of applicants) {
-    //     const success = await sendSugarTestEmail({
-    //       to: applicant.email,
-    //       applicantName: applicant.name,
-    //       groupId: groupId,
-    //       userName: user.name,
-    //       companyName: "",
-    //       deadline: deadline,
-    //       userType: user.userType,
-    //     });
-
-    //     if (!success) {
-    //       alert("이메일 전송 실패. 다시 시도해주세요.");
-    //     }
-    //   }
-    // }
-
     setIsSending(false);
     setGroupName("");
     setDeadline("");
