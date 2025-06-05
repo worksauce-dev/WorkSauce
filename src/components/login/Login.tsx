@@ -125,7 +125,7 @@ export const Login = () => {
             </div>
           </div>
 
-          <div className="mt-6">
+          {/* <div className="mt-6">
             <button
               onClick={() => handleLogin("kakao")}
               className="w-full flex items-center justify-center px-6 py-3 border border-gray-200 rounded-lg
@@ -135,7 +135,7 @@ export const Login = () => {
               <RiKakaoTalkFill className="w-6 h-6 text-[#FFE300]" />
               <span className="ml-3 font-medium">카카오톡으로 계속하기</span>
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="mt-6 text-center">
