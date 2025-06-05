@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import KakaoProvider from "next-auth/providers/kakao";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginUser } from "@/api/firebase/users/loginUser";
+import { UserBase } from "@/types/user";
 
 export async function createOrUpdateUser({
   id,
@@ -17,18 +18,24 @@ export async function createOrUpdateUser({
   const userDoc = await getDoc(userRef);
 
   if (!userDoc.exists()) {
-    await setDoc(userRef, {
-      id: id,
+    const data: UserBase = {
+      id,
+      email: "",
       name: name ?? "",
-      type: "user",
+      userType: "individual",
       status: "active",
-      isFirstLogin: true,
       isAdmin: false,
-      provider: provider ?? "email",
+      plan: "free",
+      provider: provider ?? "kakao",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       lastLoginAt: new Date().toISOString(),
-    });
+      agreeTerms: true,
+      dashboardId: "",
+      members: [],
+    };
+
+    await setDoc(userRef, data);
   } else {
     // 로그인 시 lastLoginAt 업데이트
     await updateDoc(userRef, {
