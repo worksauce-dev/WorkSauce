@@ -7,7 +7,7 @@ interface SendEmailOptions {
   html: string;
 }
 
-export const sendTestEmail = async (
+export const sendEmail = async (
   options: SendEmailOptions
 ): Promise<boolean> => {
   try {

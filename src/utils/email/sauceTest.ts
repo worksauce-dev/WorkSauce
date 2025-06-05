@@ -1,5 +1,5 @@
 import { EmailOptions } from "@/types/email";
-import { deployUrl, sendTestEmail } from "./common";
+import { deployUrl, sendEmail } from "./common";
 import { formatDate } from "../dateUtils";
 
 export function generateSauceTestEmailTemplate(
@@ -211,7 +211,7 @@ export const sendSauceTestEmail = async (
     dashboardId,
   } = options;
 
-  return sendTestEmail({
+  return sendEmail({
     to,
     subject: generateEmailSubject(
       userName,

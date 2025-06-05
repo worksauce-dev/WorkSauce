@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MdCheckCircle, MdError, MdWarning } from "react-icons/md";
+import { MdCheckCircle, MdError, MdWarning, MdRefresh } from "react-icons/md";
 import { isValidEmail } from "@/utils/validation";
 import signupAnimation from "../../../public/animations/signupAnimation.json";
 import { UserBase } from "@/types/user";
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getSession, signIn } from "next-auth/react";
 import dynamic from "next/dynamic";
+import { sendEmailVerificationEmail } from "@/utils/email/emailVerification";
 
 const Lottie = dynamic(() => import("react-lottie-player"), {
   ssr: false,
@@ -63,6 +64,16 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
     termsOfService: false,
     privacyPolicy: false,
   });
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null
+  );
+  const [verificationCode, setVerificationCode] = useState("");
+  const [showVerificationInput, setShowVerificationInput] = useState(false);
+  const [verificationTimer, setVerificationTimer] = useState(0);
+  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+  const [isExpired, setIsExpired] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -99,6 +110,15 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: "" }));
+
+    // 이메일이 변경되면 인증 상태 초기화
+    if (name === "email") {
+      setIsEmailVerified(false);
+      setShowVerificationInput(false);
+      setVerificationTimer(0);
+      setGeneratedCode(null);
+      setVerificationCode("");
+    }
 
     // Validate email
     if (name === "email" && value && !isValidEmail(value)) {
@@ -144,6 +164,76 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
       ...prev,
       [name]: checked,
     }));
+  };
+
+  const handleEmailVerification = async () => {
+    if (!formData.email || !isValidEmail(formData.email)) {
+      setErrors(prev => ({
+        ...prev,
+        email: "올바른 이메일 형식이 아닙니다",
+      }));
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerificationError(null);
+    setIsExpired(false);
+
+    try {
+      // 6자리 랜덤 코드 생성
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedCode(code);
+
+      await sendEmailVerificationEmail(code, formData.email);
+
+      // 개발 환경에서만 콘솔에 코드 출력
+      if (process.env.NODE_ENV === "development") {
+        console.log("Verification code:", code);
+      }
+
+      // 인증 입력 필드 표시
+      setShowVerificationInput(true);
+
+      // 3분 타이머 시작
+      setVerificationTimer(180);
+      const timer = setInterval(() => {
+        setVerificationTimer(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            setGeneratedCode(null); // 타이머 만료시 코드 초기화
+            setIsExpired(true); // 만료 상태 설정
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (error) {
+      setVerificationError("이메일 인증 요청 중 오류가 발생했습니다.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleVerificationCodeSubmit = () => {
+    if (!generatedCode) {
+      setVerificationError("인증 코드가 만료되었습니다. 다시 시도해주세요.");
+      return;
+    }
+
+    if (verificationCode === generatedCode) {
+      setIsEmailVerified(true);
+      setShowVerificationInput(false);
+      setVerificationTimer(0);
+      setGeneratedCode(null);
+    } else {
+      setVerificationError("인증 코드가 일치하지 않습니다.");
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -267,22 +357,97 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                     >
                       이메일
                     </label>
-                    <div className="relative">
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className={`mt-1 block w-full px-3 py-2 border ${getInputBorderStyle(
-                          formData.email,
-                          errors.email
-                        )} rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500`}
-                        placeholder="example@email.com"
-                      />
-                      {renderStatusIcon(formData.email, errors.email)}
+                    <div className="relative flex space-x-2">
+                      <div className="flex-1 relative">
+                        <input
+                          id="email"
+                          name="email"
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className={`mt-1 block w-full px-3 py-2 border ${getInputBorderStyle(
+                            formData.email,
+                            errors.email
+                          )} rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500`}
+                          placeholder="example@email.com"
+                        />
+                        {renderStatusIcon(formData.email, errors.email)}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleEmailVerification}
+                        disabled={
+                          isVerifying ||
+                          isEmailVerified ||
+                          !formData.email ||
+                          !isValidEmail(formData.email)
+                        }
+                        className={`mt-1 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+                          ${
+                            isVerifying ||
+                            isEmailVerified ||
+                            !formData.email ||
+                            !isValidEmail(formData.email)
+                              ? "bg-orange-400 cursor-not-allowed"
+                              : "bg-orange-600 hover:bg-orange-700"
+                          } 
+                          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500`}
+                      >
+                        {isVerifying ? (
+                          <div className="flex items-center">
+                            <MdRefresh className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                            인증중...
+                          </div>
+                        ) : isEmailVerified ? (
+                          <div className="flex items-center">
+                            <MdCheckCircle className="mr-1" size={16} />
+                            인증완료
+                          </div>
+                        ) : (
+                          "인증하기"
+                        )}
+                      </button>
                     </div>
+                    {verificationError && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {verificationError}
+                      </p>
+                    )}
+                    {isEmailVerified && (
+                      <p className="mt-1 text-sm text-green-600">
+                        이메일이 인증되었습니다.
+                      </p>
+                    )}
+                    {showVerificationInput && !isEmailVerified && (
+                      <div className="mt-2 flex space-x-2">
+                        <input
+                          type="text"
+                          value={verificationCode}
+                          onChange={e => setVerificationCode(e.target.value)}
+                          placeholder="인증 코드 6자리"
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-orange-500 focus:border-orange-500"
+                          maxLength={6}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerificationCodeSubmit}
+                          className="mt-1 whitespace-nowrap min-w-[60px] px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                        >
+                          확인
+                        </button>
+                      </div>
+                    )}
+                    {verificationTimer > 0 && (
+                      <p className="mt-1 text-sm text-orange-600">
+                        인증 코드 유효 시간: {formatTime(verificationTimer)}
+                      </p>
+                    )}
+                    {isExpired && (
+                      <p className="mt-1 text-sm text-red-500">
+                        인증 시간이 만료되었습니다. 다시 인증해주세요.
+                      </p>
+                    )}
                   </div>
 
                   {/* 비밀번호 */}
@@ -433,26 +598,7 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
+                        <MdRefresh className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
                         처리중...
                       </div>
                     ) : (

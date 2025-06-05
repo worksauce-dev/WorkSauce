@@ -1,5 +1,5 @@
 import { EmailOptions } from "@/types/email";
-import { deployUrl, sendTestEmail } from "./common";
+import { deployUrl, sendEmail } from "./common";
 import { formatDate } from "@/utils/dateUtils";
 
 export function generateSugarTestEmailTemplate(
@@ -224,7 +224,7 @@ export async function sendSugarTestEmail(
     dashboardId,
   } = options;
 
-  return sendTestEmail({
+  return sendEmail({
     to,
     subject: generateEmailSubject(
       userName,
