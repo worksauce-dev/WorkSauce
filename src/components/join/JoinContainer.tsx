@@ -23,6 +23,7 @@ interface JoinContainerProps {
     success: boolean;
     userId: string;
   }>;
+  checkExistedEmail: (email: string) => Promise<boolean>;
 }
 
 // 비밀번호 유효성 검사 함수 추가
@@ -47,7 +48,10 @@ const validatePassword = (password: string) => {
   return "";
 };
 
-export const JoinContainer = ({ createUser }: JoinContainerProps) => {
+export const JoinContainer = ({
+  createUser,
+  checkExistedEmail,
+}: JoinContainerProps) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -172,6 +176,18 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
         ...prev,
         email: "올바른 이메일 형식이 아닙니다",
       }));
+      return;
+    }
+
+    if (await checkExistedEmail(formData.email)) {
+      setErrors(prev => ({
+        ...prev,
+        email: "이미 존재하는 이메일입니다",
+      }));
+      setShowVerificationInput(false);
+      setVerificationTimer(0);
+      setGeneratedCode(null);
+      setIsExpired(false);
       return;
     }
 
@@ -411,9 +427,9 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                         )}
                       </button>
                     </div>
-                    {verificationError && (
+                    {errors.email && (
                       <p className="mt-1 text-sm text-red-500">
-                        {verificationError}
+                        {errors.email}
                       </p>
                     )}
                     {isEmailVerified && (
