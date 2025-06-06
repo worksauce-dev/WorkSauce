@@ -225,6 +225,8 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
       setShowVerificationInput(false);
       setVerificationTimer(0);
       setGeneratedCode(null);
+      setIsExpired(false);
+      setVerificationError(null);
     } else {
       setVerificationError("인증 코드가 일치하지 않습니다.");
     }
@@ -419,6 +421,11 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                         이메일이 인증되었습니다.
                       </p>
                     )}
+                    {!isEmailVerified && isExpired && (
+                      <p className="mt-1 text-sm text-red-500">
+                        인증 시간이 만료되었습니다. 다시 인증해주세요.
+                      </p>
+                    )}
                     {showVerificationInput && !isEmailVerified && (
                       <div className="mt-2 flex space-x-2">
                         <input
@@ -441,11 +448,6 @@ export const JoinContainer = ({ createUser }: JoinContainerProps) => {
                     {verificationTimer > 0 && (
                       <p className="mt-1 text-sm text-orange-600">
                         인증 코드 유효 시간: {formatTime(verificationTimer)}
-                      </p>
-                    )}
-                    {isExpired && (
-                      <p className="mt-1 text-sm text-red-500">
-                        인증 시간이 만료되었습니다. 다시 인증해주세요.
                       </p>
                     )}
                   </div>
