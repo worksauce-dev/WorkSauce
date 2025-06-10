@@ -305,7 +305,6 @@ export const JoinContainer = ({
         updatedAt: new Date().toISOString(),
         agreeTerms: true,
         dashboardId: "",
-        members: [],
       };
 
       await createUser(data, formData.password);

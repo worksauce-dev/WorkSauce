@@ -58,5 +58,4 @@ export interface UserBase {
   lastLoginAt: string;
   agreeTerms: boolean;
   dashboardId: string;
-  members: Members[];
 }
