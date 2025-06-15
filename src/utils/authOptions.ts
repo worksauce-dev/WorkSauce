@@ -32,7 +32,6 @@ export async function createOrUpdateUser({
       lastLoginAt: new Date().toISOString(),
       agreeTerms: true,
       dashboardId: "",
-      members: [],
     };
 
     await setDoc(userRef, data);
