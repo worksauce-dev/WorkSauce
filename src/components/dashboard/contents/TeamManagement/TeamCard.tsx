@@ -81,7 +81,11 @@ const TeamCard = ({ team, onAddMember, fetchTests }: TeamCardProps) => {
   ];
 
   const renderTeamTestChart = (type: "sugar" | "sauce", color: string) => {
-    const trendData = getTeamTestHistoryTrend(team, fetchTests, type);
+    const trendData = getTeamTestHistoryTrend(
+      team,
+      fetchTests.filter(test => test.status === "completed"),
+      type
+    );
     const latestResult = getTeamLatestTestResult(team, fetchTests, type);
 
     const renderScoreGuide = () => (
@@ -98,196 +102,206 @@ const TeamCard = ({ team, onAddMember, fetchTests }: TeamCardProps) => {
     if (!trendData || trendData.trend.length === 0) {
       return (
         <div className="flex items-center justify-center h-64 w-full bg-gray-50 rounded">
-          <span className="text-sm text-gray-400">팀 전체 기록 없음</span>
+          <span className="text-sm text-gray-400">
+            진단 미실시 또는 테스트가 아직 진행중입니다.
+          </span>
         </div>
       );
     }
 
-    return (
-      <section className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h4 className="text-sm text-gray-500 font-medium">
-              {team.name} 팀 {type === "sugar" ? "슈가" : "소스"} 테스트
-              히스토리
-            </h4>
-            {type === "sugar" && renderScoreGuide()}
-          </div>
-          <div className="flex items-center gap-2">
-            {latestResult?.status && (
-              <div
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm ${
-                  latestResult.status === "completed"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-orange-50 text-orange-700"
-                }`}
-              >
-                <MdTimer className="w-4 h-4" />
-                <span className="font-medium text-sm">
-                  {latestResult.status === "completed" ? "완료" : "진행 중"}
+    if (type === "sugar") {
+      return (
+        <section className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h4 className="text-sm text-gray-500 font-medium">
+                {team.name} 팀 {type === "sugar" ? "슈가" : "소스"} 테스트
+                히스토리
+              </h4>
+              {type === "sugar" && renderScoreGuide()}
+            </div>
+            <div className="flex items-center gap-2">
+              {latestResult?.status && (
+                <div
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm ${
+                    latestResult.status === "completed"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-orange-50 text-orange-700"
+                  }`}
+                >
+                  <MdTimer className="w-4 h-4" />
+                  <span className="font-medium text-sm">
+                    {latestResult.status === "completed" ? "완료" : "진행 중"}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center">
+                <span
+                  className="text-lg font-semibold"
+                  style={{
+                    color,
+                    ...(type === "sugar" &&
+                      trendData.overallAverage >= 4 && {
+                        color: "#EF4444",
+                      }),
+                  }}
+                >
+                  {trendData.overallAverage}
                 </span>
+                <span className="text-sm text-gray-500 ml-1">점</span>
               </div>
-            )}
-            <div className="flex items-center">
-              <span
-                className="text-lg font-semibold"
-                style={{
-                  color,
-                  ...(type === "sugar" &&
-                    trendData.overallAverage >= 4 && { color: "#EF4444" }),
-                }}
-              >
-                {trendData.overallAverage}
-              </span>
-              <span className="text-sm text-gray-500 ml-1">점</span>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col gap-6">
-          {/* 카테고리별 평균 점수 레이더 차트 */}
-          <div className="bg-white p-4 rounded-lg border border-gray-100">
-            <h5 className="text-sm font-medium text-gray-700 mb-4">
-              카테고리별 평균 점수
-            </h5>
-            <ResponsiveContainer width="100%" height={200}>
-              <RadarChart
-                data={trendData.categoryAverages || []}
-                margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-              >
-                <PolarGrid />
-                <PolarAngleAxis dataKey="name" tick={{ fontSize: 11 }} />
-                <PolarRadiusAxis domain={[0, 5]} tick={{ fontSize: 11 }} />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-gray-100 p-2.5 rounded-lg border border-gray-200">
-                          <p className="text-xs font-medium text-gray-900 mb-2.5">
-                            {label}
-                          </p>
-                          <div className="space-y-5">
-                            {payload.map((entry, index) => (
-                              <div
-                                key={`item-${index}`}
-                                className="flex items-center justify-between py-1"
-                              >
-                                <span className="text-xs text-gray-800">
-                                  {entry.name}
-                                </span>
-                                <span
-                                  className="text-xs font-semibold"
-                                  style={{ color }}
+          <div className="flex flex-col gap-6">
+            {/* 카테고리별 평균 점수 레이더 차트 */}
+            <div className="bg-white p-4 rounded-lg border border-gray-100">
+              <h5 className="text-sm font-medium text-gray-700 mb-4">
+                카테고리별 평균 점수
+              </h5>
+              <ResponsiveContainer width="100%" height={200}>
+                <RadarChart
+                  data={trendData.categoryAverages || []}
+                  margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                >
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <PolarRadiusAxis domain={[0, 5]} tick={{ fontSize: 11 }} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-gray-100 p-2.5 rounded-lg border border-gray-200">
+                            <p className="text-xs font-medium text-gray-900 mb-2.5">
+                              {label}
+                            </p>
+                            <div className="space-y-5">
+                              {payload.map((entry, index) => (
+                                <div
+                                  key={`item-${index}`}
+                                  className="flex items-center justify-between py-1"
                                 >
-                                  {entry.value}점
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Radar
-                  name="평균 점수"
-                  dataKey="score"
-                  stroke={color}
-                  fill={color}
-                  fillOpacity={0.6}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* 추이 차트 */}
-          <div className="bg-white p-4 rounded-lg border border-gray-100">
-            <h5 className="text-sm font-medium text-gray-700 mb-4">
-              점수 추이
-            </h5>
-            <ResponsiveContainer width="100%" height={200}>
-              <LineChart
-                data={trendData.trend}
-                margin={{ top: 10, right: 20, left: 10, bottom: 40 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tick={{ fontSize: 11 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={40}
-                  interval={0}
-                />
-                <YAxis domain={[0, 5]} tick={{ fontSize: 12 }} />
-                <Tooltip
-                  content={({ active, payload, label }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-gray-100 p-2.5 rounded-lg border border-gray-200">
-                          <p className="text-xs font-medium text-gray-900 mb-2.5">
-                            {label}
-                          </p>
-                          <div className="space-y-5">
-                            {Object.entries(payload[0].payload).map(
-                              ([key, value]) => {
-                                if (key === "date" || key === "score")
-                                  return null;
-                                return (
-                                  <div
-                                    key={key}
-                                    className="flex items-center justify-between py-1"
+                                  <span className="text-xs text-gray-800">
+                                    {entry.name}
+                                  </span>
+                                  <span
+                                    className="text-xs font-semibold"
+                                    style={{ color }}
                                   >
-                                    <span className="text-xs text-gray-800">
-                                      {CATEGORY_KR_TRANSLATIONS[
-                                        key as keyof typeof CATEGORY_KR_TRANSLATIONS
-                                      ] || key}
-                                    </span>
-                                    <span
-                                      className="text-xs font-semibold"
-                                      style={{ color }}
+                                    {entry.value}점
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Radar
+                    name="평균 점수"
+                    dataKey="score"
+                    stroke={color}
+                    fill={color}
+                    fillOpacity={0.6}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* 추이 차트 */}
+            <div className="bg-white p-4 rounded-lg border border-gray-100">
+              <h5 className="text-sm font-medium text-gray-700 mb-4">
+                점수 추이
+              </h5>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart
+                  data={trendData.trend}
+                  margin={{ top: 10, right: 20, left: 10, bottom: 40 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fontSize: 11 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={40}
+                    interval={0}
+                  />
+                  <YAxis domain={[0, 5]} tick={{ fontSize: 12 }} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-gray-100 p-2.5 rounded-lg border border-gray-200">
+                            <p className="text-xs font-medium text-gray-900 mb-2.5">
+                              {label}
+                            </p>
+                            <div className="space-y-5">
+                              {Object.entries(payload[0].payload).map(
+                                ([key, value]) => {
+                                  if (key === "date" || key === "score")
+                                    return null;
+                                  return (
+                                    <div
+                                      key={key}
+                                      className="flex items-center justify-between py-1"
                                     >
-                                      {value as number}점
-                                    </span>
-                                  </div>
-                                );
-                              }
-                            )}
-                            <div className="border-t border-gray-300 pt-2.5 mt-2.5">
-                              <div className="flex items-center justify-between py-1">
-                                <span className="text-xs font-medium text-gray-900">
-                                  전체 평균
-                                </span>
-                                <span
-                                  className="text-xs font-semibold"
-                                  style={{ color }}
-                                >
-                                  {payload[0].value}점
-                                </span>
+                                      <span className="text-xs text-gray-800">
+                                        {CATEGORY_KR_TRANSLATIONS[
+                                          key as keyof typeof CATEGORY_KR_TRANSLATIONS
+                                        ] || key}
+                                      </span>
+                                      <span
+                                        className="text-xs font-semibold"
+                                        style={{ color }}
+                                      >
+                                        {value as number}점
+                                      </span>
+                                    </div>
+                                  );
+                                }
+                              )}
+                              <div className="border-t border-gray-300 pt-2.5 mt-2.5">
+                                <div className="flex items-center justify-between py-1">
+                                  <span className="text-xs font-medium text-gray-900">
+                                    전체 평균
+                                  </span>
+                                  <span
+                                    className="text-xs font-semibold"
+                                    style={{ color }}
+                                  >
+                                    {payload[0].value}점
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  stroke={color}
-                  strokeWidth={3}
-                  dot={{ fill: color, r: 5 }}
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="score"
+                    stroke={color}
+                    strokeWidth={3}
+                    dot={{ fill: color, r: 5 }}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
-      </section>
-    );
+        </section>
+      );
+    }
+
+    if (type === "sauce") {
+      return <div>sauce</div>;
+    }
   };
 
   const renderTestStatus = () => {
