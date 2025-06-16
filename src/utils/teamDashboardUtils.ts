@@ -770,6 +770,8 @@ export function getMemberLatestTestData(
     app => app.id === member.id && app.testResult
   ) as any;
 
+  if (!applicant) return null;
+
   const result = applicant.testResult as SugarTestResult;
   const completedAt = applicant.completedAt;
 
