@@ -144,8 +144,6 @@ const CircularProgress: React.FC<{ score: number }> = ({ score }) => {
   const [currentOffset, setCurrentOffset] = useState(circumference);
   const targetOffset = circumference - (progress / 100) * circumference;
 
-  console.log(currentOffset, targetOffset);
-
   useEffect(() => {
     // 마운트 직후 애니메이션 시작을 위한 약간의 지연
     const timer = setTimeout(() => {
