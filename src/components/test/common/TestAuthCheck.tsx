@@ -1,6 +1,5 @@
 "use client";
 
-import { Group } from "@/types/group";
 import { useState } from "react";
 import { SauceTestContainer } from "../saucetest/SauceTestContainer";
 import { SugarTestContainer } from "../sugartest/SugarTestContainer";
