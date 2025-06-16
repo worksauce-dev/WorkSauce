@@ -2,15 +2,15 @@
 
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
-import { ScoreType } from "@/types/saucetest/test";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+import { SauceTestResult } from "@/types/saucetestV2Type";
 
 export async function submitTest(
   dashboardId: string,
   testId: string,
   email: string,
   name: string,
-  testResult: ScoreType[] | SugarTestResult
+  testResult: SugarTestResult | SauceTestResult
 ) {
   try {
     // testResults 컬렉션의 문서 참조

@@ -7,9 +7,6 @@ import { getServerSession } from "next-auth";
 import { getUserData } from "@/api/firebase/users/getUserData";
 import { ERROR_MESSAGES } from "@/types/error";
 import { handleAppError } from "@/utils/errorHandler";
-import { SauceTest } from "@/types/saucetest/test";
-import { SugarTest } from "@/types/sugartest/test";
-
 import { getDashboardData } from "@/api/firebase/dashboard/getDashboardData";
 import { getTestResults } from "@/api/firebase/dashboard/getTestResults";
 
@@ -56,7 +53,9 @@ export default async function TestPage({
     return handleAppError(ERROR_MESSAGES.GROUP.NOT_FOUND);
   }
 
-  const testData = (await getTestDB(testType)) as SauceTest | SugarTest;
+  const isSauceTestV2 = testType === "saucetest";
+
+  const testData = await getTestDB(isSauceTestV2 ? "saucetestV2" : testType);
 
   if (!testData) {
     return handleAppError(ERROR_MESSAGES.TEST.NOT_FOUND);
@@ -76,8 +75,6 @@ export default async function TestPage({
   const session = await getServerSession(authOptions);
   const userData = await getUserData(session.user.id);
   const isAdmin = userData.isAdmin;
-  const userType = userData.userType;
-  const companyName = dashboardData.organization.companyInfo.companyName;
 
   return (
     <TestAuthCheck
@@ -85,8 +82,6 @@ export default async function TestPage({
       testType={testType as TestType}
       targetTest={targetTest}
       isAdmin={isAdmin}
-      companyName={companyName}
-      userType={userType}
       testData={testData}
       submitTest={submitTest}
     />
