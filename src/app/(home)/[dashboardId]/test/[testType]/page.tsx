@@ -1,7 +1,5 @@
-import { getGroup } from "@/api/firebase/getGroup";
 import { submitTest } from "@/api/firebase/submitTest";
 import { TestAuthCheck } from "@/components/test/common/TestAuthCheck";
-import { Group } from "@/types/group";
 import { Metadata } from "next";
 import { getTestDB } from "@/api/firebase/getTestDB";
 import { authOptions } from "@/utils/authOptions";
