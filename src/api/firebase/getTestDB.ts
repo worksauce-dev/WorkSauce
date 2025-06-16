@@ -1,6 +1,8 @@
 "use server";
 
 import { firestore } from "@/api/firebase/initFirebase";
+import { SauceTestV2 } from "@/types/saucetestV2Type";
+import { SugarTest } from "@/types/sugartest/test";
 import { doc, getDoc } from "firebase/firestore";
 
 export async function getTestDB(testName: string) {
@@ -8,7 +10,7 @@ export async function getTestDB(testName: string) {
   const testDoc = await getDoc(testRef);
 
   if (testDoc.exists()) {
-    return testDoc.data();
+    return testDoc.data() as SauceTestV2 | SugarTest;
   } else {
     return null;
   }

@@ -1,46 +1,47 @@
 "use client";
 
 import { useState } from "react";
-import { SauceTestContainer } from "../saucetest/SauceTestContainer";
+// import { SauceTestContainer } from "../saucetest/SauceTestContainer";
 import { SugarTestContainer } from "../sugartest/SugarTestContainer";
-import { ScoreType, SauceTest } from "@/types/saucetest/test";
 import { SugarTest } from "@/types/sugartest/test";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
 import SugarTestCompletionResult from "../sugartest/result/SugarTestCompletionResult";
 import { TestInfo } from "@/types/user";
+import { SauceTestContainer } from "../saucetestV2/SauceTestContainer";
+import { SauceTestV2, SauceTestResult } from "@/types/saucetestV2Type";
+import { IoCheckmarkCircle } from "react-icons/io5";
+import { motion } from "framer-motion";
+
 interface TestAuthCheckProps {
   dashboardId: string;
   targetTest: TestInfo;
-  isAdmin: boolean;
-  companyName: string;
-  userType: string;
   testType: "saucetest" | "sugartest";
-  testData: SauceTest | SugarTest;
+  testData: SauceTestV2 | SugarTest;
+  isAdmin: boolean;
   submitTest: (
     dashboardId: string,
     testId: string,
     email: string,
     name: string,
-    testResult: ScoreType[] | SugarTestResult
+    testResult: SugarTestResult | SauceTestResult
   ) => Promise<{ success: boolean }>;
 }
 
 export function TestAuthCheck({
   dashboardId,
   targetTest,
-  isAdmin,
-  companyName,
-  userType,
   testType,
   testData,
   submitTest,
+  isAdmin,
 }: TestAuthCheckProps) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [error, setError] = useState("");
-  const [completedTestResult, setCompletedTestResult] =
-    useState<SugarTestResult | null>(null);
+  const [completedTestResult, setCompletedTestResult] = useState<
+    SugarTestResult | SauceTestResult | null
+  >(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,11 +58,13 @@ export function TestAuthCheck({
     if (applicant) {
       if (
         applicant.testStatus === "completed" &&
-        testType === "sugartest" &&
-        applicant.testResult
+        ((testType === "sugartest" && applicant.testResult) ||
+          (testType === "saucetest" && applicant.testResult))
       ) {
-        // 슈가 테스트가 이미 완료된 경우 결과 데이터 설정
-        setCompletedTestResult(applicant.testResult as SugarTestResult);
+        // 테스트가 이미 완료된 경우 결과 데이터 설정
+        setCompletedTestResult(
+          applicant.testResult as SugarTestResult | SauceTestResult
+        );
       }
       setIsAuthorized(true);
     } else {
@@ -72,7 +75,39 @@ export function TestAuthCheck({
   // 이미 완료된 슈가 테스트 결과 표시
   if (isAuthorized && testType === "sugartest" && completedTestResult) {
     return (
-      <SugarTestCompletionResult name={name} testResult={completedTestResult} />
+      <SugarTestCompletionResult
+        name={name}
+        testResult={completedTestResult as SugarTestResult}
+      />
+    );
+  }
+
+  if (isAuthorized && testType === "saucetest" && completedTestResult) {
+    return (
+      <div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center space-y-6 shadow-sm border border-gray-100"
+        >
+          <div className="flex justify-center">
+            <IoCheckmarkCircle className="text-green-500" size={64} />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-2xl font-bold text-gray-900">이미 제출 완료</h3>
+            <p className="text-gray-600">
+              {name}님의 소스테스트가 이미 제출되었습니다.
+              <br />
+            </p>
+          </div>
+          <button
+            onClick={() => (window.location.href = "/")}
+            className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
+          >
+            홈으로 이동
+          </button>
+        </motion.div>
+      </div>
     );
   }
 
@@ -85,11 +120,8 @@ export function TestAuthCheck({
             email={email}
             dashboardId={dashboardId}
             testId={targetTest.testId}
-            testData={testData as SauceTest}
+            testData={testData as SauceTestV2}
             submitTest={submitTest}
-            isAdmin={isAdmin}
-            companyName={companyName}
-            userType={userType}
           />
         );
 
