@@ -63,3 +63,29 @@ export interface Test {
   createdBy: { name: string; id: string };
   results: Record<string, TestResult>;
 }
+
+export interface TestResults {
+  applicants: {
+    completedAt: string;
+    email: string;
+    id: string;
+    name: string;
+    team: {
+      id: string;
+      name: string;
+    };
+    testResult: SugarTestResult | SauceResult;
+    testStatus: "pending" | "completed" | "expired";
+  }[];
+  createdAt: string;
+  createdBy: {
+    id: string;
+    name: string;
+  };
+  deadline: string;
+  status: "pending" | "completed" | "expired";
+  teamId: string;
+  testId: string;
+  type: "sugar" | "sauce";
+  updatedAt: string;
+}

@@ -4,6 +4,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "./initFirebase";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
 import { SauceTestResult } from "@/types/saucetestV2Type";
+import { TestResults } from "@/types/test";
 
 export async function submitTest(
   dashboardId: string,
@@ -27,10 +28,8 @@ export async function submitTest(
     if (!testDocSnap.exists()) {
       throw new Error("Test result document not found");
     }
-    const testDocData = testDocSnap.data();
-    const applicants = Array.isArray(testDocData.applicants)
-      ? testDocData.applicants
-      : [];
+    const testDocData = testDocSnap.data() as TestResults;
+    const applicants = testDocData.applicants;
 
     // applicants 배열에서 해당 지원자만 testResult 업데이트
     const updatedApplicants = applicants.map((applicant: any) => {
@@ -45,9 +44,14 @@ export async function submitTest(
       return applicant;
     });
 
+    const allCompleted = updatedApplicants.every(
+      applicant => applicant.testStatus === "completed"
+    );
+
     // 문서 업데이트
     await updateDoc(testResultRef, {
       applicants: updatedApplicants,
+      status: allCompleted ? "completed" : "pending",
     });
 
     console.log("Applicant test result updated successfully");
