@@ -10,6 +10,7 @@ import { DashboardInterface } from "@/types/dashboard";
 import { sendSugarTestEmail } from "@/utils/email/sugarTest";
 import { Applicant, UserBase } from "@/types/user";
 import { sendSauceTestEmail } from "@/utils/email/sauceTest";
+import { SauceTestResultDescriptionType } from "@/types/saucetest/test";
 
 interface AddTeamMemberResponse {
   success: boolean;
@@ -44,6 +45,7 @@ interface TeamManagementProps {
   ) => Promise<{ success: boolean; message: string }>;
   fetchTests: TestInfo[];
   dashboardData: DashboardInterface;
+  SauceTestResultDescriptionType: SauceTestResultDescriptionType;
 }
 
 const TeamManagement = ({
@@ -56,6 +58,7 @@ const TeamManagement = ({
   createTest,
   fetchTests,
   dashboardData,
+  SauceTestResultDescriptionType,
 }: TeamManagementProps) => {
   // 상태 관리
   const [teams, setTeams] = useState<UserTeam[]>(fetchTeams);
@@ -350,6 +353,7 @@ const TeamManagement = ({
             selectedView={selectedView}
             setSelectedTeam={setSelectedTeam}
             selectedMember={selectedMember}
+            SauceTestResultDescriptionType={SauceTestResultDescriptionType}
           />
         );
 
@@ -364,6 +368,7 @@ const TeamManagement = ({
             setSelectedTeam={setSelectedTeam}
             setSelectedMember={setSelectedMember}
             fetchTests={fetchTests}
+            SauceTestResultDescriptionType={SauceTestResultDescriptionType}
           />
         );
     }

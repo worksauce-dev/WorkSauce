@@ -76,8 +76,8 @@ const TeamCard = ({ team, onAddMember, fetchTests }: TeamCardProps) => {
 
   const testTypes = [
     { id: "status", name: "테스트 현황" },
-    { id: "sugar", name: "슈가 테스트" },
     { id: "sauce", name: "소스 테스트" },
+    { id: "sugar", name: "슈가 테스트" },
   ];
 
   const renderTeamTestChart = (type: "sugar" | "sauce", color: string) => {

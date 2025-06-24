@@ -1,9 +1,11 @@
 import { UserTeam, TestInfo, Members, TestStatus } from "@/types/user";
 import { SugarTestResult } from "@/types/sugartest/sugarTestResult";
+import { SauceResult } from "@/types/test";
 import { isSugarTestResult } from "@/utils/typeGuards";
 import { formatDateToKorean } from "./dateUtils";
 import { CATEGORY_KR_TRANSLATIONS } from "@/constants/sugartest";
 import { ANALYSIS_DATA } from "@/constants/sugartest";
+import { SauceTestResultDescriptionType } from "@/types/saucetest/test";
 
 interface ProcessedTeamData {
   totalTests: number;
@@ -744,12 +746,49 @@ export function getMemberLatestTestResult(
   return null;
 }
 
-export function getMemberLatestTestData(
+export interface SugarTestData {
+  categories: Array<{
+    name:
+      | "업무 부담"
+      | "불확실성"
+      | "대인관계 갈등"
+      | "업무 자율성"
+      | "보상과 인정";
+    score: number;
+    rawKey: string;
+  }>;
+  averageScore: number;
+  completedAt: string;
+  rawResult: SugarTestResult;
+  currentStatusDescription: string;
+  testHistory: Array<{
+    id: string;
+    name: string;
+    createdAt: string;
+  }>;
+  selectedTestId: string;
+}
+
+export interface SauceTestData {
+  completedAt: string;
+  rawResult: SauceResult;
+  testHistory: Array<{
+    id: string;
+    name: string;
+    createdAt: string;
+  }>;
+  selectedTestId: string;
+  typeDescription?: any;
+  characteristics?: any;
+  onboarding?: any;
+}
+
+export function getMemberLatestSugarTestData(
   member: Members,
   tests: TestInfo[],
   type: "sugar" | "sauce",
   selectedTestId?: string
-) {
+): SugarTestData | null {
   const matchedTests = tests.filter(test =>
     member.testIds.includes(test.testId)
   );
@@ -839,6 +878,90 @@ export function getMemberLatestTestData(
     currentStatusDescription,
     testHistory,
     selectedTestId: targetTest.testId,
+  };
+}
+
+export function getMemberLatestSauceTestData(
+  member: Members,
+  tests: TestInfo[],
+  SauceTestResultDescriptionType: SauceTestResultDescriptionType,
+  selectedTestId?: string
+): SauceTestData | null {
+  const matchedTests = tests.filter(test =>
+    member.testIds.includes(test.testId)
+  );
+
+  const filteredTests = matchedTests.filter(test => test.type === "sauce");
+
+  // If selectedTestId is provided, use that test, otherwise use the latest one
+  const targetTest = selectedTestId
+    ? filteredTests.find(test => test.testId === selectedTestId)
+    : filteredTests.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )[0];
+
+  if (!targetTest) return null;
+
+  const applicant = targetTest.applicants.find(
+    app => app.id === member.id && app.testResult
+  ) as any;
+
+  if (!applicant) return null;
+
+  const result = applicant.testResult as SauceResult;
+  const completedAt = applicant.completedAt;
+
+  // 성향 유형별 점수 계산
+  const personalityTypes = Object.entries(result.categories).map(
+    ([type, scores]) => {
+      const scoreArray = Array.isArray(scores) ? scores : [scores];
+      const averageScore =
+        scoreArray.length > 0
+          ? Math.round(
+              (scoreArray.reduce((a, b) => a + b, 0) / scoreArray.length) * 10
+            ) / 10
+          : 0;
+      return {
+        type,
+        score: averageScore,
+        rawKey: type,
+      };
+    }
+  );
+  // 점수 순으로 정렬하여 주요 성향 파악
+  const sortedTypes = personalityTypes.sort((a, b) => b.score - a.score);
+  const primaryType = sortedTypes[0];
+  const secondaryType = sortedTypes[1];
+
+  // descriptionData만 사용
+  const descriptionData =
+    SauceTestResultDescriptionType.categories?.[primaryType?.type]?.[
+      secondaryType?.type
+    ];
+
+  console.log(SauceTestResultDescriptionType.categories);
+
+  // Get all test history for dropdown
+  const testHistory = filteredTests
+    .map(test => ({
+      id: test.testId,
+      name: formatDateToKorean(test.createdAt),
+      createdAt: test.createdAt,
+    }))
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+  return {
+    completedAt: formatDateToKorean(completedAt),
+    rawResult: result,
+    testHistory,
+    selectedTestId: targetTest.testId,
+    typeDescription: descriptionData?.typeDescription,
+    characteristics: descriptionData?.characteristics,
+    onboarding: descriptionData?.onboarding,
   };
 }
 

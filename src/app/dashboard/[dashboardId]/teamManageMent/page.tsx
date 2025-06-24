@@ -12,6 +12,7 @@ import { updateTestRef } from "@/api/firebase/dashboard/updateTestRef";
 import { createTest } from "@/api/firebase/dashboard/createTest";
 import { getTestResults } from "@/api/firebase/dashboard/getTestResults";
 import { getDashboardData } from "@/api/firebase/dashboard/getDashboardData";
+import { getSauceResult } from "@/api/firebase/getSauceResult";
 
 const TeamManagementPage = async () => {
   const session = await getServerSession(authOptions);
@@ -24,6 +25,7 @@ const TeamManagementPage = async () => {
   const fetchTeams = await getTeams(userBase.dashboardId);
   const fetchTests = await getTestResults(userBase.dashboardId);
   const dashboardData = await getDashboardData(userBase.dashboardId);
+  const SauceTestResultDescriptionType = await getSauceResult();
 
   return (
     <TeamManagement
@@ -36,6 +38,7 @@ const TeamManagementPage = async () => {
       createTest={createTest}
       fetchTests={fetchTests}
       dashboardData={dashboardData}
+      SauceTestResultDescriptionType={SauceTestResultDescriptionType}
     />
   );
 };

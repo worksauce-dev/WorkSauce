@@ -3,13 +3,16 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdSave } from "react-icons/md";
-import { TestData } from "@/types/saucetest/sauceTestResult";
-import { SauceResultType, SauceType } from "@/types/saucetest/test";
+import {
+  SauceTestResultDescriptionType,
+  SauceType,
+  SauceTestResultDescription,
+} from "@/types/saucetest/test";
 import { useState } from "react";
 
 interface SauceResultEditorProps {
-  initialData: SauceResultType;
-  updateResult: (result: SauceResultType) => Promise<void>;
+  initialData: SauceTestResultDescriptionType;
+  updateResult: (result: SauceTestResultDescriptionType) => Promise<void>;
 }
 
 type TabType = "type" | "characteristics" | "onboarding";
@@ -34,7 +37,8 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
   updateResult,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("type");
-  const [editedData, setEditedData] = useState<SauceResultType>(initialData);
+  const [editedData, setEditedData] =
+    useState<SauceTestResultDescriptionType>(initialData);
   const [isSaving, setIsSaving] = useState(false);
   const [activeMainType, setActiveMainType] = useState<SauceType>("기준윤리형");
   const [activeSubType, setActiveSubType] = useState<SauceType>("기준심미형");
@@ -56,7 +60,7 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
 
   const handleMainTypeChange = (newMainType: SauceType) => {
     setActiveMainType(newMainType);
-    const subTypes = Object.keys(editedData[newMainType] || {});
+    const subTypes = Object.keys(editedData.categories[newMainType] || {});
     setActiveSubType(subTypes[0] as SauceType);
   };
 
@@ -68,11 +72,9 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
   ) => {
     setEditedData(prev => {
       const newData = { ...prev };
-      const mainTypeData = newData[activeMainType];
+      const mainTypeData = newData.categories[activeMainType][activeSubType];
 
-      if (typeof mainTypeData === "string") return prev;
-
-      const testData = { ...mainTypeData[activeSubType] };
+      let testData = { ...mainTypeData };
       const fieldPath = field.split(".");
       let current: any = testData[section];
 
@@ -89,7 +91,7 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
         current[lastField] = value;
       }
 
-      mainTypeData[activeSubType] = testData;
+      newData.categories[activeMainType][activeSubType] = testData;
       return newData;
     });
   };
@@ -101,7 +103,7 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
         <div className="flex justify-between items-center mb-4">
           <div className="flex gap-2">
             {(
-              Object.keys(editedData).filter(
+              Object.keys(editedData.categories).filter(
                 type => type !== "createdAt" && type !== "updatedAt"
               ) as SauceType[]
             ).map(type => (
@@ -124,12 +126,15 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
         </div>
         <div className="flex justify-between items-center">
           <div className="flex gap-2">
-            {(Object.keys(editedData[activeMainType] || {}) as SauceType[]).map(
-              type => (
-                <button
-                  key={type}
-                  onClick={() => setActiveSubType(type)}
-                  className={`
+            {(
+              Object.keys(
+                editedData.categories[activeMainType] || {}
+              ) as SauceType[]
+            ).map(type => (
+              <button
+                key={type}
+                onClick={() => setActiveSubType(type)}
+                className={`
                 px-3 py-1.5 rounded-lg transition-all text-sm
                 ${
                   activeSubType === type
@@ -137,11 +142,10 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
                     : "text-gray-600 hover:bg-gray-100"
                 }
               `}
-                >
-                  {type}
-                </button>
-              )
-            )}
+              >
+                {type}
+              </button>
+            ))}
           </div>
           <button
             onClick={handleSave}
@@ -181,23 +185,23 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
       <AnimatePresence mode="wait">
         <motion.div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex-1">
           {activeTab === "type" &&
-            typeof editedData[activeMainType] !== "string" && (
+            typeof editedData.categories[activeMainType] !== "string" && (
               <TypeEditor
-                data={editedData[activeMainType][activeSubType]}
+                data={editedData.categories[activeMainType][activeSubType]}
                 onChange={handleFieldChange}
               />
             )}
           {activeTab === "characteristics" &&
-            typeof editedData[activeMainType] !== "string" && (
+            typeof editedData.categories[activeMainType] !== "string" && (
               <CharacteristicsEditor
-                data={editedData[activeMainType][activeSubType]}
+                data={editedData.categories[activeMainType][activeSubType]}
                 onChange={handleFieldChange}
               />
             )}
           {activeTab === "onboarding" &&
-            typeof editedData[activeMainType] !== "string" && (
+            typeof editedData.categories[activeMainType] !== "string" && (
               <OnboardingEditor
-                data={editedData[activeMainType][activeSubType]}
+                data={editedData.categories[activeMainType][activeSubType]}
                 onChange={handleFieldChange}
               />
             )}
@@ -208,7 +212,7 @@ const SauceResultEditor: React.FC<SauceResultEditorProps> = ({
 };
 
 interface EditorProps {
-  data: TestData;
+  data: SauceTestResultDescription;
   onChange: (
     section: SectionType,
     field: string,

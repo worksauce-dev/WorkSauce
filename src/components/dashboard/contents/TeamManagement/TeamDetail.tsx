@@ -5,6 +5,10 @@ import Breadcrumb from "./Breadcrumb";
 import { UserTeam, Members, TestInfo } from "@/types/user";
 import { useState } from "react";
 import { getMemberLatestTestResult } from "@/utils/teamDashboardUtils";
+import {
+  SauceTestResultDescriptionType,
+  SauceType,
+} from "@/types/saucetest/test";
 
 interface TeamDetailProps {
   selectedTeam: UserTeam | null;
@@ -16,7 +20,231 @@ interface TeamDetailProps {
   setSelectedTeam: (team: UserTeam | null) => void;
   selectedMember: Members | null;
   fetchTests: TestInfo[];
+  SauceTestResultDescriptionType: SauceTestResultDescriptionType;
 }
+
+// 팀원의 테스트 결과 표시 컴포넌트
+const NoContent = () => {
+  return (
+    <div className="flex items-center justify-center h-24 bg-gray-50 rounded-lg">
+      <span className="text-sm text-gray-500">미실시</span>
+    </div>
+  );
+};
+
+const TestResultDisplay = ({
+  member,
+  fetchTests,
+  SauceTestResultDescriptionType,
+}: {
+  member: Members;
+  fetchTests: TestInfo[];
+  SauceTestResultDescriptionType: SauceTestResultDescriptionType;
+}) => {
+  const [activeTab, setActiveTab] = useState<"sugar" | "sauce">("sauce");
+
+  const getScoreColor = (score: number) => {
+    if (score >= 4) return "bg-red-500";
+    if (score >= 3) return "bg-orange-500";
+    if (score >= 2) return "bg-yellow-500";
+    return "bg-green-500";
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "sugar": {
+        const latestSugarResult = getMemberLatestTestResult(
+          member,
+          fetchTests,
+          activeTab
+        );
+        if (!latestSugarResult) return <NoContent />;
+        return (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-1">
+                <span
+                  className={`text-sm font-semibold ${
+                    latestSugarResult.averageScore >= 4
+                      ? "text-red-600"
+                      : "text-gray-900"
+                  }`}
+                >
+                  {latestSugarResult.averageScore}점
+                </span>
+                <span className="text-xs text-gray-500">/ 5점</span>
+              </div>
+              <div className="text-xs text-gray-500">
+                {latestSugarResult.completedAt}
+              </div>
+            </div>
+            <div className="space-y-1">
+              {latestSugarResult.categories.map(({ name, score }) => (
+                <div
+                  className="flex items-center justify-between py-2"
+                  key={name}
+                >
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className={`w-2 h-2 rounded-full ${getScoreColor(score)}`}
+                    />
+                    <span className="text-sm text-gray-700">{name}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${getScoreColor(
+                          score
+                        )} transition-all duration-300`}
+                        style={{
+                          width: `${(score / 5) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-gray-900">
+                      {score}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 flex items-center space-x-2 text-xs text-gray-500">
+              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />{" "}
+              양호
+              <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />{" "}
+              보통
+              <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />{" "}
+              높음
+              <span className="inline-block w-2 h-2 rounded-full bg-red-500" />{" "}
+              매우 높음
+            </div>
+          </div>
+        );
+      }
+
+      case "sauce": {
+        const sauceTests = fetchTests.filter(test => test.type === "sauce");
+
+        // 모든 완료된 테스트 결과를 찾아서 날짜순으로 정렬
+        const completedResults = sauceTests
+          .flatMap(test => test.applicants)
+          .filter(
+            applicant =>
+              applicant.testStatus === "completed" &&
+              applicant.testResult &&
+              applicant.testResult.categories
+          )
+          .sort(
+            (a, b) =>
+              new Date(b.completedAt).getTime() -
+              new Date(a.completedAt).getTime()
+          );
+
+        // 가장 최근 결과가 없으면 NoContent 표시
+        if (completedResults.length === 0) {
+          return <NoContent />;
+        }
+
+        const latestResult = completedResults[0];
+
+        // testResult가 null이 아닌지 확인
+        if (!latestResult.testResult?.categories) {
+          return <NoContent />;
+        }
+
+        // 점수 순으로 정렬된 카테고리 배열 생성
+        const categories = Object.entries(
+          latestResult.testResult.categories
+        ).sort(([, a], [, b]) => Number(b) - Number(a));
+
+        // 상위 2개 카테고리 가져오기
+        const [topCategory, secondCategory] = categories.slice(0, 2);
+
+        function getDescription(topCategory: string, secondCategory: string) {
+          const topCategoryKey = topCategory as SauceType;
+          const secondCategoryKey = secondCategory as SauceType;
+
+          const description =
+            SauceTestResultDescriptionType.categories[topCategoryKey][
+              secondCategoryKey
+            ];
+
+          return description.typeDescription.finalOpinion.content;
+        }
+
+        return (
+          <div className="space-y-4">
+            {/* Header with completion date */}
+            <div className="flex justify-end">
+              <span className="text-xs text-gray-500">
+                {new Date(latestResult.completedAt).toLocaleDateString()}
+              </span>
+            </div>
+
+            {/* Combined Category Type */}
+            <div className="text-center space-y-6">
+              <div className="relative">
+                <div className="flex items-center justify-center space-x-3">
+                  <span className="text-2xl font-bold ">{topCategory[0]}</span>
+                  <span className="text-lg text-gray-300">×</span>
+                  <span className="text-xl font-medium text-gray-600">
+                    {secondCategory[0]}
+                  </span>
+                </div>
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-orange-400 to-orange-200 rounded-full"></div>
+              </div>
+
+              <div className="px-4 py-3 bg-gradient-to-br from-orange-50 to-white rounded-xl shadow-sm border border-orange-100">
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {getDescription(topCategory[0], secondCategory[0])}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="w-full h-[280px]">
+      <div className="flex border-b mb-4">
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            setActiveTab("sauce");
+          }}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-200 ${
+            activeTab === "sauce"
+              ? "border-orange-500 text-orange-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          소스 테스트
+        </button>
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            setActiveTab("sugar");
+          }}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-200 ${
+            activeTab === "sugar"
+              ? "border-orange-500 text-orange-600"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          슈가 테스트
+        </button>
+      </div>
+      <div className="h-[220px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        {renderContent()}
+      </div>
+    </div>
+  );
+};
 
 const TeamDetail = ({
   selectedTeam,
@@ -28,219 +256,8 @@ const TeamDetail = ({
   setSelectedTeam,
   selectedMember,
   fetchTests,
+  SauceTestResultDescriptionType,
 }: TeamDetailProps) => {
-  // 팀원의 테스트 결과 표시 컴포넌트
-  const NoContent = () => {
-    return (
-      <div className="flex items-center justify-center h-24 bg-gray-50 rounded-lg">
-        <span className="text-sm text-gray-500">미실시</span>
-      </div>
-    );
-  };
-
-  const TestResultDisplay = ({ member }: { member: Members | null }) => {
-    const [activeTab, setActiveTab] = useState<"sugar" | "sauce">("sugar");
-
-    if (!member) return null;
-
-    const getScoreColor = (score: number) => {
-      if (score >= 4) return "bg-red-500";
-      if (score >= 3) return "bg-orange-500";
-      if (score >= 2) return "bg-yellow-500";
-      return "bg-green-500";
-    };
-
-    const renderContent = () => {
-      switch (activeTab) {
-        case "sugar": {
-          const latestSugarResult = getMemberLatestTestResult(
-            member,
-            fetchTests,
-            activeTab
-          );
-          if (!latestSugarResult) return <NoContent />;
-          return (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-1">
-                  <span
-                    className={`text-sm font-semibold ${
-                      latestSugarResult.averageScore >= 4
-                        ? "text-red-600"
-                        : "text-gray-900"
-                    }`}
-                  >
-                    {latestSugarResult.averageScore}점
-                  </span>
-                  <span className="text-xs text-gray-500">/ 5점</span>
-                </div>
-                <div className="text-xs text-gray-500">
-                  {latestSugarResult.completedAt}
-                </div>
-              </div>
-              <div className="space-y-1">
-                {latestSugarResult.categories.map(({ name, score }) => (
-                  <div
-                    className="flex items-center justify-between py-2"
-                    key={name}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${getScoreColor(
-                          score
-                        )}`}
-                      />
-                      <span className="text-sm text-gray-700">{name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${getScoreColor(
-                            score
-                          )} transition-all duration-300`}
-                          style={{
-                            width: `${(score / 5) * 100}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {score}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3 flex items-center space-x-2 text-xs text-gray-500">
-                <span className="inline-block w-2 h-2 rounded-full bg-green-500" />{" "}
-                양호
-                <span className="inline-block w-2 h-2 rounded-full bg-yellow-500" />{" "}
-                보통
-                <span className="inline-block w-2 h-2 rounded-full bg-orange-500" />{" "}
-                높음
-                <span className="inline-block w-2 h-2 rounded-full bg-red-500" />{" "}
-                매우 높음
-              </div>
-            </div>
-          );
-        }
-
-        case "sauce": {
-          const sauceTests = fetchTests.filter(test => test.type === "sauce");
-
-          // 모든 완료된 테스트 결과를 찾아서 날짜순으로 정렬
-          const completedResults = sauceTests
-            .flatMap(test => test.applicants)
-            .filter(
-              applicant =>
-                applicant.testStatus === "completed" &&
-                applicant.testResult &&
-                applicant.testResult.categories
-            )
-            .sort(
-              (a, b) =>
-                new Date(b.completedAt).getTime() -
-                new Date(a.completedAt).getTime()
-            );
-
-          // 가장 최근 결과가 없으면 NoContent 표시
-          if (completedResults.length === 0) {
-            return <NoContent />;
-          }
-
-          const latestResult = completedResults[0];
-
-          // testResult가 null이 아닌지 확인
-          if (!latestResult.testResult?.categories) {
-            return <NoContent />;
-          }
-
-          // 점수 순으로 정렬된 카테고리 배열 생성
-          const categories = Object.entries(
-            latestResult.testResult.categories
-          ).sort(([, a], [, b]) => Number(b) - Number(a));
-
-          // 상위 2개 카테고리 가져오기
-          const [topCategory, secondCategory] = categories.slice(0, 2);
-
-          return (
-            <div className="space-y-4">
-              {/* Header with completion date */}
-              <div className="flex justify-end">
-                <span className="text-xs text-gray-500">
-                  {new Date(latestResult.completedAt).toLocaleDateString()}
-                </span>
-              </div>
-
-              {/* Combined Category Type */}
-              <div className="text-center space-y-6">
-                <div className="relative">
-                  <div className="flex items-center justify-center space-x-3">
-                    <span className="text-2xl font-bold ">
-                      {topCategory[0]}
-                    </span>
-                    <span className="text-lg text-gray-300">×</span>
-                    <span className="text-xl font-medium text-gray-600">
-                      {secondCategory[0]}
-                    </span>
-                  </div>
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-orange-400 to-orange-200 rounded-full"></div>
-                </div>
-
-                <div className="px-4 py-3 bg-gradient-to-br from-orange-50 to-white rounded-xl shadow-sm border border-orange-100">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    이 인재는 감성적 접근과 체계적 기준을 결합하여, 높은 품질의
-                    업무 결과물을 만들어낼 수 있습니다. 특히 창의성과 체계성이
-                    동시에 요구되는 프로젝트에서 뛰어난 역량을 발휘할 것으로
-                    기대됩니다.
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        }
-
-        default:
-          return null;
-      }
-    };
-
-    return (
-      <div className="w-full h-[280px]">
-        <div className="flex border-b mb-4">
-          <button
-            onClick={e => {
-              e.stopPropagation();
-              setActiveTab("sugar");
-            }}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-200 ${
-              activeTab === "sugar"
-                ? "border-orange-500 text-orange-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            슈가 테스트
-          </button>
-          <button
-            onClick={e => {
-              e.stopPropagation();
-              setActiveTab("sauce");
-            }}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors duration-200 ${
-              activeTab === "sauce"
-                ? "border-orange-500 text-orange-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            소스 테스트
-          </button>
-        </div>
-        <div className="h-[220px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {renderContent()}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="">
       <Breadcrumb
@@ -301,7 +318,13 @@ const TeamDetail = ({
                   <p className="text-sm text-gray-500">{member.email}</p>
                 </div>
                 <div>
-                  <TestResultDisplay member={member} />
+                  <TestResultDisplay
+                    member={member}
+                    fetchTests={fetchTests}
+                    SauceTestResultDescriptionType={
+                      SauceTestResultDescriptionType
+                    }
+                  />
                 </div>
               </div>
             </article>
