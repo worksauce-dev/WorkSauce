@@ -3,6 +3,8 @@
 import { UserBase } from "@/types/user";
 import React, { useState } from "react";
 import { MdLock, MdPerson, MdWarning } from "react-icons/md";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface ModalProps {
   isOpen: boolean;
@@ -35,24 +37,49 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
   );
 };
 
-const AccountSetting = ({ userBase }: { userBase: UserBase }) => {
+interface AccountSettingProps {
+  userBase: UserBase;
+
+  optoutUser: (
+    userId: string,
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean }>;
+}
+
+const AccountSetting = ({ userBase, optoutUser }: AccountSettingProps) => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-
+  const router = useRouter();
   const handlePasswordChange = (e: React.FormEvent) => {
     e.preventDefault();
     // 비밀번호 변경 로직 구현
     setIsPasswordModalOpen(false);
   };
 
-  const handleAccountDelete = (e: React.FormEvent) => {
+  const handleAccountDelete = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 계정 삭제 로직 구현
-    setIsDeleteModalOpen(false);
+
+    try {
+      const optoutResult = await optoutUser(
+        userBase.id,
+        userBase.email,
+        currentPassword
+      );
+
+      // 유저 삭제 후 로그아웃
+      await signOut();
+      router.push("/");
+
+      if (!optoutResult.success) {
+        throw new Error("계정 삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -189,46 +216,59 @@ const AccountSetting = ({ userBase }: { userBase: UserBase }) => {
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="계정 삭제"
+        title=""
       >
-        <form onSubmit={handleAccountDelete} className="space-y-4">
-          <div className="flex items-center p-4 bg-red-50 rounded-lg">
-            <MdWarning className="text-red-600 mr-2" size={24} />
-            <p className="text-red-600">
-              계정 삭제 시 모든 데이터가 영구적으로 삭제되며, 이 작업은 되돌릴
-              수 없습니다.
+        <form onSubmit={handleAccountDelete} className="space-y-6">
+          {/* 상단 경고 아이콘 및 헤드라인 */}
+          <div className="flex flex-col items-center justify-center p-4 bg-red-100 rounded-lg">
+            <MdWarning className="text-red-600 mb-2" size={40} />
+            <h2 className="text-xl font-bold text-red-700 mb-1">
+              정말 계정을 삭제하시겠습니까?
+            </h2>
+            <p className="text-red-600 text-center text-sm">
+              계정 삭제 시 모든 데이터가{" "}
+              <span className="font-semibold">영구적으로 삭제</span>되며,
+              <br />
+              <span className="font-semibold">
+                이 작업은 되돌릴 수 없습니다.
+              </span>
             </p>
           </div>
+          {/* 비밀번호 입력 안내문 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              확인을 위해 &quot;계정삭제&quot;를 입력하세요
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              본인 확인을 위해{" "}
+              <span className="font-bold text-red-600">비밀번호</span>를 입력해
+              주세요.
             </label>
             <input
-              type="text"
-              value={deleteConfirm}
-              onChange={e => setDeleteConfirm(e.target.value)}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+              type="password"
+              value={currentPassword}
+              onChange={e => setCurrentPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-red-500 focus:border-red-500"
+              placeholder="비밀번호 입력"
               required
             />
           </div>
-          <div className="flex justify-end space-x-2 mt-4">
+          {/* 버튼 영역 */}
+          <div className="flex justify-between mt-6">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="bg-gray-100 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-200"
+              className="bg-gray-100 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-200 transition"
             >
               취소
             </button>
             <button
               type="submit"
-              disabled={deleteConfirm !== "계정삭제"}
-              className={`px-4 py-2 rounded-md ${
-                deleteConfirm === "계정삭제"
+              disabled={currentPassword.length === 0}
+              className={`px-4 py-2 rounded-md font-semibold transition ${
+                currentPassword.length > 0
                   ? "bg-red-600 text-white hover:bg-red-700"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
-              삭제하기
+              영구 삭제
             </button>
           </div>
         </form>

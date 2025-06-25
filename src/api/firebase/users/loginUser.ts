@@ -1,6 +1,6 @@
 "use server";
 
-import { signInWithEmailAndPassword, UserCredential } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../initFirebase";
 import { FirebaseError } from "firebase/app";
 
