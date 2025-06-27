@@ -940,8 +940,6 @@ export function getMemberLatestSauceTestData(
       secondaryType?.type
     ];
 
-  console.log(SauceTestResultDescriptionType.categories);
-
   // Get all test history for dropdown
   const testHistory = filteredTests
     .map(test => ({

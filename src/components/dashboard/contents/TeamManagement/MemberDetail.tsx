@@ -3,7 +3,7 @@
 import { MdPerson, MdPeople, MdNote } from "react-icons/md";
 import Breadcrumb from "./Breadcrumb";
 import { UserTeam, Members, TestInfo } from "@/types/user";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomDropdown from "@/components/common/CustomDropdown";
 import {
   getMemberLatestSauceTestData,
@@ -25,7 +25,8 @@ interface PersonalResultHeaderProps {
   selectedTestId: string;
   setSelectedTestId: (id: string) => void;
   setIsChangeTeamModalOpen: (open: boolean) => void;
-  sugarTestData: any;
+  sugarTestData: SugarTestData | null;
+  sauceTestData: SauceTestData | null;
 }
 const PersonalResultHeader = ({
   selectedMember,
@@ -36,6 +37,7 @@ const PersonalResultHeader = ({
   setSelectedTestId,
   setIsChangeTeamModalOpen,
   sugarTestData,
+  sauceTestData,
 }: PersonalResultHeaderProps) => (
   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-0">
     {/* 프로필 영역 */}
@@ -73,12 +75,15 @@ const PersonalResultHeader = ({
       <CustomDropdown
         fullWidth={false}
         options={
-          sugarTestData?.testHistory.map((test: TestInfo) => ({
-            id: test.testId,
-            name: `${
-              test.type === "sugar" ? "슈가" : "소스"
-            } 테스트 (${new Date(test.createdAt).toLocaleDateString()})`,
-          })) || []
+          selectedTest === "sugar"
+            ? sugarTestData?.testHistory?.map(test => ({
+                id: test.id,
+                name: test.name,
+              })) || []
+            : sauceTestData?.testHistory?.map(test => ({
+                id: test.id,
+                name: test.name,
+              })) || []
         }
         selectedOption={selectedTestId}
         onSelect={option => setSelectedTestId(option as string)}
@@ -143,6 +148,28 @@ const MemberDetail = ({
     selectedTestId
   );
 
+  // 최신 테스트 id 자동 세팅 useEffect
+  useEffect(() => {
+    if (
+      selectedTest === "sugar" &&
+      sugarTestData &&
+      Array.isArray(sugarTestData.testHistory) &&
+      sugarTestData.testHistory.length > 0
+    ) {
+      setSelectedTestId(sugarTestData.testHistory[0].id);
+    } else if (
+      selectedTest === "sauce" &&
+      sauceTestData &&
+      Array.isArray(sauceTestData.testHistory) &&
+      sauceTestData.testHistory.length > 0
+    ) {
+      setSelectedTestId(sauceTestData.testHistory[0].id);
+    } else {
+      setSelectedTestId("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTest, sugarTestData?.testHistory, sauceTestData?.testHistory]);
+
   // 결과 영역 함수 분리
   function renderTestResult(
     selectedTest: "sugar" | "sauce",
@@ -151,15 +178,29 @@ const MemberDetail = ({
     selectedMember: Members
   ) {
     if (selectedTest === "sugar") {
+      if (!sugarTestData) {
+        return (
+          <div className="py-8 text-center text-gray-500">
+            아직 슈가 테스트 결과가 없습니다.
+          </div>
+        );
+      }
       return (
         <SugarTestResult
-          sugarTestData={sugarTestData as SugarTestData}
+          sugarTestData={sugarTestData}
           selectedMember={selectedMember}
         />
       );
     }
     if (selectedTest === "sauce") {
-      return <SauceTestResult sauceTestData={sauceTestData as SauceTestData} />;
+      if (!sauceTestData) {
+        return (
+          <div className="py-8 text-center text-gray-500">
+            아직 소스 테스트 결과가 없습니다.
+          </div>
+        );
+      }
+      return <SauceTestResult sauceTestData={sauceTestData} />;
     }
     return null;
   }
@@ -188,6 +229,7 @@ const MemberDetail = ({
                 setSelectedTestId={setSelectedTestId}
                 setIsChangeTeamModalOpen={setIsChangeTeamModalOpen}
                 sugarTestData={sugarTestData}
+                sauceTestData={sauceTestData}
               />
             </header>
             {renderTestResult(
