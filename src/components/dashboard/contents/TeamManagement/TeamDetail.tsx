@@ -22,7 +22,6 @@ interface TeamDetailProps {
   fetchTests: TestInfo[];
   SauceTestResultDescriptionType: SauceTestResultDescriptionType;
   setIsDeleteTeamModalOpen: (open: boolean) => void;
-  isDeleteTeamModalOpen: boolean;
 }
 
 // 팀원의 테스트 결과 표시 컴포넌트
@@ -184,20 +183,20 @@ const TestResultDisplay = ({
             </div>
 
             {/* Combined Category Type */}
-            <div className="text-center space-y-6">
-              <div className="relative">
-                <div className="flex items-center justify-center space-x-3">
-                  <span className="text-2xl font-bold ">{topCategory[0]}</span>
-                  <span className="text-lg text-gray-300">×</span>
-                  <span className="text-xl font-medium text-gray-600">
-                    {secondCategory[0]}
-                  </span>
-                </div>
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-orange-400 to-orange-200 rounded-full"></div>
+            <div className="flex flex-col items-center space-y-4">
+              {/* 카테고리 조합 */}
+              <div className="flex items-center space-x-2">
+                <span className="px-3 py-1 rounded-md bg-orange-50 text-orange-600 font-semibold text-xl">
+                  {topCategory[0]}
+                </span>
+                <span className="text-xl text-gray-300 font-light">×</span>
+                <span className="px-3 py-1 rounded-md bg-gray-50 text-gray-700 font-medium text-sm">
+                  {secondCategory[0]}
+                </span>
               </div>
-
-              <div className="px-4 py-3 bg-gradient-to-br from-orange-50 to-white rounded-xl shadow-sm border border-orange-100">
-                <p className="text-sm leading-relaxed text-gray-600">
+              {/* 설명 카드 */}
+              <div className="w-full max-w-md bg-gray-50 rounded-xl shadow-sm px-6 py-5">
+                <p className="text-sm text-gray-700 text-center leading-relaxed">
                   {getDescription(topCategory[0], secondCategory[0])}
                 </p>
               </div>
@@ -260,7 +259,6 @@ const TeamDetail = ({
   fetchTests,
   SauceTestResultDescriptionType,
   setIsDeleteTeamModalOpen,
-  isDeleteTeamModalOpen,
 }: TeamDetailProps) => {
   return (
     <div className="">

@@ -383,7 +383,6 @@ const TeamManagement = ({
             selectedMember={selectedMember}
             SauceTestResultDescriptionType={SauceTestResultDescriptionType}
             setIsDeleteTeamModalOpen={setIsDeleteTeamModalOpen}
-            isDeleteTeamModalOpen={isDeleteTeamModalOpen}
           />
         );
 
