@@ -300,7 +300,99 @@ const TeamCard = ({ team, onAddMember, fetchTests }: TeamCardProps) => {
     }
 
     if (type === "sauce") {
-      return <div>sauce</div>;
+      return (
+        <section className="space-y-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h4 className="text-sm text-gray-500 font-medium">
+                {team.name} 팀 소스 테스트 합산 통계
+              </h4>
+              <div className="text-xs text-gray-500 mt-1">
+                <span className="font-medium">소스 테스트 점수 체계:</span>{" "}
+                0점(낮음) ~ 60점(높음)
+                <br />
+                <span className="text-orange-500">
+                  높은 점수는 해당 성향이 강함을 의미합니다.
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {latestResult?.status && (
+                <div
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm ${
+                    latestResult.status === "completed"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-orange-50 text-orange-700"
+                  }`}
+                >
+                  <MdTimer className="w-4 h-4" />
+                  <span className="font-medium text-sm">
+                    {latestResult.status === "completed" ? "완료" : "진행 중"}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            {/* 카테고리별 평균 점수 레이더 차트 */}
+            <div className="bg-white p-4 rounded-lg border border-gray-100">
+              <h5 className="text-sm font-medium text-gray-700 mb-4">
+                카테고리별 평균 점수
+              </h5>
+              <ResponsiveContainer width="100%" height={200}>
+                <RadarChart
+                  data={latestResult?.categories || []}
+                  margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+                >
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <PolarRadiusAxis domain={[0, 60]} tick={{ fontSize: 11 }} />
+                  <Tooltip
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-gray-100 p-2.5 rounded-lg border border-gray-200">
+                            <p className="text-xs font-medium text-gray-900 mb-2.5">
+                              {label}
+                            </p>
+                            <div className="space-y-5">
+                              {payload.map((entry, index) => (
+                                <div
+                                  key={`item-${index}`}
+                                  className="flex items-center justify-between py-1"
+                                >
+                                  <span className="text-xs text-gray-800">
+                                    {entry.name}
+                                  </span>
+                                  <span
+                                    className="text-xs font-semibold"
+                                    style={{ color }}
+                                  >
+                                    {entry.value}점
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Radar
+                    name="평균 점수"
+                    dataKey="score"
+                    stroke={color}
+                    fill={color}
+                    fillOpacity={0.6}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </section>
+      );
     }
   };
 
