@@ -27,6 +27,7 @@ interface PersonalResultHeaderProps {
   setIsChangeTeamModalOpen: (open: boolean) => void;
   sugarTestData: SugarTestData | null;
   sauceTestData: SauceTestData | null;
+  handleTestIdChange: (id: string) => void;
 }
 const PersonalResultHeader = ({
   selectedMember,
@@ -38,6 +39,7 @@ const PersonalResultHeader = ({
   setIsChangeTeamModalOpen,
   sugarTestData,
   sauceTestData,
+  handleTestIdChange,
 }: PersonalResultHeaderProps) => (
   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-0">
     {/* 프로필 영역 */}
@@ -63,8 +65,8 @@ const PersonalResultHeader = ({
       <CustomDropdown
         fullWidth={false}
         options={[
-          { id: "sugar", name: "슈가 테스트" },
           { id: "sauce", name: "소스 테스트" },
+          { id: "sugar", name: "슈가 테스트" },
         ]}
         selectedOption={selectedTest}
         onSelect={option => {
@@ -86,7 +88,7 @@ const PersonalResultHeader = ({
               })) || []
         }
         selectedOption={selectedTestId}
-        onSelect={option => setSelectedTestId(option as string)}
+        onSelect={option => handleTestIdChange(option as string)}
       />
       <button
         onClick={() => setIsChangeTeamModalOpen(true)}
@@ -133,6 +135,7 @@ const MemberDetail = ({
   const [selectedTestId, setSelectedTestId] = useState<string>(
     initialTestData?.selectedTestId || ""
   );
+  const [isUserSelected, setIsUserSelected] = useState(false);
 
   const sugarTestData = getMemberLatestSugarTestData(
     selectedMember,
@@ -148,27 +151,39 @@ const MemberDetail = ({
     selectedTestId
   );
 
+  // 사용자가 직접 날짜를 선택할 때
+  const handleTestIdChange = (option: string) => {
+    setSelectedTestId(option);
+    setIsUserSelected(true);
+  };
+
   // 최신 테스트 id 자동 세팅 useEffect
   useEffect(() => {
-    if (
-      selectedTest === "sugar" &&
-      sugarTestData &&
-      Array.isArray(sugarTestData.testHistory) &&
-      sugarTestData.testHistory.length > 0
-    ) {
-      setSelectedTestId(sugarTestData.testHistory[0].id);
-    } else if (
-      selectedTest === "sauce" &&
-      sauceTestData &&
-      Array.isArray(sauceTestData.testHistory) &&
-      sauceTestData.testHistory.length > 0
-    ) {
-      setSelectedTestId(sauceTestData.testHistory[0].id);
-    } else {
-      setSelectedTestId("");
+    if (!isUserSelected) {
+      if (
+        selectedTest === "sugar" &&
+        sugarTestData &&
+        Array.isArray(sugarTestData.testHistory) &&
+        sugarTestData.testHistory.length > 0
+      ) {
+        setSelectedTestId(sugarTestData.testHistory[0].id);
+      } else if (
+        selectedTest === "sauce" &&
+        sauceTestData &&
+        Array.isArray(sauceTestData.testHistory) &&
+        sauceTestData.testHistory.length > 0
+      ) {
+        setSelectedTestId(sauceTestData.testHistory[0].id);
+      } else {
+        setSelectedTestId("");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTest, sugarTestData?.testHistory, sauceTestData?.testHistory]);
+  }, [selectedTest]);
+
+  useEffect(() => {
+    setIsUserSelected(false);
+  }, [selectedTest]);
 
   // 결과 영역 함수 분리
   function renderTestResult(
@@ -230,6 +245,7 @@ const MemberDetail = ({
                 setIsChangeTeamModalOpen={setIsChangeTeamModalOpen}
                 sugarTestData={sugarTestData}
                 sauceTestData={sauceTestData}
+                handleTestIdChange={handleTestIdChange}
               />
             </header>
             {renderTestResult(
