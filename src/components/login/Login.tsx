@@ -113,7 +113,7 @@ export const Login = () => {
               {loading ? "로그인 중..." : "로그인"}
             </button>
           </form>
-
+          {/* 
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -123,7 +123,7 @@ export const Login = () => {
                 <span className="px-2 bg-white text-gray-500">또는</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* <div className="mt-6">
             <button
