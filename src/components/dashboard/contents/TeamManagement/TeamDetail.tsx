@@ -1,6 +1,6 @@
 "use client";
 
-import { MdPeople, MdPerson, MdNote } from "react-icons/md";
+import { MdPeople, MdPerson, MdNote, MdDelete } from "react-icons/md";
 import Breadcrumb from "./Breadcrumb";
 import { UserTeam, Members, TestInfo } from "@/types/user";
 import { useState } from "react";
@@ -21,6 +21,8 @@ interface TeamDetailProps {
   selectedMember: Members | null;
   fetchTests: TestInfo[];
   SauceTestResultDescriptionType: SauceTestResultDescriptionType;
+  setIsDeleteTeamModalOpen: (open: boolean) => void;
+  isDeleteTeamModalOpen: boolean;
 }
 
 // 팀원의 테스트 결과 표시 컴포넌트
@@ -257,6 +259,8 @@ const TeamDetail = ({
   selectedMember,
   fetchTests,
   SauceTestResultDescriptionType,
+  setIsDeleteTeamModalOpen,
+  isDeleteTeamModalOpen,
 }: TeamDetailProps) => {
   return (
     <div className="">
@@ -297,6 +301,12 @@ const TeamDetail = ({
             >
               <MdNote className="mr-2 text-lg" />
               테스트 전송
+            </button>
+            <button
+              onClick={() => setIsDeleteTeamModalOpen(true)}
+              className="flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors duration-200 text-sm font-medium shadow-sm"
+            >
+              <MdDelete className="mr-2 text-lg" />팀 삭제
             </button>
           </div>
         </header>

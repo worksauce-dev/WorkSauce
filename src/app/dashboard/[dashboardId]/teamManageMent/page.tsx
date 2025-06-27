@@ -13,6 +13,7 @@ import { createTest } from "@/api/firebase/dashboard/createTest";
 import { getTestResults } from "@/api/firebase/dashboard/getTestResults";
 import { getDashboardData } from "@/api/firebase/dashboard/getDashboardData";
 import { getSauceResult } from "@/api/firebase/getSauceResult";
+import { deleteTeam } from "@/api/firebase/dashboard/deleteTeam";
 
 const TeamManagementPage = async () => {
   const session = await getServerSession(authOptions);
@@ -39,6 +40,7 @@ const TeamManagementPage = async () => {
       fetchTests={fetchTests}
       dashboardData={dashboardData}
       SauceTestResultDescriptionType={SauceTestResultDescriptionType}
+      deleteTeam={deleteTeam}
     />
   );
 };

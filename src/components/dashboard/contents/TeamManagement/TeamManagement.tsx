@@ -46,6 +46,10 @@ interface TeamManagementProps {
   fetchTests: TestInfo[];
   dashboardData: DashboardInterface;
   SauceTestResultDescriptionType: SauceTestResultDescriptionType;
+  deleteTeam: (
+    dashboardId: string,
+    teamId: string
+  ) => Promise<{ success: boolean }>;
 }
 
 const TeamManagement = ({
@@ -59,6 +63,7 @@ const TeamManagement = ({
   fetchTests,
   dashboardData,
   SauceTestResultDescriptionType,
+  deleteTeam,
 }: TeamManagementProps) => {
   // 상태 관리
   const [teams, setTeams] = useState<UserTeam[]>(fetchTeams);
@@ -79,6 +84,8 @@ const TeamManagement = ({
   const [selectedTestType, setSelectedTestType] = useState<"sugar" | "sauce">(
     "sugar"
   );
+
+  const [isDeleteTeamModalOpen, setIsDeleteTeamModalOpen] = useState(false);
 
   const [selectedDeadline, setSelectedDeadline] = useState<string>(() => {
     const date = new Date();
@@ -324,6 +331,22 @@ const TeamManagement = ({
     setNewTeamId("");
   };
 
+  const handleDeleteTeam = async () => {
+    if (!selectedTeam) return;
+
+    try {
+      await deleteTeam(userBase.dashboardId, selectedTeam.teamId);
+      setTeams(teams.filter(team => team.teamId !== selectedTeam.teamId));
+      setSelectedTeam(null);
+      setSelectedView("teams");
+      alert("팀이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDeleteTeamModalOpen(false);
+    }
+  };
+
   // 메인 컨텐츠 컴포넌트
   const MainContent = () => {
     switch (selectedView) {
@@ -354,6 +377,8 @@ const TeamManagement = ({
             setSelectedTeam={setSelectedTeam}
             selectedMember={selectedMember}
             SauceTestResultDescriptionType={SauceTestResultDescriptionType}
+            setIsDeleteTeamModalOpen={setIsDeleteTeamModalOpen}
+            isDeleteTeamModalOpen={isDeleteTeamModalOpen}
           />
         );
 
@@ -606,6 +631,31 @@ const TeamManagement = ({
                 변경하기
               </button>
             </footer>
+          </div>
+        </div>
+      )}
+
+      {isDeleteTeamModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-96 space-y-6">
+            <h2 className="text-xl font-semibold text-gray-900">팀 삭제</h2>
+            <p className="text-sm text-gray-500">
+              팀을 삭제하면 팀원들의 테스트 결과가 삭제됩니다.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setIsDeleteTeamModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-800"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleDeleteTeam}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600"
+              >
+                삭제
+              </button>
+            </div>
           </div>
         </div>
       )}
