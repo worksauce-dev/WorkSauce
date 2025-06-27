@@ -504,23 +504,40 @@ export function getTeamLatestTestResult(
   if (filtered.length === 0) return null;
 
   const latest = filtered[0];
-  // 가장 최근 테스트의 모든 지원자 중 완료된 사람만
+  // 모든 완료된 지원자
   const completedApplicants = latest.applicants.filter(
     a => a.testStatus === "completed" && a.testResult
   );
 
   if (completedApplicants.length === 0) return null;
 
-  // 예시: 첫 번째 지원자의 결과 사용 (팀 평균 등으로 확장 가능)
-  const result = completedApplicants[0].testResult;
-  if (!result || !("categories" in result)) return null;
+  // 카테고리별로 모든 지원자의 점수를 합산
+  const categoryScores: Record<string, number[]> = {};
+
+  completedApplicants.forEach(applicant => {
+    const result = applicant.testResult;
+    if (result && "categories" in result) {
+      Object.entries(result.categories).forEach(([name, arr]) => {
+        const scores = Array.isArray(arr) ? arr : [arr];
+        if (!categoryScores[name]) categoryScores[name] = [];
+        categoryScores[name].push(
+          scores.length > 0
+            ? Math.round(
+                (scores.reduce((a, b) => a + b, 0) / scores.length) * 10
+              ) / 10
+            : 0
+        );
+      });
+    }
+  });
 
   // 카테고리별 평균 점수
-  const categories = Object.entries(result.categories).map(([name, arr]) => ({
+  const categories = Object.entries(categoryScores).map(([name, arr]) => ({
     name,
-    score: Array.isArray(arr)
-      ? Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10
-      : arr,
+    score:
+      arr.length > 0
+        ? Math.round((arr.reduce((a, b) => a + b, 0) / arr.length) * 10) / 10
+        : 0,
   }));
 
   // 전체 평균
