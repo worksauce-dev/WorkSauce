@@ -86,6 +86,7 @@ const TeamManagement = ({
   );
 
   const [isDeleteTeamModalOpen, setIsDeleteTeamModalOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const [selectedDeadline, setSelectedDeadline] = useState<string>(() => {
     const date = new Date();
@@ -188,6 +189,7 @@ const TeamManagement = ({
         setNewMember({ name: "", email: "" });
         setIsCreateMemberModalOpen(false);
         alert("팀원이 성공적으로 추가되었습니다.");
+        window.location.reload();
       } else {
         alert(response.message || "팀원 추가에 실패했습니다.");
       }
@@ -199,6 +201,7 @@ const TeamManagement = ({
 
   // 테스트 전송 핸들러
   const handleSendTest = async () => {
+    setIsSending(true);
     if (!selectedTeam) return;
 
     function getAllMemberIds(teams: UserTeam[]): string[] {
@@ -299,9 +302,11 @@ const TeamManagement = ({
     if (testResponse.success) {
       setIsSendTestModalOpen(false);
       alert("테스트가 성공적으로 전송되었습니다.");
+      window.location.reload();
     } else {
       alert(testResponse.message || "테스트 전송에 실패했습니다.");
     }
+    setIsSending(false);
   };
 
   const handleTeamChange = () => {
@@ -475,9 +480,35 @@ const TeamManagement = ({
               <button
                 type="submit"
                 onClick={handleSendTest}
-                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700"
+                disabled={isSending}
+                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 flex items-center justify-center"
               >
-                전송
+                {isSending ? (
+                  <span className="flex items-center">
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2 text-white"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+                      />
+                    </svg>
+                    전송 중...
+                  </span>
+                ) : (
+                  "전송"
+                )}
               </button>
             </div>
           </form>
