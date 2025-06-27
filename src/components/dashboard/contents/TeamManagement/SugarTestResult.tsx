@@ -13,6 +13,13 @@ import {
 } from "recharts";
 import { SugarTestData } from "@/utils/teamDashboardUtils";
 import { Members } from "@/types/user";
+import {
+  MdBarChart,
+  MdWarningAmber,
+  MdStarOutline,
+  MdWorkOutline,
+  MdNoteAlt,
+} from "react-icons/md";
 
 interface SugarTestResultProps {
   sugarTestData: SugarTestData;
@@ -28,10 +35,11 @@ const SugarTestResult = ({
       <div className="space-y-8">
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div>
+            <div className="flex flex-col">
               <h2 className="text-xl font-semibold text-gray-900">
                 종합 진단 결과
               </h2>
+
               <p className="text-sm text-gray-500 mt-1">
                 {sugarTestData.completedAt}
               </p>
@@ -80,9 +88,12 @@ const SugarTestResult = ({
         </div>
 
         <div className="border-t border-gray-100 pt-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
-            카테고리별 상세 분석
-          </h3>
+          <div className="flex items-center gap-2 mb-6">
+            <MdBarChart className="text-orange-500 text-xl" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              카테고리별 상세 분석
+            </h3>
+          </div>
           <div className="bg-white rounded-xl border border-gray-100 p-6">
             <div className="h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -201,9 +212,12 @@ const SugarTestResult = ({
         </div>
 
         <div className="border-t border-gray-100 pt-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
-            현재 상태 분석
-          </h3>
+          <div className="flex items-center gap-2 mb-6">
+            <MdWarningAmber className="text-orange-500 text-xl" />
+            <h3 className="text-lg font-semibold text-gray-900">
+              현재 상태 분석
+            </h3>
+          </div>
           <div className="grid grid-cols-2 gap-6">
             <div className="bg-white rounded-xl border border-gray-100 p-6">
               <h4 className="text-base font-medium text-gray-900 mb-4">
@@ -257,9 +271,10 @@ const SugarTestResult = ({
         </div>
 
         <div className="border-t border-gray-100 pt-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
-            개선 제안
-          </h3>
+          <div className="flex items-center gap-2 mb-6">
+            <MdStarOutline className="text-orange-500 text-xl" />
+            <h3 className="text-lg font-semibold text-gray-900">개선 제안</h3>
+          </div>
           <div className="bg-orange-50 rounded-xl p-6">
             <div className="grid grid-cols-2 gap-6">
               <div>
@@ -374,9 +389,10 @@ const SugarTestResult = ({
 
         <div className="border-t border-gray-100 pt-8">
           <div className="bg-gray-50 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              종합 의견
-            </h3>
+            <div className="flex items-center gap-2 mb-4">
+              <MdWorkOutline className="text-orange-500 text-xl" />
+              <h3 className="text-lg font-semibold text-gray-900">종합 의견</h3>
+            </div>
             <p className="text-gray-600">
               {
                 ANALYSIS_DATA[
