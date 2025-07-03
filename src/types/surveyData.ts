@@ -6,4 +6,5 @@ export interface SurveyData {
   name: string;
   email: string;
   ageRange: string;
+  createdAt: string;
 }

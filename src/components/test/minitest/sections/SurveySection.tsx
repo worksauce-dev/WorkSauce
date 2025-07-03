@@ -32,7 +32,16 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
       }
       setEmailError("");
       setSubmitted(true);
-      const data: SurveyData = { name, email, ageRange, q1, q2, q3, feedback };
+      const data: SurveyData = {
+        name,
+        email,
+        ageRange,
+        q1,
+        q2,
+        q3,
+        feedback,
+        createdAt: new Date().toISOString(),
+      };
       if (onSubmit) onSubmit(data);
       await submitSurvey(data);
     } catch (error) {
