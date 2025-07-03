@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { MiniTestContainer } from "@/components/test/minitest/MiniTestContainer";
+import { submitSurvey } from "@/api/firebase/minitest/submitSurvey";
 
 export const metadata: Metadata = {
   title: "당신의 워크 소스(Work Sauce) | 일하는 방식 심리테스트",
@@ -19,5 +20,5 @@ export const metadata: Metadata = {
 };
 
 export default function MiniTestPage() {
-  return <MiniTestContainer />;
+  return <MiniTestContainer submitSurvey={submitSurvey} />;
 }
