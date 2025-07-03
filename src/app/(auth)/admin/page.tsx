@@ -3,7 +3,6 @@ import {
   MdPeople,
   MdTrendingUp,
   MdWorkspaces,
-  MdFolder,
   MdSettings,
   MdBarChart,
 } from "react-icons/md";
@@ -81,31 +80,26 @@ export default async function AdminDashboard() {
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <QuickActionButton
-              title="사용자 관리"
+              title="설문조사"
               icon={<MdPeople size={24} />}
-              href="/admin/users"
-            />
-            <QuickActionButton
-              title="프로젝트 관리"
-              icon={<MdFolder size={24} />}
-              href="/admin/projects"
-            />
-            <QuickActionButton
-              title="설정"
-              icon={<MdSettings size={24} />}
-              href="/admin/settings"
+              href="/admin/minitest-survey"
             />
             <QuickActionButton
               title="보고서"
               icon={<MdBarChart size={24} />}
               href="/admin/reports"
             />
+            <QuickActionButton
+              title="설정"
+              icon={<MdSettings size={24} />}
+              href="/admin/settings"
+            />
           </div>
         </div>
       </div>
 
       {/* 인증 대기 목록 */}
-      <div className="bg-white p-4 rounded-lg shadow mt-6 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
+      <div className="bg-white p-4 rounded-lg shadow mt-6 h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-[#F97316]">
             회사 인증 대기 목록
