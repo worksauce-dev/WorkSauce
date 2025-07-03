@@ -214,7 +214,7 @@ export function ResultSection({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-8 animate-fadein mt-12">
+    <div className="flex flex-col items-center space-y-8 animate-fadein-pop mt-12">
       <div className="relative w-full max-w-lg mx-auto">
         {/* 컬러풀한 그라데이션 원 + 이모지 */}
         <div
