@@ -269,8 +269,7 @@ const verbQuestions = {
     ],
   },
   fifth: {
-    question:
-      "모든 과정이 끝났을 때, 어떤 결과가 당신에게 가장 큰 보람을 주나요?",
+    question: "어떤 결과가 당신에게 가장 큰 보람을 주나요?",
     options: [
       { type: "기준윤리형", verb: "개선하다", score: 1, sort: "기준형" },
       { type: "기준윤리형", verb: "완수하다", score: 1, sort: "기준형" },
@@ -455,7 +454,7 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
   const renderMiniTest = () => {
     const typeBlock = miniTestQuestions[currentTypeIdx];
     return (
-      <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-8 mt-8">
+      <div className="max-w-xl bg-white rounded-2xl shadow-lg p-8 w-full">
         {/* 진행률 & 제목 */}
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-extrabold mb-2 text-orange-600 tracking-tight flex items-center justify-center gap-2">
@@ -475,42 +474,43 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
             유형 진행: {currentTypeIdx + 1} / {miniTestQuestions.length}
           </div>
         </div>
-        <section className="bg-gray-50 rounded-xl shadow p-6 border border-gray-100 h-[400px] sm:h-[400px] flex flex-col justify-center">
-          <div className="space-y-6">
-            {typeBlock.questions.map((q, qIdx) => (
-              <div key={qIdx} className="mb-2">
-                <div className="mb-3 flex items-center">
-                  <span className="text-orange-500 font-bold mr-2">
-                    {qIdx + 1}.
-                  </span>
-                  <span className="text-gray-900 font-medium text-sm sm:text-base">
-                    {q.text}
-                  </span>
-                </div>
-                <div className="flex gap-4 justify-center">
-                  {[1, 2, 3, 4, 5].map(score => (
-                    <button
-                      key={score}
-                      type="button"
-                      onClick={() =>
-                        handleMiniTestAnswer(currentTypeIdx, qIdx, score)
-                      }
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold border-2
-                        ${
-                          miniTestAnswers[currentTypeIdx][qIdx] === score
-                            ? "bg-orange-500 text-white border-orange-500 scale-110"
-                            : "bg-white text-gray-400 border-gray-300 hover:border-orange-300"
-                        }
-                        transition`}
-                      aria-label={`${score}점`}
-                    >
-                      {score}
-                    </button>
-                  ))}
-                </div>
+        <section className="bg-gray-50 rounded-xl shadow p-6 border border-gray-100 h-[400px] sm:h-[400px] flex flex-col justify-evenly">
+          {typeBlock.questions.map((q, qIdx) => (
+            <div
+              key={qIdx}
+              className="gap-2 sm:gap-3 flex flex-col mb-4 sm:mb-6 last:mb-0"
+            >
+              <div className="flex items-center">
+                <span className="text-orange-500 font-bold mr-2">
+                  {qIdx + 1}.
+                </span>
+                <span className="text-gray-900 font-medium text-sm sm:text-base">
+                  {q.text}
+                </span>
               </div>
-            ))}
-          </div>
+              <div className="flex gap-8 justify-center">
+                {[1, 2, 3, 4, 5].map(score => (
+                  <button
+                    key={score}
+                    type="button"
+                    onClick={() =>
+                      handleMiniTestAnswer(currentTypeIdx, qIdx, score)
+                    }
+                    className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
+                      ${
+                        miniTestAnswers[currentTypeIdx][qIdx] === score
+                          ? "bg-orange-500 text-white border-orange-500 scale-110"
+                          : "bg-white text-gray-400 border-gray-300 hover:border-orange-300"
+                      }
+                      transition`}
+                    aria-label={`${score}점`}
+                  >
+                    {score}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </section>
         {currentTypeIdx < miniTestQuestions.length - 1 ? (
           <button
@@ -535,7 +535,7 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
 
   // 렌더링 분기
   return (
-    <div className="min-h-screen mx-auto max-w-[600px] px-4 py-8 flex justify-center items-center flex-col">
+    <div className="min-h-screen mx-auto max-w-[600px] flex justify-center items-center flex-col">
       {step === "intro" && (
         <>
           <IntroSection onStart={() => setStep("verb")} />

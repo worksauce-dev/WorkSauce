@@ -50,9 +50,9 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto mt-10 bg-white/90 rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col items-center border border-orange-100">
+    <div className="w-full bg-white/90 rounded-3xl shadow-md p-4 sm:p-6 flex flex-col items-center border border-orange-100">
       {submitted ? (
-        <div className="flex flex-col items-center gap-2 text-center py-8">
+        <div className="flex flex-col items-center gap-2 text-center py-4">
           <span className="text-4xl mb-2">🎉</span>
           <div className="text-orange-600 font-bold text-lg">
             소중한 의견 감사합니다!
@@ -62,58 +62,53 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
           </div>
         </div>
       ) : (
-        <div className="w-full flex flex-col items-center mb-4">
-          <span className="text-3xl mb-1">📋✨</span>
-          <h3 className="text-2xl font-extrabold mb-1 text-orange-600 tracking-tight">
-            간단 설문조사
+        <>
+          <h3 className="text-lg font-extrabold text-orange-600 tracking-tight text-center mb-4">
+            설문조사를 도와주시면 추첨을 통해 커피 기프티콘을 드려요 🎁
           </h3>
-          <p className="text-sm text-gray-500 text-center mb-2">
-            <span className="font-semibold text-orange-500">여러분의 의견</span>
-            을 듣고 있어요! <span className="text-lg">🥰</span>
-          </p>
-
           <form
             onSubmit={handleSubmit}
-            className="w-full flex flex-col items-center gap-7"
+            className="w-full flex flex-col items-center gap-4"
           >
-            {/* 이름 */}
-            <div className="w-full">
-              <label className="mb-1 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-xl">👤</span>이름
-              </label>
-              <input
-                type="text"
-                className="w-full border border-orange-200 rounded-xl p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400"
-                placeholder="이름을 입력하세요"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-              />
-            </div>
-            {/* 이메일 */}
-            <div className="w-full">
-              <label className="mb-1 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-xl">📧</span>이메일
-              </label>
-              <input
-                type="email"
-                className="w-full border border-orange-200 rounded-xl p-3 mb-1 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400"
-                placeholder="이메일을 입력하세요"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-              />
-              {emailError && (
-                <div className="text-red-500 text-xs mb-1">{emailError}</div>
-              )}
+            {/* 이름 + 이메일 가로 정렬 */}
+            <div className="w-full flex flex-row gap-2 mb-1">
+              {/* 이름 */}
+              <div className="flex-1 min-w-0">
+                <span className="text-base mb-1 font-semibold text-gray-800 flex items-center gap-1">
+                  👤 이름
+                </span>
+
+                <input
+                  type="text"
+                  className="w-full border border-orange-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400 placeholder:text-sm sm:text-base text-sm"
+                  placeholder="이름을 입력하세요"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  required
+                />
+              </div>
+              {/* 이메일 */}
+              <div className="flex-1 min-w-0">
+                <span className="text-base mb-1 font-semibold text-gray-800 flex items-center gap-1">
+                  📧 이메일
+                </span>
+                <input
+                  type="email"
+                  className="w-full border border-orange-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400 placeholder:text-sm sm:text-base text-sm"
+                  placeholder="이메일을 입력하세요"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                />
+                {emailError && (
+                  <div className="text-red-500 text-xs mb-1">{emailError}</div>
+                )}
+              </div>
             </div>
             {/* 연령대 */}
             <div className="w-full">
-              <label className="mb-1 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-xl">🎂</span>연령대
-              </label>
               <select
-                className="w-full border border-orange-200 rounded-xl p-3 mb-2 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700"
+                className="w-full border border-orange-200 rounded-xl p-2 mb-1 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 text-sm"
                 value={ageRange}
                 onChange={e => setAgeRange(e.target.value)}
                 required
@@ -154,21 +149,18 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
               </label>
             </div>
             {/* Q1 */}
-            <div className="w-full">
-              <label className="mb-2 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-sm sm:text-xl">🧑‍💼</span>위 결과가 나의
-                일하는 모습이나 성향을 잘 반영한다고 느끼시나요?{" "}
-              </label>
+            <div className="w-full mb-2 font-semibold text-gray-800 flex flex-col gap-3">
+              <span className="text-sm sm:text-base">
+                🧑‍💼 위 결과가 나의 일하는 모습이나 성향을 잘 반영한다고
+                느끼시나요?
+              </span>
               <div className="flex justify-between items-end gap-2 sm:gap-3 flex-wrap">
                 {[1, 2, 3, 4, 5].map(num => (
-                  <div
-                    key={num}
-                    className="flex flex-col items-center flex-1 min-w-[48px] sm:min-w-[56px]"
-                  >
+                  <div key={num} className="flex flex-col items-center flex-1 ">
                     <button
                       type="button"
                       onClick={() => setQ1(num)}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold border-2
+                      className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
                       ${
                         q1 === num
                           ? "bg-orange-500 text-white border-orange-500 shadow-md"
@@ -184,12 +176,11 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
               </div>
             </div>
             {/* Q2 */}
-            <div className="w-full">
-              <label className="mb-2 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-sm sm:text-xl">🏢</span>
-                만약 당신이 인사 담당자 또는 조직 관리자라면, 위 결과를
-                조직관리나 신규 채용 시 참고 자료로 활용할 의향이 있으신가요?
-              </label>
+            <div className="w-full mb-2 font-semibold text-gray-800 flex flex-col gap-3">
+              <span className="text-sm sm:text-base">
+                🏢 위 결과를 조직관리나 신규 채용 시 참고 자료로 활용할 의향이
+                있으신가요?
+              </span>
               <div className="flex justify-between items-end gap-2 sm:gap-3 flex-wrap">
                 {[1, 2, 3, 4, 5].map(num => (
                   <div
@@ -199,7 +190,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
                     <button
                       type="button"
                       onClick={() => setQ2(num)}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold border-2
+                      className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
                       ${
                         q2 === num
                           ? "bg-orange-500 text-white border-orange-500 shadow-md"
@@ -215,12 +206,12 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
               </div>
             </div>
             {/* Q3 (조직구성원 관점 창작질문) */}
-            <div className="w-full">
-              <label className="mb-2 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-sm sm:text-xl">🤝</span>
-                우리 조직 동료들이 이런 결과를 서로 공유한다면, 팀워크나 소통에
-                도움이 될 것 같나요?
-              </label>
+            <div className="w-full mb-2 font-semibold text-gray-800 flex flex-col gap-3">
+              <span className="text-sm sm:text-base">
+                🤝 팀원들이 이런 결과를 서로 공유한다면, 팀워크나 소통에 도움이
+                될 것 같나요?
+              </span>
+
               <div className="flex justify-between items-end gap-2 sm:gap-3 flex-wrap">
                 {[1, 2, 3, 4, 5].map(num => (
                   <div
@@ -230,7 +221,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
                     <button
                       type="button"
                       onClick={() => setQ3(num)}
-                      className={`w-9 h-9 rounded-full flex items-center justify-center font-bold border-2
+                      className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
                       ${
                         q3 === num
                           ? "bg-orange-500 text-white border-orange-500 shadow-md"
@@ -246,22 +237,19 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
               </div>
             </div>
             {/* 의견 */}
-            <div className="w-full">
-              <label className="mb-1 font-semibold text-gray-800 flex items-center gap-1">
-                <span className="text-xl">💬</span>더 하고 싶은 말이 있다면
-                자유롭게 남겨주세요!
-              </label>
+            <div className="w-full mb-2 font-semibold text-gray-800 flex flex-col gap-3">
+              <span className="text-sm sm:text-base">💬 의견 (선택)</span>
               <textarea
-                className="w-full border border-orange-200 rounded-xl p-3 mb-2 resize-none focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400"
-                rows={3}
-                placeholder="ex) 이런 점이 좋았어요! 이런 부분이 아쉬워요!"
+                className="w-full border border-orange-200 rounded-xl py-2 px-3 md:py-3 md:px-4 mb-1 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400 min-h-[32px] md:min-h-[40px] placeholder:text-sm text-sm resize-none"
+                placeholder="서비스에 대한 의견이나 개선점을 자유롭게 남겨주세요."
                 value={feedback}
                 onChange={e => setFeedback(e.target.value)}
+                rows={2}
               />
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-orange-400 to-orange-600 text-white rounded-2xl font-extrabold shadow-lg hover:scale-[1.03] hover:from-orange-500 hover:to-orange-700 active:scale-95 transition disabled:opacity-50 text-lg tracking-wide flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-orange-400 to-pink-400 text-white font-bold py-2 rounded-xl shadow-lg hover:scale-105 transition-transform mt-1 text-base"
               disabled={
                 !name ||
                 !email ||
@@ -275,7 +263,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
               <span>제출하기</span> <span className="text-xl">🚀</span>
             </button>
           </form>
-        </div>
+        </>
       )}
     </div>
   );
