@@ -328,10 +328,10 @@ function ResultSummarySection({
         {comment}
       </div>
       <div className="flex gap-4 mt-4">
-        <button className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-orange-400 to-pink-400 text-white font-bold shadow-lg hover:from-orange-500 hover:to-pink-500 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-300">
+        {/* <button className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-orange-400 to-pink-400 text-white font-bold shadow-lg hover:from-orange-500 hover:to-pink-500 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-300">
           <MdShare className="text-base sm:text-xl" />
           <span className="text-base sm:text-xl">공유하기</span>
-        </button>
+        </button> */}
         <button
           onClick={onRestart}
           className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-pink-400 to-orange-400 text-white font-bold shadow-lg hover:from-pink-500 hover:to-orange-500 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-200"

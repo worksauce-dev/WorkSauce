@@ -49,6 +49,14 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
     }
   };
 
+  // --- 유효성 검사 함수 추가 ---
+  const isFormValid =
+    email.trim() !== "" &&
+    ageRange.trim() !== "" &&
+    // 아래에 추가 필수 항목이 있다면 모두 &&로 연결
+    // 예: gender.trim() !== "" && ...
+    true;
+
   return (
     <div className="w-full bg-white/90 rounded-3xl shadow-md p-4 sm:p-6 flex flex-col items-center border border-orange-100">
       {submitted ? (
@@ -63,9 +71,10 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
         </div>
       ) : (
         <>
-          <h3 className="text-lg font-extrabold text-orange-600 tracking-tight text-center mb-4">
-            설문조사를 도와주시면 추첨을 통해 커피 기프티콘을 드려요 🎁
+          <h3 className="text-base font-bold text-orange-600 tracking-tight text-center mb-4">
+            설문조사를 도와주시면 <br /> 추첨을 통해 커피 기프티콘을 드려요 🎁
           </h3>
+
           <form
             onSubmit={handleSubmit}
             className="w-full flex flex-col items-center gap-4"
@@ -73,7 +82,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
             {/* 이름 + 이메일 가로 정렬 */}
             <div className="w-full flex flex-row gap-2 mb-1">
               {/* 이름 */}
-              <div className="flex-1 min-w-0">
+              {/* <div className="flex-1 min-w-0">
                 <span className="text-base mb-1 font-semibold text-gray-800 flex items-center gap-1">
                   👤 이름
                 </span>
@@ -86,7 +95,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
                   onChange={e => setName(e.target.value)}
                   required
                 />
-              </div>
+              </div> */}
               {/* 이메일 */}
               <div className="flex-1 min-w-0">
                 <span className="text-base mb-1 font-semibold text-gray-800 flex items-center gap-1">
@@ -94,7 +103,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
                 </span>
                 <input
                   type="email"
-                  className="w-full border border-orange-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400 placeholder:text-sm sm:text-base text-sm"
+                  className="h-12 w-full border border-orange-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400 placeholder:text-sm sm:text-base text-sm"
                   placeholder="이메일을 입력하세요"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -104,49 +113,59 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
                   <div className="text-red-500 text-xs mb-1">{emailError}</div>
                 )}
               </div>
-            </div>
-            {/* 연령대 */}
-            <div className="w-full">
-              <select
-                className="w-full border border-orange-200 rounded-xl p-2 mb-1 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 text-sm"
-                value={ageRange}
-                onChange={e => setAgeRange(e.target.value)}
-                required
-              >
-                <option value="">연령대를 선택하세요</option>
-                {ageOptions.map(opt => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {/* 개인정보 동의 체크박스 */}
-            <div className="w-full mb-2 flex items-center">
-              <input
-                type="checkbox"
-                id="privacy-agree"
-                className="mr-2 accent-orange-500"
-                checked={agreed}
-                onChange={e => setAgreed(e.target.checked)}
-                required
-              />
-              <label
-                htmlFor="privacy-agree"
-                className="text-xs text-gray-600 select-none cursor-pointer"
-              >
-                <span>
-                  <a
-                    href="https://worksauce.gitbook.io/infomation/service/privacy-policy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline text-orange-500 hover:text-orange-700"
-                  >
-                    개인정보 수집 및 이용
-                  </a>
-                  에 동의합니다.
+              {/* 연령대 */}
+              <div className="flex-1 min-w-0">
+                <span className="text-base mb-1 font-semibold text-gray-800 flex items-center gap-1">
+                  🎂 연령대
                 </span>
-              </label>
+                <select
+                  className="h-12 w-full border border-orange-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-orange-50/30 text-gray-700 placeholder:text-gray-400 placeholder:text-sm sm:text-base text-sm"
+                  value={ageRange}
+                  onChange={e => setAgeRange(e.target.value)}
+                  required
+                >
+                  <option value="">연령대를 선택하세요</option>
+                  {ageOptions.map(opt => (
+                    <option key={opt} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* 개인정보 동의 체크박스 */}
+            <div className="w-full mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="privacy-agree"
+                  className="accent-orange-500"
+                  checked={agreed}
+                  onChange={e => setAgreed(e.target.checked)}
+                  required
+                />
+                <label
+                  htmlFor="privacy-agree"
+                  className="text-xs text-gray-600 select-none cursor-pointer"
+                >
+                  <span>
+                    <a
+                      href="https://worksauce.gitbook.io/infomation/service/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-orange-500 hover:text-orange-700"
+                    >
+                      개인정보 수집 및 이용
+                    </a>
+                    에 동의합니다.
+                  </span>
+                </label>
+              </div>
+
+              <span className="text-xs text-gray-400">
+                해당 정보는 기프티콘 추첨 및 발송 용도로만 사용됩니다.
+              </span>
             </div>
             {/* Q1 */}
             <div className="w-full mb-2 font-semibold text-gray-800 flex flex-col gap-3">
@@ -249,18 +268,10 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
             </div>
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-400 to-pink-400 text-white font-bold py-2 rounded-xl shadow-lg hover:scale-105 transition-transform mt-1 text-base"
-              disabled={
-                !name ||
-                !email ||
-                !ageRange ||
-                q1 === 0 ||
-                q2 === 0 ||
-                q3 === 0 ||
-                !agreed
-              }
+              className="w-full py-3 mt-6 rounded-xl font-bold bg-gradient-to-r from-orange-500 via-pink-500 to-yellow-400 text-white shadow-md hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!isFormValid}
             >
-              <span>제출하기</span> <span className="text-xl">🚀</span>
+              제출하기
             </button>
           </form>
         </>
