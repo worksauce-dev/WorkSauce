@@ -454,81 +454,83 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
   const renderMiniTest = () => {
     const typeBlock = miniTestQuestions[currentTypeIdx];
     return (
-      <div className="max-w-xl bg-white rounded-2xl shadow-lg p-8 w-full">
-        {/* 진행률 & 제목 */}
-        <div className="mb-8 text-center">
-          <h2 className="text-2xl font-extrabold mb-2 text-orange-600 tracking-tight flex items-center justify-center gap-2">
-            문항에 답해주세요
-          </h2>
-          <p className="text-sm text-gray-500 mt-2 flex items-center justify-center gap-1">
-            <span className="text-base">👉</span>각 문항마다{" "}
-            <span className="text-orange-500 font-bold">1~5점</span> 중
-            선택해주세요
-          </p>
-          <div className="mt-2 text-xs text-gray-400">
-            <span className="font-bold text-orange-500">1</span>=매우 그렇지
-            않다, <span className="font-bold text-orange-500">5</span>=매우
-            그렇다
+      <div className="px-4 py-8 sm:p-0 min-h-screen flex flex-col items-center justify-center ">
+        <div className="max-w-xl bg-white rounded-2xl shadow-lg p-8 w-full">
+          {/* 진행률 & 제목 */}
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl font-extrabold mb-2 text-orange-600 tracking-tight flex items-center justify-center gap-2">
+              문항에 답해주세요
+            </h2>
+            <p className="text-sm text-gray-500 mt-2 flex items-center justify-center gap-1">
+              <span className="text-base">👉</span>각 문항마다{" "}
+              <span className="text-orange-500 font-bold">1~5점</span> 중
+              선택해주세요
+            </p>
+            <div className="mt-2 text-xs text-gray-400">
+              <span className="font-bold text-orange-500">1</span>=매우 그렇지
+              않다, <span className="font-bold text-orange-500">5</span>=매우
+              그렇다
+            </div>
+            <div className="mt-2 text-xs text-gray-400">
+              유형 진행: {currentTypeIdx + 1} / {miniTestQuestions.length}
+            </div>
           </div>
-          <div className="mt-2 text-xs text-gray-400">
-            유형 진행: {currentTypeIdx + 1} / {miniTestQuestions.length}
-          </div>
-        </div>
-        <section className="bg-gray-50 rounded-xl shadow p-6 border border-gray-100 h-[400px] sm:h-[400px] flex flex-col justify-evenly">
-          {typeBlock.questions.map((q, qIdx) => (
-            <div
-              key={qIdx}
-              className="gap-2 sm:gap-3 flex flex-col mb-4 sm:mb-6 last:mb-0"
-            >
-              <div className="flex items-center">
-                <span className="text-orange-500 font-bold mr-2">
-                  {qIdx + 1}.
-                </span>
-                <span className="text-gray-900 font-medium text-sm sm:text-base">
-                  {q.text}
-                </span>
-              </div>
-              <div className="flex gap-8 justify-center">
-                {[1, 2, 3, 4, 5].map(score => (
-                  <button
-                    key={score}
-                    type="button"
-                    onClick={() =>
-                      handleMiniTestAnswer(currentTypeIdx, qIdx, score)
-                    }
-                    className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
+          <section className="bg-gray-50 rounded-xl shadow p-6 border border-gray-100 h-[400px] sm:h-[400px] flex flex-col justify-evenly">
+            {typeBlock.questions.map((q, qIdx) => (
+              <div
+                key={qIdx}
+                className="gap-2 sm:gap-3 flex flex-col mb-4 sm:mb-6 min-h-[100px] last:mb-0"
+              >
+                <div className="flex items-center">
+                  <span className="text-orange-500 font-bold mr-2">
+                    {qIdx + 1}.
+                  </span>
+                  <span className="text-gray-900 font-medium text-sm sm:text-base break-words">
+                    {q.text}
+                  </span>
+                </div>
+                <div className="flex gap-8 justify-center">
+                  {[1, 2, 3, 4, 5].map(score => (
+                    <button
+                      key={score}
+                      type="button"
+                      onClick={() =>
+                        handleMiniTestAnswer(currentTypeIdx, qIdx, score)
+                      }
+                      className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
                       ${
                         miniTestAnswers[currentTypeIdx][qIdx] === score
                           ? "bg-orange-500 text-white border-orange-500 scale-110"
                           : "bg-white text-gray-400 border-gray-300 hover:border-orange-300"
                       }
                       transition`}
-                    aria-label={`${score}점`}
-                  >
-                    {score}
-                  </button>
-                ))}
+                      aria-label={`${score}점`}
+                    >
+                      {score}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </section>
-        {currentTypeIdx < miniTestQuestions.length - 1 ? (
-          <button
-            className="w-full py-3 bg-gradient-to-r from-orange-500 via-pink-500 to-yellow-400 text-white rounded-xl font-bold mt-10 shadow-md hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleMiniTestNextType}
-            disabled={miniTestAnswers[currentTypeIdx].some(ans => ans === 0)}
-          >
-            다음
-          </button>
-        ) : (
-          <button
-            className="w-full py-3 bg-gradient-to-r from-orange-500 via-pink-500 to-yellow-400 text-white rounded-xl font-bold mt-10 shadow-md hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleMiniTestFinish}
-            disabled={miniTestAnswers[currentTypeIdx].some(ans => ans === 0)}
-          >
-            결과 보기
-          </button>
-        )}
+            ))}
+          </section>
+          {currentTypeIdx < miniTestQuestions.length - 1 ? (
+            <button
+              className="w-full py-3 bg-gradient-to-r from-orange-500 via-pink-500 to-yellow-400 text-white rounded-xl font-bold mt-10 shadow-md hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleMiniTestNextType}
+              disabled={miniTestAnswers[currentTypeIdx].some(ans => ans === 0)}
+            >
+              다음
+            </button>
+          ) : (
+            <button
+              className="w-full py-3 bg-gradient-to-r from-orange-500 via-pink-500 to-yellow-400 text-white rounded-xl font-bold mt-10 shadow-md hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleMiniTestFinish}
+              disabled={miniTestAnswers[currentTypeIdx].some(ans => ans === 0)}
+            >
+              결과 보기
+            </button>
+          )}
+        </div>
       </div>
     );
   };
