@@ -450,12 +450,59 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
     setCurrentTypeIdx(0);
   };
 
+  // 미니테스트 문항(문제) 컴포넌트 분리
+  function MiniTestQuestion({
+    q,
+    qIdx,
+    currentTypeIdx,
+    answer,
+    onSelect,
+  }: {
+    q: { text: string; baseScore: number };
+    qIdx: number;
+    currentTypeIdx: number;
+    answer: number;
+    onSelect: (score: number) => void;
+  }) {
+    return (
+      <div className="gap-2 sm:gap-3 flex flex-col mb-4 sm:mb-6 min-h-[100px] last:mb-0">
+        <div className="flex items-start">
+          <span className="text-orange-500 font-bold mr-2 mt-0.5">
+            {qIdx + 1}.
+          </span>
+          <span className="text-gray-900 font-medium text-sm sm:text-base break-words leading-relaxed">
+            {q.text}
+          </span>
+        </div>
+        <div className="flex gap-8 justify-center mt-2">
+          {[1, 2, 3, 4, 5].map(score => (
+            <button
+              key={score}
+              type="button"
+              onClick={() => onSelect(score)}
+              className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
+              ${
+                answer === score
+                  ? "bg-orange-500 text-white border-orange-500 scale-110"
+                  : "bg-white text-gray-400 border-gray-300 hover:border-orange-300"
+              }
+              transition`}
+              aria-label={`${score}점`}
+            >
+              {score}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // 미니테스트 UI (유형별로 한 번에 3문제씩만 보여주기)
   const renderMiniTest = () => {
     const typeBlock = miniTestQuestions[currentTypeIdx];
     return (
       <div className="px-4 py-8 sm:p-0 min-h-screen flex flex-col items-center justify-center ">
-        <div className="max-w-xl bg-white rounded-2xl shadow-lg p-8 w-full">
+        <div className="w-[600px] bg-white rounded-2xl shadow-lg p-8">
           {/* 진행률 & 제목 */}
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-extrabold mb-2 text-orange-600 tracking-tight flex items-center justify-center gap-2">
@@ -477,40 +524,16 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
           </div>
           <section className="bg-gray-50 rounded-xl shadow p-6 border border-gray-100 h-[400px] sm:h-[400px] flex flex-col justify-evenly">
             {typeBlock.questions.map((q, qIdx) => (
-              <div
+              <MiniTestQuestion
                 key={qIdx}
-                className="gap-2 sm:gap-3 flex flex-col mb-4 sm:mb-6 min-h-[100px] last:mb-0"
-              >
-                <div className="flex items-center">
-                  <span className="text-orange-500 font-bold mr-2">
-                    {qIdx + 1}.
-                  </span>
-                  <span className="text-gray-900 font-medium text-sm sm:text-base break-words">
-                    {q.text}
-                  </span>
-                </div>
-                <div className="flex gap-8 justify-center">
-                  {[1, 2, 3, 4, 5].map(score => (
-                    <button
-                      key={score}
-                      type="button"
-                      onClick={() =>
-                        handleMiniTestAnswer(currentTypeIdx, qIdx, score)
-                      }
-                      className={`w-6 h-6 text-xs sm:text-base sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold border-2
-                      ${
-                        miniTestAnswers[currentTypeIdx][qIdx] === score
-                          ? "bg-orange-500 text-white border-orange-500 scale-110"
-                          : "bg-white text-gray-400 border-gray-300 hover:border-orange-300"
-                      }
-                      transition`}
-                      aria-label={`${score}점`}
-                    >
-                      {score}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                q={q}
+                qIdx={qIdx}
+                currentTypeIdx={currentTypeIdx}
+                answer={miniTestAnswers[currentTypeIdx][qIdx]}
+                onSelect={score =>
+                  handleMiniTestAnswer(currentTypeIdx, qIdx, score)
+                }
+              />
             ))}
           </section>
           {currentTypeIdx < miniTestQuestions.length - 1 ? (
