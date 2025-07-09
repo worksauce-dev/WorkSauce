@@ -1,9 +1,10 @@
 "use client";
 
-import { MdShare, MdContentCopy } from "react-icons/md";
+import { MdShare, MdContentCopy, MdRefresh } from "react-icons/md";
 import { SurveySection } from "./SurveySection";
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { SurveyData } from "@/types/surveyData";
+import { workflowContent } from "@/constants/saucetest";
 
 declare global {
   interface Window {
@@ -202,7 +203,88 @@ export function ResultSection({
 
   const [surveyVisible, setSurveyVisible] = useState(false);
 
-  // 설문조사 섹션으로 스크롤 이동
+  // 섹션 이동 관련 상태
+  const [activeSection, setActiveSection] = useState(0); // 0: 결과, 1: 설명, 2: 공유/설문
+  const sectionCount = 3;
+  const sectionContainerRef = useRef<HTMLDivElement>(null);
+  const sectionCooldown = 600; // ms
+  const [isScrollLocked, setIsScrollLocked] = useState(false);
+  const lastScrollTimeRef = useRef<number>(0);
+
+  // 섹션 이동 함수
+  const goToSection = useCallback(
+    (idx: number) => {
+      if (idx < 0 || idx >= sectionCount) return;
+      setActiveSection(idx);
+    },
+    [sectionCount]
+  );
+  const nextSection = () => goToSection(activeSection + 1);
+  const prevSection = () => goToSection(activeSection - 1);
+
+  // 키보드 좌우 이동 지원
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") nextSection();
+      else if (e.key === "ArrowLeft") prevSection();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeSection]);
+
+  // 터치(스와이프) 이동 지원 (Y축)
+  useEffect(() => {
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    const handleTouchEnd = (e: TouchEvent) => {
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < sectionCooldown) return;
+      lastScrollTimeRef.current = now;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diff = touchStartY - touchEndY;
+      if (diff > 50) nextSection(); // 위로 스와이프 → 다음(아래)
+      else if (diff < -50) prevSection(); // 아래로 스와이프 → 이전(위)
+    };
+    const container = sectionContainerRef.current;
+    if (container) {
+      container.addEventListener("touchstart", handleTouchStart);
+      container.addEventListener("touchend", handleTouchEnd);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("touchstart", handleTouchStart);
+        container.removeEventListener("touchend", handleTouchEnd);
+      }
+    };
+  }, [activeSection]);
+
+  // 휠(마우스 스크롤) 이동 지원 (Y축)
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < sectionCooldown) return;
+      lastScrollTimeRef.current = now;
+      if (e.deltaY > 0) {
+        nextSection();
+      } else if (e.deltaY < 0) {
+        prevSection();
+      }
+    };
+    const container = sectionContainerRef.current;
+    if (container) {
+      container.addEventListener("wheel", handleWheel, { passive: false });
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("wheel", handleWheel);
+      }
+    };
+  }, [activeSection]);
+
+  // 설문조사 스크롤
   const handleSurveyScroll = () => {
     setSurveyVisible(true);
     setTimeout(() => {
@@ -214,113 +296,208 @@ export function ResultSection({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-8 animate-fadein-pop mt-12">
-      <div className="relative w-full max-w-lg mx-auto">
-        {/* 컬러풀한 그라데이션 원 + 이모지 */}
-        <div
-          className={`absolute left-1/2 -translate-x-1/2 -top-16 w-32 h-32 rounded-full blur-xl opacity-60 z-0 bg-gradient-to-br ${finalResult.color}`}
-        ></div>
-        <div className="relative z-10 flex flex-col items-center">
-          <div className="text-7xl mb-2 drop-shadow-lg animate-pop">
-            {emoji}
-          </div>
-          <div className="flex flex-col items-center mb-1">
-            <span className="text-base font-medium text-gray-400 mb-1">
-              당신의 워크소스는
-            </span>
-            <span className="text-4xl sm:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-orange-500 to-pink-500 animate-gradient drop-shadow-lg">
-              {finalResult.name}
-            </span>
-          </div>
-          <div className="text-lg font-bold text-orange-600 animate-fadein-slow">
-            {finalResult.tagline}
-          </div>
-        </div>
-      </div>
-
-      {/* 특성 뱃지 */}
-      <div className="flex flex-wrap justify-center gap-2 mb-2">
-        {finalResult.traits.map((trait, index) => (
-          <span
-            key={index}
-            className="px-4 py-2 rounded-full text-sm font-semibold shadow-sm bg-gradient-to-br from-orange-100 to-orange-200 text-orange-700 border border-orange-200"
-          >
-            {trait}
-          </span>
+    <div className="relative overflow-hidden w-full max-w-2xl mx-auto">
+      {/* 인디케이터: 화면 우측 중앙에 고정 */}
+      <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 md:flex-col gap-4 hidden md:flex">
+        {[...Array(sectionCount)].map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => goToSection(idx)}
+            className={`w-4 h-4 rounded-full transition-all duration-300 border-2 ${
+              activeSection === idx
+                ? "bg-orange-500 border-orange-500 scale-125"
+                : "bg-gray-300 border-gray-300 hover:bg-gray-400"
+            }`}
+            aria-label={`섹션 ${idx + 1}`}
+          />
         ))}
       </div>
-      {/* 한 줄 코멘트 */}
-      <div className="text-base font-semibold text-pink-600 mb-2 animate-bounce">
-        {comment}
-      </div>
-      {/* 설명 */}
-      <div className="max-w-xl mx-auto mb-4 animate-fadein-slow space-y-6">
-        {/* 설명 */}
-        <div className="flex items-start gap-3 bg-gradient-to-br from-orange-50 to-orange-100 border-l-4 border-orange-400 rounded-xl p-5 shadow">
-          <div className="text-3xl mt-1">💡</div>
-          <div>
-            <div className="font-bold text-orange-600 text-lg mb-1">설명</div>
-            <div className="text-gray-800 leading-relaxed">
-              {finalResult.description}
-            </div>
-          </div>
-        </div>
-        {/* 업무 추진 방향성 */}
-        <div className="flex items-start gap-3 bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-400 rounded-xl p-5 shadow">
-          <div className="text-3xl mt-1">🚀</div>
-          <div>
-            <div className="font-bold text-blue-600 text-lg mb-1">
-              업무 추진 방향성
-            </div>
-            <div className="text-gray-800 leading-relaxed">
-              {finalResult.workStyle}
-            </div>
-          </div>
-        </div>
-        {/* 보완 방법 */}
-        <div className="flex items-start gap-3 bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-green-400 rounded-xl p-5 shadow">
-          <div className="text-3xl mt-1">🌱</div>
-          <div>
-            <div className="font-bold text-green-600 text-lg mb-1">
-              이 유형을 보완하는 방법
-            </div>
-            <div className="text-gray-800 leading-relaxed">
-              {finalResult.improvement}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 공유/복사 버튼 */}
-      <div className="flex justify-center gap-4 mb-4">
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 text-yellow-700 font-bold shadow hover:bg-yellow-200 transition">
-          <MdContentCopy /> 결과 복사
-        </button>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-bold shadow hover:bg-blue-200 transition">
-          <MdShare /> 공유하기
-        </button>
-      </div>
-      {/* 다시 테스트하기 버튼 */}
-      <button
-        onClick={onRestart}
-        className="border-2 border-[#FF5858] text-[#FF5858] px-8 py-3 rounded-full font-semibold hover:bg-[#FF5858]/5 transition-colors text-lg flex items-center gap-2 mt-2 animate-pop"
+      {/* 섹션 컨테이너 */}
+      <div
+        ref={sectionContainerRef}
+        className="flex flex-col transition-transform duration-700 ease-in-out"
+        style={{ transform: `translateY(-${activeSection * 100}vh)` }}
       >
-        <span>🔄</span> 다시 테스트하기
-      </button>
-      {/* 설문조사 유도 버튼 (설문조사 보이기 전만) */}
-      <button
-        onClick={handleSurveyScroll}
-        className="mt-2 px-8 py-4 rounded-full bg-gradient-to-r from-orange-400 to-pink-400 text-white text-lg font-extrabold shadow-lg hover:scale-105 transition-transform animate-pop"
-      >
-        설문조사를 진행하고 <span className="mx-1">☕️</span> 커피 기프티콘을
-        받아가세요!
-      </button>
-      {/* 설문조사 섹션 (버튼 클릭 시에만 보임) */}
-      {surveyVisible && (
-        <div id="survey-section" className="w-full">
+        {/* 1. 결과 섹션 */}
+        <div className="px-4 py-8 sm:p-0 min-h-screen flex flex-col items-center justify-center space-y-8 animate-fadein-pop">
+          <div className="relative w-full max-w-lg mx-auto">
+            {/* 컬러풀한 그라데이션 원 + 이모지 */}
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 -top-16 w-32 h-32 rounded-full blur-xl opacity-60 z-0 bg-gradient-to-br ${finalResult.color}`}
+            ></div>
+            <div className="relative z-10 flex flex-col items-center">
+              <div className="text-7xl mb-2 drop-shadow-lg animate-pop">
+                {emoji}
+              </div>
+              <div className="flex flex-col items-center mb-1">
+                <span className="text-base font-medium text-gray-400 mb-1">
+                  당신의 워크소스는
+                </span>
+                <span className="text-4xl sm:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-orange-500 to-pink-500 animate-gradient drop-shadow-lg">
+                  {finalResult.name}
+                </span>
+              </div>
+              <div className="text-lg font-bold text-orange-600 animate-fadein-slow">
+                {finalResult.tagline}
+              </div>
+            </div>
+          </div>
+          {/* 특성 뱃지 */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2">
+            {finalResult.traits.map((trait, index) => (
+              <span
+                key={index}
+                className="px-4 py-2 rounded-full text-sm font-semibold shadow-sm bg-gradient-to-br from-orange-100 to-orange-200 text-orange-700 border border-orange-200"
+              >
+                {trait}
+              </span>
+            ))}
+          </div>
+          {/* 한 줄 코멘트 */}
+          <div className="text-base font-semibold text-pink-600 mb-2 animate-bounce">
+            {comment}
+          </div>
+          {/* 공유/다시하기 버튼: 결과 섹션 디자인 톤에 맞게 */}
+          <div className="flex gap-4 mt-4">
+            <button className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-orange-400 to-pink-400 text-white font-bold shadow-lg hover:from-orange-500 hover:to-pink-500 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-300">
+              <MdShare className="text-base sm:text-xl" />
+              <span className="text-base sm:text-xl">공유하기</span>
+            </button>
+            <button
+              onClick={onRestart}
+              className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-pink-400 to-orange-400 text-white font-bold shadow-lg hover:from-pink-500 hover:to-orange-500 hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-200"
+            >
+              <MdRefresh className="text-base sm:text-xl" />
+              <span className="text-base sm:text-xl">다시 테스트하기</span>
+            </button>
+          </div>
+        </div>
+        {/* 2. 설명 섹션 */}
+        <div className="px-2 py-4 sm:p-0 min-h-screen flex flex-col items-center justify-center">
+          <div className="w-full max-w-xl flex flex-col gap-4 bg-gradient-to-br from-orange-50 via-white to-blue-50 rounded-2xl shadow-md p-6 border border-orange-100">
+            {/* 설명/업무/보완 */}
+            <div className="flex flex-col gap-3">
+              {[
+                {
+                  icon: "💡",
+                  color: "bg-orange-100",
+                  title: "설명",
+                  text: finalResult.description,
+                  titleColor: "text-orange-600",
+                  bg: "bg-orange-50",
+                },
+                {
+                  icon: "🚀",
+                  color: "bg-blue-100",
+                  title: "업무 추진 방향성",
+                  text: finalResult.workStyle,
+                  titleColor: "text-blue-600",
+                  bg: "bg-blue-50",
+                },
+                {
+                  icon: "🌱",
+                  color: "bg-green-100",
+                  title: "이 유형을 보완하는 방법",
+                  text: finalResult.improvement,
+                  titleColor: "text-green-600",
+                  bg: "bg-green-50",
+                },
+              ].map(({ icon, color, title, text, titleColor, bg }) => (
+                <div
+                  key={title}
+                  className={`flex items-start gap-3 rounded-xl ${bg} p-3 shadow-sm`}
+                >
+                  <div
+                    className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full ${color} shadow text-xl animate-bounce`}
+                  >
+                    {icon}
+                  </div>
+                  <div>
+                    <div className={`font-bold ${titleColor} text-sm mb-0.5`}>
+                      {title}
+                    </div>
+                    <div className="text-gray-800 leading-relaxed text-xs">
+                      {text}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* 구분선 */}
+            <div className="border-t border-gray-200 my-1" />
+            {/* workflowContent */}
+            {workflowContent[finalType as keyof typeof workflowContent] && (
+              <div className="flex flex-col gap-2">
+                {/* 동사(verbs) */}
+                <div>
+                  <div className="font-bold text-orange-600 text-sm mb-1">
+                    이 유형의 핵심 동사
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {workflowContent[
+                      finalType as keyof typeof workflowContent
+                    ].verbs
+                      .split(" - ")
+                      .map((verb: string, idx: number) => (
+                        <span
+                          key={verb}
+                          className={`px-2 py-0.5 rounded-full text-white text-xs font-medium shadow-sm border border-white bg-gradient-to-r from-orange-400 to-pink-400 hover:scale-105 transition-transform duration-150`}
+                        >
+                          {verb}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+                {/* 단계별 워크플로우 */}
+                <div>
+                  <div className="font-bold text-blue-600 text-sm mb-1">
+                    업무 추진 단계
+                  </div>
+                  <ol className="relative border-l-2 border-blue-200 pl-4">
+                    {workflowContent[
+                      finalType as keyof typeof workflowContent
+                    ].steps.map(
+                      (
+                        step: { action: string; content: string },
+                        idx: number
+                      ) => (
+                        <li
+                          key={idx}
+                          className="mb-3 ml-2 flex items-start gap-2"
+                        >
+                          <div className="relative">
+                            <div className="w-3 h-3 bg-gradient-to-br from-blue-400 to-pink-400 rounded-full border-2 border-white animate-pulse"></div>
+                            {idx <
+                              workflowContent[
+                                finalType as keyof typeof workflowContent
+                              ].steps.length -
+                                1 && (
+                              <div className="absolute left-1/2 top-full w-0.5 h-6 bg-gradient-to-b from-blue-200 to-pink-200 -translate-x-1/2"></div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="font-bold text-blue-700 text-xs">
+                              {step.action}
+                            </div>
+                            <div className="text-gray-700 text-xs">
+                              {step.content}
+                            </div>
+                          </div>
+                        </li>
+                      )
+                    )}
+                  </ol>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* 3. 공유/설문조사 섹션 */}
+        <div className="px-4 py-8 sm:p-0 min-h-screen flex flex-col items-center justify-center ">
+          {/* 설문조사 섹션: 항상 바로 보이게 */}
           <SurveySection submitSurvey={submitSurvey} />
         </div>
-      )}
+      </div>
     </div>
   );
 }
