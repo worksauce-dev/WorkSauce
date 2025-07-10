@@ -340,6 +340,11 @@ function ResultSummarySection({
           <span className="text-base sm:text-xl">다시 테스트하기</span>
         </button>
       </div>
+      <div className="w-full flex justify-center mt-8">
+        <span className="flex items-center gap-1 text-orange-600 font-semibold text-base sm:text-lg animate-bounce">
+          <span className="text-lg">⬇️</span> 아래로 스크롤하세요
+        </span>
+      </div>
     </div>
   );
 }

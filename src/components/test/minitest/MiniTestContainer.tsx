@@ -502,7 +502,7 @@ export function MiniTestContainer({ submitSurvey }: MiniTestContainerProps) {
     const typeBlock = miniTestQuestions[currentTypeIdx];
     return (
       <div className="px-4 py-8 sm:p-0 min-h-screen flex flex-col items-center justify-center ">
-        <div className="w-[600px] bg-white rounded-2xl shadow-lg p-8">
+        <div className="w-fullsm:w-[600px] bg-white rounded-2xl shadow-lg p-8">
           {/* 진행률 & 제목 */}
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-extrabold mb-2 text-orange-600 tracking-tight flex items-center justify-center gap-2">
