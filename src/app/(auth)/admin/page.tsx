@@ -5,6 +5,7 @@ import {
   MdWorkspaces,
   MdSettings,
   MdBarChart,
+  MdBusiness,
 } from "react-icons/md";
 import { getAdminStats } from "@/api/firebase/getAdminStats";
 import { formatDistanceToNow } from "date-fns";
@@ -94,6 +95,11 @@ export default async function AdminDashboard() {
               title="설정"
               icon={<MdSettings size={24} />}
               href="/admin/settings"
+            />
+            <QuickActionButton
+              title="인증된 대시보드"
+              icon={<MdBusiness size={24} />}
+              href="/admin/approved-dashboards"
             />
           </div>
         </div>
