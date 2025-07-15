@@ -5,7 +5,7 @@ export interface EmailOptions {
   testId: string;
   companyName: string;
   deadline: string;
-  isVerified: "verified" | "pending" | "rejected" | "notRequested";
+  isVerified: "approved" | "pending" | "rejected" | "notRequested";
   subject?: string;
   html?: string;
   dashboardId: string;

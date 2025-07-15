@@ -273,7 +273,7 @@ const TeamManagement = ({
       }
     };
 
-    if (dashboardData.isVerified === "verified") {
+    if (dashboardData.isVerified === "approved") {
       for (const member of selectedTeam.members) {
         try {
           const success = await sendTestEmail(member);
