@@ -8,7 +8,6 @@ import {
   MdDone,
   MdBlock,
 } from "react-icons/md";
-import { UserBase } from "@/types/user";
 import { formatDate } from "@/utils/dateUtils";
 import { DashboardInterface } from "@/types/dashboard";
 
