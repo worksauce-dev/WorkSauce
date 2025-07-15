@@ -312,7 +312,7 @@ function ResultDescriptionSection({
                 <div className={`font-bold ${titleColor} text-sm mb-0.5`}>
                   {title}
                 </div>
-                <div className="text-gray-800 leading-relaxed text-xs">
+                <div className="text-gray-800 leading-relaxed text-xs sm:text-sm">
                   {text}
                 </div>
               </div>
@@ -362,10 +362,10 @@ function ResultDescriptionSection({
                         )}
                       </div>
                       <div>
-                        <div className="font-bold text-blue-700 text-xs">
+                        <div className="font-bold text-blue-700 text-xs sm:text-sm">
                           {step.action}
                         </div>
-                        <div className="text-gray-700 text-xs">
+                        <div className="text-gray-700 text-xs sm:text-sm">
                           {step.content}
                         </div>
                       </div>
