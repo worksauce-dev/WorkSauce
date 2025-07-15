@@ -135,7 +135,7 @@ export function SurveySection({ onSubmit, submitSurvey }: SurveySectionProps) {
             </div>
 
             {/* 개인정보 동의 체크박스 */}
-            <div className="w-full mb-2 flex items-center justify-between">
+            <div className="w-full mb-2 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
