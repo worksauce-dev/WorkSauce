@@ -56,9 +56,10 @@ export interface Organization {
     businessLicenseUrl: string | null;
     employmentCertificateUrl: string | null;
   };
-  status?: "pending" | "approved" | "rejected";
-  submittedAt?: string;
-  updatedAt?: string;
+  status: "pending" | "approved" | "rejected";
+  updatedAt: string;
+  createdAt: string;
+  dashboardId: string;
 }
 
 export interface DashboardInterface {
@@ -85,7 +86,7 @@ export interface DashboardInterface {
     createdAt: string;
     completedAt: string;
   }[];
-  isVerified: "verified" | "pending" | "rejected" | "notRequested";
+  isVerified: "approved" | "pending" | "rejected" | "notRequested";
   organization: Organization;
   userTeam: UserTeam[];
 }
