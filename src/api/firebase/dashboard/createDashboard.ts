@@ -113,6 +113,10 @@ export async function createDashboard(
           businessLicenseUrl: null,
           employmentCertificateUrl: null,
         },
+        status: "notRequested",
+        updatedAt: createdAt,
+        createdAt,
+        dashboardId: "",
       },
       userTeam: [],
     };

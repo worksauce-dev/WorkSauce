@@ -56,7 +56,7 @@ export interface Organization {
     businessLicenseUrl: string | null;
     employmentCertificateUrl: string | null;
   };
-  status: "pending" | "approved" | "rejected";
+  status: "notRequested" | "pending" | "approved" | "rejected";
   updatedAt: string;
   createdAt: string;
   dashboardId: string;
