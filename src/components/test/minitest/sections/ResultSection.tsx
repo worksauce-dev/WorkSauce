@@ -191,94 +191,6 @@ const SAUCE_COMMENTS: Record<string, string> = {
   도전목표형: "목표를 향해 직진! 성취의 아이콘!",
 };
 
-// --- 섹션 이동 커스텀 훅 ---
-function useSectionNavigation(sectionCount: number) {
-  const [activeSection, setActiveSection] = useState(0);
-  const sectionContainerRef = useRef<HTMLDivElement>(null);
-  const sectionCooldown = 600; // ms
-  const lastScrollTimeRef = useRef<number>(0);
-
-  const goToSection = useCallback(
-    (idx: number) => {
-      if (idx < 0 || idx >= sectionCount) return;
-      setActiveSection(idx);
-    },
-    [sectionCount]
-  );
-  const nextSection = () => goToSection(activeSection + 1);
-  const prevSection = () => goToSection(activeSection - 1);
-
-  // 키보드 좌우 이동 지원
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") nextSection();
-      else if (e.key === "ArrowLeft") prevSection();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeSection]);
-
-  // 터치(스와이프) 이동 지원 (Y축)
-  useEffect(() => {
-    let touchStartY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-    const handleTouchEnd = (e: TouchEvent) => {
-      const now = Date.now();
-      if (now - lastScrollTimeRef.current < sectionCooldown) return;
-      lastScrollTimeRef.current = now;
-      const touchEndY = e.changedTouches[0].clientY;
-      const diff = touchStartY - touchEndY;
-      if (diff > 50) nextSection();
-      else if (diff < -50) prevSection();
-    };
-    const container = sectionContainerRef.current;
-    if (container) {
-      container.addEventListener("touchstart", handleTouchStart);
-      container.addEventListener("touchend", handleTouchEnd);
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener("touchstart", handleTouchStart);
-        container.removeEventListener("touchend", handleTouchEnd);
-      }
-    };
-  }, [activeSection]);
-
-  // 휠(마우스 스크롤) 이동 지원 (Y축)
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - lastScrollTimeRef.current < sectionCooldown) return;
-      lastScrollTimeRef.current = now;
-      if (e.deltaY > 0) {
-        nextSection();
-      } else if (e.deltaY < 0) {
-        prevSection();
-      }
-    };
-    const container = sectionContainerRef.current;
-    if (container) {
-      container.addEventListener("wheel", handleWheel, { passive: false });
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener("wheel", handleWheel);
-      }
-    };
-  }, [activeSection]);
-
-  return {
-    activeSection,
-    goToSection,
-    nextSection,
-    prevSection,
-    sectionContainerRef,
-  };
-}
-
 // --- 결과 섹션 ---
 function ResultSummarySection({
   finalResult,
@@ -490,45 +402,29 @@ export function ResultSection({
   const finalResult = SAUCE_TYPES[finalType as keyof typeof SAUCE_TYPES];
   const emoji = SAUCE_EMOJIS[finalType] || "🍽️";
   const comment = SAUCE_COMMENTS[finalType] || "나만의 소스를 발견했어요!";
-  const sectionCount = 3;
-  const { activeSection, goToSection, sectionContainerRef } =
-    useSectionNavigation(sectionCount);
 
   return (
-    <div className="relative overflow-hidden w-full max-w-2xl mx-auto">
-      {/* 인디케이터: 화면 우측 중앙에 고정 */}
-      <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 md:flex-col gap-4 hidden md:flex">
-        {[...Array(sectionCount)].map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => goToSection(idx)}
-            className={`w-4 h-4 rounded-full transition-all duration-300 border-2 ${
-              activeSection === idx
-                ? "bg-orange-500 border-orange-500 scale-125"
-                : "bg-gray-300 border-gray-300 hover:bg-gray-400"
-            }`}
-            aria-label={`섹션 ${idx + 1}`}
-          />
-        ))}
-      </div>
-      {/* 섹션 컨테이너 */}
-      <div
-        ref={sectionContainerRef}
-        className="flex flex-col transition-transform duration-700 ease-in-out"
-        style={{ transform: `translateY(-${activeSection * 100}vh)` }}
-      >
+    <div
+      className="overflow-y-auto h-screen snap-y snap-mandatory w-full max-w-2xl mx-auto scroll-smooth hide-scrollbar"
+      style={{ scrollSnapType: "y mandatory" }}
+    >
+      <section className="min-h-screen snap-start">
         <ResultSummarySection
           finalResult={finalResult}
           emoji={emoji}
           comment={comment}
           onRestart={onRestart}
         />
+      </section>
+      <section className="min-h-screen snap-start">
         <ResultDescriptionSection
           finalResult={finalResult}
           finalType={finalType}
         />
+      </section>
+      <section className="min-h-screen snap-start">
         <ResultSurveySection submitSurvey={submitSurvey} />
-      </div>
+      </section>
     </div>
   );
 }
