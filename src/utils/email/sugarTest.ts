@@ -202,9 +202,9 @@ function generateEmailSubject(
   userName: string,
   applicantName: string,
   companyName: string,
-  isVerified: "verified" | "pending" | "rejected" | "notRequested"
+  isVerified: "approved" | "pending" | "rejected" | "notRequested"
 ): string {
-  if (isVerified === "verified") {
+  if (isVerified === "approved") {
     return `[${companyName}] ${applicantName}님 슈가테스트를 시작해주세요!`;
   }
   return `[${userName}]님이 보내신 슈가테스트를 시작해주세요!`;
@@ -233,7 +233,7 @@ export async function sendSugarTestEmail(
       isVerified
     ),
     html:
-      isVerified === "verified"
+      isVerified === "approved"
         ? generateSugarTestEmailTemplateForBusiness(
             applicantName,
             testId,

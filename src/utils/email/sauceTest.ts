@@ -93,11 +93,11 @@ export function generateSauceTestEmailTemplate(
 }
 
 export function generateSauceTestEmailTemplateForBusiness(
-  applicantName: string = "",
-  testId: string = "",
-  companyName: string = "",
-  dashboardId: string = "",
-  deadline: string = ""
+  applicantName: string,
+  testId: string,
+  companyName: string,
+  dashboardId: string,
+  deadline: string
 ): string {
   return `
    <!DOCTYPE html>
@@ -189,9 +189,9 @@ function generateEmailSubject(
   userName: string,
   applicantName: string,
   companyName: string,
-  isVerified: "verified" | "pending" | "rejected" | "notRequested"
+  isVerified: "approved" | "pending" | "rejected" | "notRequested"
 ): string {
-  if (isVerified === "verified") {
+  if (isVerified === "approved") {
     return `[${companyName}] ${applicantName}님 소스테스트를 시작해주세요!`;
   }
   return `[${userName}]님이 보내신 소스테스트를 시작해주세요!`;
@@ -220,11 +220,11 @@ export const sendSauceTestEmail = async (
       isVerified
     ),
     html:
-      isVerified === "verified"
+      isVerified === "approved"
         ? generateSauceTestEmailTemplateForBusiness(
-            userName,
             applicantName,
             testId,
+            companyName,
             dashboardId,
             deadline
           )
