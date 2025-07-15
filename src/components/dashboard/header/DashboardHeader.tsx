@@ -135,7 +135,7 @@ const DashboardHeader = ({
             type="button"
             className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded text-sm font-medium text-gray-700"
           >
-            {dashboardData.isVerified === "verified"
+            {dashboardData.isVerified === "approved"
               ? dashboardData.organization.companyInfo.companyName
               : userBase.name}
           </button>

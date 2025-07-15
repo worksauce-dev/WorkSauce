@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   MdCheckCircle,
@@ -27,7 +27,7 @@ interface RegisterCompanyProps {
     data: Organization,
     dashboardId: string
   ) => Promise<void>;
-  isVerified: "verified" | "pending" | "rejected" | "notRequested";
+  isVerified: "approved" | "pending" | "rejected" | "notRequested";
 }
 
 const RegisterCompany = ({
@@ -73,7 +73,9 @@ const RegisterCompany = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [localVerified, setLocalVerified] = useState<
+    "approved" | "pending" | "rejected" | "notRequested"
+  >(isVerified);
 
   // 입력 필드 변경 핸들러
   const handleInputChange = (
@@ -369,6 +371,10 @@ const RegisterCompany = ({
           businessLicenseUrl,
           employmentCertificateUrl,
         },
+        status: "pending",
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        dashboardId: userBase.dashboardId,
       };
 
       //3. 회사 인증 요청
@@ -381,8 +387,8 @@ const RegisterCompany = ({
       );
 
       if (result.success) {
-        alert("회사 인증 요청이 성공적으로 제출되었습니다.");
-        setIsSuccess(true);
+        // alert("회사 인증 요청이 성공적으로 제출되었습니다.");
+        setLocalVerified("pending"); // 바로 인증 진행 중으로 전환
       } else {
         alert(result.message);
       }
@@ -395,19 +401,17 @@ const RegisterCompany = ({
   };
 
   return (
-    <main className="flex-1 p-6 overflow-auto bg-gray-50 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
-      <div className="max-w-6xl mx-auto">
-        {isVerified === "pending" ? (
-          <div className="text-center">
+    <div className="flex-1 p-6 overflow-auto bg-gray-50 scrollbar-thin scrollbar-thumb-gray-200 hover:scrollbar-thumb-gray-300 scrollbar-track-transparent">
+      <div className="max-w-6xl mx-auto h-full flex flex-col justify-center items-center min-h-[60vh]">
+        {localVerified === "pending" ? (
+          <section className="w-full flex flex-col items-center text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 mb-4">
               <MdAccessTime className="w-8 h-8 text-orange-500" />
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
               회사 인증이 진행 중입니다
             </h2>
-
-            {/* 인증 진행 상태 안내 */}
-            <div className="max-w-md mx-auto space-y-4">
+            <div className="max-w-md w-full mx-auto space-y-4">
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
                   <MdInfo className="flex-shrink-0 h-5 w-5 text-orange-500 mt-0.5" />
@@ -422,7 +426,6 @@ const RegisterCompany = ({
                   </div>
                 </div>
               </div>
-
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-start space-x-3">
                   <MdAutorenew className="flex-shrink-0 h-5 w-5 text-blue-500 mt-0.5" />
@@ -438,46 +441,47 @@ const RegisterCompany = ({
                 </div>
               </div>
             </div>
-
             <button
               type="button"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(`/dashboard/${userBase.dashboardId}`)}
               className="mt-6 px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
             >
               대시보드로 이동
             </button>
-          </div>
-        ) : isSuccess ? (
-          <div className="text-center">
+          </section>
+        ) : localVerified === "approved" ? (
+          <section className="w-full flex flex-col items-center text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
               <MdCheckCircle className="w-8 h-8 text-green-500" />
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              회사 등록이 완료되었습니다!
+              회사 인증이 완료되었습니다!
             </h2>
-
-            {/* 인증 소요 시간 안내문구 */}
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4 inline-flex items-start">
-              <MdAccessTime className="flex-shrink-0 h-5 w-5 text-orange-500 mt-0.5 mr-2" />
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 inline-flex items-start max-w-md w-full">
+              <MdInfo className="flex-shrink-0 h-5 w-5 text-green-500 mt-0.5 mr-2" />
               <div className="text-left">
-                <p className="text-orange-700 font-medium">회사 인증 안내</p>
-                <p className="text-orange-600 text-sm">
-                  회사 인증은 제출 후 2-3 영업일이 소요됩니다. 인증이 완료되면
-                  알림을 통해 안내해 드립니다.
+                <p className="text-green-700 font-medium">회사 인증 완료</p>
+                <p className="text-green-600 text-sm">
+                  축하합니다! 회사 인증이 정상적으로 완료되었습니다. 이제 모든
+                  서비스를 자유롭게 이용하실 수 있습니다.
+                  <br />
+                  <span className="block mt-2 text-green-700 font-semibold">
+                    이제 이메일로 진단 검사를 보낼 때 공식적인 회사명이
+                    노출됩니다.
+                  </span>
                 </p>
               </div>
             </div>
-
             <button
               type="button"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(`/dashboard/${userBase.dashboardId}`)}
               className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
             >
               대시보드로 이동
             </button>
-          </div>
+          </section>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8 w-full">
             {errors.submit && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-start">
                 <MdInfo className="flex-shrink-0 h-5 w-5 text-red-500 mt-0.5 mr-2" />
@@ -644,7 +648,7 @@ const RegisterCompany = ({
                           files.businessLicense ? "valid" : "",
                           errors.businessLicense
                         )} rounded-md shadow-sm text-sm text-gray-700 
-                        bg-white hover:bg-gray-50 cursor-pointer h-[38px]`}
+                          bg-white hover:bg-gray-50 cursor-pointer h-[38px]`}
                         aria-required="true"
                       >
                         <div className="flex items-center justify-between h-full">
@@ -710,7 +714,7 @@ const RegisterCompany = ({
                           files.employmentCertificate ? "valid" : "",
                           errors.employmentCertificate
                         )} rounded-md shadow-sm text-sm text-gray-700 
-                        bg-white hover:bg-gray-50 cursor-pointer h-[38px]`}
+                          bg-white hover:bg-gray-50 cursor-pointer h-[38px]`}
                         aria-required="true"
                       >
                         <div className="flex items-center justify-between h-full">
@@ -1023,15 +1027,16 @@ const RegisterCompany = ({
 
                 <div className="pt-4">
                   <button
+                    onClick={handleSubmit}
                     type="submit"
                     disabled={isSubmitting}
                     className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
-                      ${
-                        isSubmitting
-                          ? "bg-orange-400 cursor-not-allowed"
-                          : "bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-                      } 
-                      transition-colors duration-200`}
+                        ${
+                          isSubmitting
+                            ? "bg-orange-400 cursor-not-allowed"
+                            : "bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                        } 
+                        transition-colors duration-200`}
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">
@@ -1048,7 +1053,7 @@ const RegisterCompany = ({
           </form>
         )}
       </div>
-    </main>
+    </div>
   );
 };
 
