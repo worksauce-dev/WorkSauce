@@ -109,6 +109,9 @@ const config: Config = {
         "slide-up": "slideUp 0.4s ease-out",
         "fadein-pop": "fadein-pop 0.7s cubic-bezier(0.22,1,0.36,1)",
         gradientMove: "gradientMove 2.5s linear infinite",
+        float: "float 3s ease-in-out infinite",
+        "slide-in-up": "slideInUp 0.6s ease-out",
+        "scale-in": "scaleIn 0.5s ease-out",
       },
       keyframes: {
         fadeIn: {
@@ -128,6 +131,18 @@ const config: Config = {
         gradientMove: {
           "0%": { backgroundPosition: "0% 50%" },
           "100%": { backgroundPosition: "100% 50%" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        slideInUp: {
+          "0%": { transform: "translateY(30px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        scaleIn: {
+          "0%": { transform: "scale(0.9)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
         },
       },
     },

@@ -1,8 +1,7 @@
 "use client";
 
-import { MdShare, MdContentCopy, MdRefresh } from "react-icons/md";
+import { MdRefresh } from "react-icons/md";
 import { SurveySection } from "./SurveySection";
-import { useState, useRef, useEffect, useCallback } from "react";
 import { SurveyData } from "@/types/surveyData";
 import { workflowContent } from "@/constants/saucetest";
 
@@ -390,6 +389,29 @@ function ResultSurveySection({
   return (
     <div className="px-4 py-8 sm:p-0 min-h-screen flex flex-col items-center justify-center ">
       <SurveySection submitSurvey={submitSurvey} />
+      <button
+        onClick={async () => {
+          try {
+            const response = await fetch("/api/webhook-test", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id: "5",
+                typeName: "이해연구형",
+                createdAt: "2025-08-04T00:00:00.000Z",
+              }),
+            });
+            console.log("Webhook response:", response);
+          } catch (error) {
+            console.error("Webhook error:", error);
+          }
+        }}
+        className="flex items-center space-x-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors duration-200"
+      >
+        <span className="font-medium">Webhook Test</span>
+      </button>
     </div>
   );
 }
