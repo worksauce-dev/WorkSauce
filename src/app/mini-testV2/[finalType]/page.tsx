@@ -35,7 +35,7 @@ function ResultSummarySection({
   onRestart: () => void;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-lg mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-slide-in-up">
@@ -74,7 +74,7 @@ function ResultSummarySection({
             .map((keyword: string, index: number) => (
               <span
                 key={index}
-                className="px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full text-sm font-medium text-slate-700 shadow-sm hover:shadow-md transition-all duration-200 animate-scale-in"
+                className="px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full text-sm font-medium text-slate-700 shadow-lg hover:shadow-xl hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 #{keyword}
@@ -101,7 +101,7 @@ function ResultSummarySection({
       <div className="flex-shrink-0 mb-6">
         <div className="flex flex-col items-center gap-2 text-slate-500">
           <span className="text-sm font-medium">아래로 스크롤하세요</span>
-          <div className="w-6 h-10 border-2 border-slate-300 rounded-full flex justify-center">
+          <div className="w-6 h-10 border-2 border-slate-300/80 rounded-full flex justify-center bg-white/40 backdrop-blur-sm">
             <div className="w-1 h-3 bg-slate-400 rounded-full mt-2 animate-bounce"></div>
           </div>
         </div>
@@ -110,119 +110,159 @@ function ResultSummarySection({
   );
 }
 
-// --- 키워드 헤더 섹션 ---
-function KeywordsHeaderSection({ result }: { result: MinitestResult }) {
+// --- 키워드 & 강점 통합 섹션 ---
+function KeywordsAndStrengthsSection({ result }: { result: MinitestResult }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white">
-      <div className="w-full max-w-2xl mx-auto text-center">
-        {/* Keywords Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
-          {result.keywords.map((keyword: string, idx: number) => (
-            <div
-              key={idx}
-              className="aspect-square bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-2xl flex items-center justify-center p-4 hover:shadow-lg transition-all duration-300 animate-scale-in"
-              style={{ animationDelay: `${idx * 0.1}s` }}
-            >
-              <span className="text-lg font-bold text-slate-800 text-center leading-tight">
-                {keyword}
-              </span>
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-y-auto">
+      <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center">
+        {/* 키워드와 메시지 */}
+        <div className="text-center mb-4 sm:mb-10">
+          <div className="mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-6 sm:mb-8 animate-slide-in-up">
+              당신을 표현하는 키워드
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-10">
+              {result.keywords.map((keyword: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="px-5 py-3 sm:px-6 sm:py-3 text-sm sm:text-base font-bold text-slate-700 bg-white/90 backdrop-blur-sm border-2 border-slate-200/80 rounded-full shadow-lg hover:shadow-xl hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 animate-scale-in"
+                  style={{ animationDelay: `${idx * 0.1}s` }}
+                >
+                  {keyword}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
 
-        {/* One Liner */}
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight mb-16 max-w-2xl mx-auto animate-slide-in-up">
-          {result.one_liner}
-        </h2>
-
-        {/* Scroll Indicator */}
-        <div className="flex flex-col items-center gap-2 text-slate-500">
-          <span className="text-sm font-medium">계속 읽어보세요</span>
-          <div className="w-6 h-10 border-2 border-slate-300 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-slate-400 rounded-full mt-2 animate-bounce"></div>
+          <div className="max-w-4xl mx-auto mb-8 sm:mb-12">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-600 leading-tight animate-slide-in-up px-2">
+              {result.one_liner}
+            </h3>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-// --- 스토리 섹션 ---
-function StorySection({ result }: { result: MinitestResult }) {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-12 animate-slide-in-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-            당신의 이야기
-          </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">
-            당신만의 특별한 워크소스가 만들어지는 과정을 들려드릴게요
-          </p>
-        </div>
-
-        <div className="space-y-8">
-          {Array.isArray(result.type_description) ? (
-            result.type_description.map((paragraph: string, idx: number) => (
-              <div
-                key={idx}
-                className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-300 animate-slide-in-up"
-                style={{ animationDelay: `${idx * 0.2}s` }}
-              >
-                <p className="text-lg text-slate-700 leading-relaxed">
-                  {paragraph}
-                </p>
-              </div>
-            ))
-          ) : (
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 animate-slide-in-up">
-              <p className="text-lg text-slate-700 leading-relaxed">
-                {result.type_description}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- 강점 섹션 ---
-function StrengthsSection({ result }: { result: MinitestResult }) {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white">
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-12 animate-slide-in-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-            핵심 강점
-          </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">
-            당신이 가진 특별한 능력들을 발견해보세요
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {result.strengths.map((strength: string, idx: number) => {
-            const [title, description] = strength.split(" - ");
-            return (
-              <div
-                key={idx}
-                className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 border border-slate-200 hover:shadow-lg transition-all duration-300 animate-scale-in"
-                style={{ animationDelay: `${idx * 0.15}s` }}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-slate-800 mb-2 leading-tight">
+        {/* 강점 카드 */}
+        <div className="mb-6 sm:mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto">
+            {result.strengths.map((strength: string, idx: number) => {
+              const [title, description] = strength.split(" - ");
+              return (
+                <div
+                  key={idx}
+                  className="bg-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-200 hover:shadow-lg hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 animate-scale-in group"
+                  style={{ animationDelay: `${(idx + 3) * 0.15}s` }}
+                >
+                  <div className="text-center">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                      <span className="text-lg sm:text-xl">
+                        {idx === 0 ? "💡" : idx === 1 ? "🎯" : "⚡"}
+                      </span>
+                    </div>
+                    <h4 className="text-base sm:text-lg font-bold text-slate-800 mb-2 sm:mb-3 leading-tight">
                       {title}
-                    </h3>
-                    <p className="text-base text-slate-600 leading-relaxed">
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                       {description}
                     </p>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 스크롤 인디케이터 */}
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <span className="text-xs sm:text-sm font-medium text-center">
+            더 자세한 이야기가 기다리고 있어요
+          </span>
+          <div className="w-6 h-10 border-2 border-slate-300/80 rounded-full flex justify-center bg-white/40 backdrop-blur-sm">
+            <div className="w-1 h-3 bg-slate-400 rounded-full mt-2 animate-bounce"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- 스토리 섹션 (첫 번째 부분) ---
+function StorySection1({ result }: { result: MinitestResult }) {
+  const descriptions = Array.isArray(result.type_description)
+    ? result.type_description
+    : [result.type_description];
+
+  return (
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white overflow-y-auto">
+      <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
+        <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+            당신의 이야기
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto px-2">
+            당신만의 특별한 워크소스가 만들어지는 과정을 들려드릴게요
+          </p>
+        </div>
+
+        <div className="space-y-4 sm:space-y-6 mb-8">
+          {descriptions.slice(0, 2).map((paragraph: string, idx: number) => (
+            <div
+              key={idx}
+              className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg border border-slate-200/80 hover:shadow-xl hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 animate-slide-in-up"
+              style={{ animationDelay: `${idx * 0.2}s` }}
+            >
+              <p className="text-sm sm:text-base lg:text-lg text-slate-700 leading-relaxed">
+                {paragraph}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* 스크롤 인디케이터 */}
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <span className="text-xs sm:text-sm font-medium text-center">
+            이야기가 계속됩니다
+          </span>
+          <div className="w-6 h-10 border-2 border-slate-300/80 rounded-full flex justify-center bg-white/40 backdrop-blur-sm">
+            <div className="w-1 h-3 bg-slate-400 rounded-full mt-2 animate-bounce"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- 스토리 섹션 (두 번째 부분) ---
+function StorySection2({ result }: { result: MinitestResult }) {
+  const descriptions = Array.isArray(result.type_description)
+    ? result.type_description
+    : [result.type_description];
+
+  // 2개 이하면 이 섹션을 표시하지 않음
+  if (descriptions.length <= 2) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-y-auto">
+      <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
+        <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
+            더 깊은 이야기
+          </h2>
+        </div>
+
+        <div className="space-y-4 sm:space-y-6">
+          {descriptions.slice(2, 4).map((paragraph: string, idx: number) => (
+            <div
+              key={idx + 2}
+              className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg border border-slate-200/80 hover:shadow-xl hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 animate-slide-in-up"
+              style={{ animationDelay: `${idx * 0.2}s` }}
+            >
+              <p className="text-sm sm:text-base lg:text-lg text-slate-700 leading-relaxed">
+                {paragraph}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -232,34 +272,35 @@ function StrengthsSection({ result }: { result: MinitestResult }) {
 // --- 성장 가이드 섹션 ---
 function GrowthSection({ result }: { result: MinitestResult }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-12 animate-slide-in-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white overflow-y-auto">
+      <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
+        <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
             성장 가이드
           </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto px-2">
             당신의 워크소스를 더욱 발전시킬 수 있는 조언을 드려요
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200 animate-slide-in-up">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg border border-slate-200/80 hover:shadow-xl hover:border-slate-300 hover:-translate-y-1 transition-all duration-300 animate-slide-in-up">
           {Array.isArray(result.advice) ? (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {result.advice.map((advice: string, idx: number) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-4 animate-slide-in-up"
+                  className="flex items-start gap-3 sm:gap-4 animate-slide-in-up"
                   style={{ animationDelay: `${idx * 0.2}s` }}
                 >
-                  <p className="text-lg text-slate-700 leading-relaxed">
-                    · {advice}
+                  <div className="w-2 h-2 bg-slate-400 rounded-full mt-2 sm:mt-3 flex-shrink-0"></div>
+                  <p className="text-sm sm:text-base lg:text-lg text-slate-700 leading-relaxed">
+                    {advice}
                   </p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-lg text-slate-700 leading-relaxed">
+            <p className="text-sm sm:text-base lg:text-lg text-slate-700 leading-relaxed">
               {result.advice}
             </p>
           )}
@@ -276,32 +317,61 @@ function CharactersSection({ result }: { result: MinitestResult }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-white">
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-12 animate-slide-in-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-y-auto">
+      <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
+        <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
             닮은 인물
           </h2>
-          <p className="text-slate-600 max-w-2xl mx-auto">
-            당신과 비슷한 워크소스를 가진 영감을 주는 인물들을 소개해요
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto px-2">
+            당신과 비슷한 워크소스를 가진 영감을 주는 인물을 소개해요
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {result.example_characters.map((character, idx: number) => (
-            <div
-              key={idx}
-              className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 border border-slate-200 hover:shadow-lg transition-all duration-300 animate-scale-in"
-              style={{ animationDelay: `${idx * 0.2}s` }}
-            >
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">
-                {character.name}
-              </h3>
-              <p className="text-lg text-slate-700 leading-relaxed">
-                {character.context}
-              </p>
-            </div>
-          ))}
+        <div className="w-full max-w-2xl mx-auto relative">
+          {result.example_characters
+            .slice(0, 1)
+            .map((character, idx: number) => (
+              <div
+                key={idx}
+                className="relative animate-scale-in"
+                style={{ animationDelay: `${idx * 0.2}s` }}
+              >
+                {/* 배경 장식 */}
+                <div className="absolute -top-3 -left-3 w-full h-full bg-gradient-to-br from-yellow-200/20 to-orange-200/20 rounded-3xl sm:rounded-[2rem] transform rotate-1"></div>
+                <div className="absolute -top-1 -right-1 w-full h-full bg-gradient-to-br from-pink-200/20 to-purple-200/20 rounded-3xl sm:rounded-[2rem] transform -rotate-1"></div>
+
+                {/* 메인 카드 */}
+                <div className="relative bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border-2 border-slate-200 shadow-xl hover:shadow-2xl hover:border-slate-300 hover:-translate-y-2 transition-all duration-300 text-center">
+                  {/* 상단 아이콘 */}
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg">
+                      <span className="text-white text-sm">✨</span>
+                    </div>
+                  </div>
+
+                  {/* 인물 이름 */}
+                  <div className="mt-4">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-800 mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">
+                      {character.name}
+                    </h3>
+                  </div>
+
+                  {/* 인물 설명 */}
+                  <div className="relative">
+                    <div className="absolute -left-2 top-0 text-4xl text-slate-300 leading-none">
+                      &quot;
+                    </div>
+                    <div className="absolute -right-2 bottom-0 text-4xl text-slate-300 leading-none">
+                      &quot;
+                    </div>
+                    <p className="text-sm sm:text-base lg:text-xl text-slate-700 leading-relaxed font-medium px-4">
+                      {character.context}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
     </div>
@@ -315,15 +385,16 @@ function ResultSurveySection({
   submitSurvey: (survey: SurveyData) => Promise<{ success: boolean }>;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50">
-      <div className="w-full max-w-2xl mx-auto">
-        <div className="text-center mb-8 animate-slide-in-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
+    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white overflow-y-auto">
+      <div className="w-full max-w-2xl mx-auto flex-1 flex flex-col justify-center">
+        <div className="text-center mb-6 sm:mb-8 animate-slide-in-up">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
             마지막 한 걸음
           </h2>
-          <p className="text-slate-600">당신의 소중한 의견을 들려주세요</p>
         </div>
-        <SurveySection submitSurvey={submitSurvey} />
+        <div>
+          <SurveySection submitSurvey={submitSurvey} />
+        </div>
       </div>
     </div>
   );
@@ -417,16 +488,19 @@ export default function MiniTestV2ResultPage({
       </section>
 
       <section className="min-h-screen snap-start">
-        <KeywordsHeaderSection result={result} />
+        <KeywordsAndStrengthsSection result={result} />
       </section>
 
       <section className="min-h-screen snap-start">
-        <StorySection result={result} />
+        <StorySection1 result={result} />
       </section>
 
-      <section className="min-h-screen snap-start">
-        <StrengthsSection result={result} />
-      </section>
+      {Array.isArray(result.type_description) &&
+        result.type_description.length > 2 && (
+          <section className="min-h-screen snap-start">
+            <StorySection2 result={result} />
+          </section>
+        )}
 
       <section className="min-h-screen snap-start">
         <GrowthSection result={result} />

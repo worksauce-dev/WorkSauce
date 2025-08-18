@@ -11,7 +11,7 @@ export interface MinitestResult {
   type_name: string;
   keywords: string[];
   one_liner: string;
-  type_description: string;
+  type_description: string | string[];
 
   strengths: string[];
 
