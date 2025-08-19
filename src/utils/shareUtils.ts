@@ -170,17 +170,10 @@ export const shareToKakao = async (shareData: ShareData) => {
         },
         buttons: [
           {
-            title: "테스트 하러가기",
+            title: "자세히 보기",
             link: {
               mobileWebUrl: shareData.testStartUrl,
               webUrl: shareData.testStartUrl,
-            },
-          },
-          {
-            title: `${shareData.typeName}형 결과보기`,
-            link: {
-              mobileWebUrl: shareData.url,
-              webUrl: shareData.url,
             },
           },
         ],
@@ -203,14 +196,7 @@ export const shareToKakao = async (shareData: ShareData) => {
         },
         buttons: [
           {
-            title: "테스트 하러가기",
-            link: {
-              mobileWebUrl: shareData.testStartUrl,
-              webUrl: shareData.testStartUrl,
-            },
-          },
-          {
-            title: `${shareData.typeName}형 결과보기`,
+            title: "자세히 보기",
             link: {
               mobileWebUrl: shareData.url,
               webUrl: shareData.url,
