@@ -7,6 +7,8 @@ import { MdRefresh } from "react-icons/md";
 import { SurveySection } from "@/components/test/minitestV2/sections/SurveySection";
 import { SurveyData } from "@/types/surveyData";
 import TestLoadingAnimation from "@/components/test/common/TestLoadingAnimation";
+import { ShareButtons } from "@/components/common/ShareButtons";
+import { createShareData } from "@/utils/shareUtils";
 
 // 소스별 대표 이모지 매핑
 const SAUCE_EMOJIS: Record<string, string> = {
@@ -28,11 +30,13 @@ function ResultSummarySection({
   emoji,
   comment,
   onRestart,
+  finalType,
 }: {
   result: MinitestResult;
   emoji: string;
   comment: string;
   onRestart: () => void;
+  finalType: string;
 }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
@@ -87,14 +91,29 @@ function ResultSummarySection({
           &ldquo;{comment}&rdquo;
         </blockquote>
 
-        {/* Restart Button */}
-        <button
-          onClick={onRestart}
-          className="group flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:bg-slate-800 transition-all duration-300 mb-8"
-        >
-          <MdRefresh className="text-lg group-hover:rotate-180 transition-transform duration-300" />
-          <span>다시 테스트하기</span>
-        </button>
+        {/* Action Buttons */}
+        <div className="flex flex-row gap-3 justify-center items-center mb-8">
+          {/* Share Button */}
+          <div className="flex-shrink-0">
+            <ShareButtons
+              shareData={createShareData(
+                result.type_name,
+                result.one_liner,
+                result.keywords,
+                finalType
+              )}
+            />
+          </div>
+
+          {/* Restart Button */}
+          <button
+            onClick={onRestart}
+            className="group flex items-center gap-2 px-4 py-3 sm:px-6 sm:py-3 bg-slate-900 text-white rounded-xl sm:rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:bg-slate-800 transition-all duration-300 text-sm sm:text-base"
+          >
+            <MdRefresh className="text-base sm:text-lg group-hover:rotate-180 transition-transform duration-300" />
+            <span>다시 테스트하기</span>
+          </button>
+        </div>
       </div>
 
       {/* Scroll Indicator */}
@@ -484,6 +503,7 @@ export default function MiniTestV2ResultPage({
           emoji={emoji}
           comment={comment}
           onRestart={handleRestart}
+          finalType={finalType}
         />
       </section>
 
