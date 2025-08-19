@@ -5,34 +5,6 @@ import { SurveySection } from "./SurveySection";
 import { SurveyData } from "@/types/surveyData";
 import { workflowContent } from "@/constants/saucetest";
 
-declare global {
-  interface Window {
-    Kakao: {
-      Link: {
-        sendDefault: (options: {
-          objectType: string;
-          content: {
-            title: string;
-            description: string;
-            imageUrl: string;
-            link: {
-              mobileWebUrl: string;
-              webUrl: string;
-            };
-          };
-          buttons: Array<{
-            title: string;
-            link: {
-              mobileWebUrl: string;
-              webUrl: string;
-            };
-          }>;
-        }) => void;
-      };
-    };
-  }
-}
-
 interface ResultSectionProps {
   finalType: string;
   onRestart: () => void;

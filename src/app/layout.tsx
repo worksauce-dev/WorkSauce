@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import KakaoScript from "@/lib/kakaoScript";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
@@ -64,6 +65,7 @@ export default async function RootLayout({
         {children}
         <Analytics />
         <SpeedInsights />
+        <KakaoScript />
       </body>
     </html>
   );
