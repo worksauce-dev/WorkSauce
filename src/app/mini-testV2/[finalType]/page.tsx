@@ -493,11 +493,8 @@ export default function MiniTestV2ResultPage({
     result.summary_card?.catchphrase || "나만의 소스를 발견했어요!";
 
   return (
-    <div
-      className="overflow-y-auto h-screen snap-y snap-mandatory w-full mx-auto scroll-smooth hide-scrollbar bg-white"
-      style={{ scrollSnapType: "y mandatory" }}
-    >
-      <section className="min-h-screen snap-start">
+    <div className="overflow-y-auto h-screen w-full mx-auto scroll-smooth hide-scrollbar bg-white md:snap-y md:snap-mandatory">
+      <section className="min-h-screen md:snap-start">
         <ResultSummarySection
           result={result}
           emoji={emoji}
@@ -507,32 +504,32 @@ export default function MiniTestV2ResultPage({
         />
       </section>
 
-      <section className="min-h-screen snap-start">
+      <section className="min-h-screen md:snap-start">
         <KeywordsAndStrengthsSection result={result} />
       </section>
 
-      <section className="min-h-screen snap-start">
+      <section className="min-h-screen md:snap-start">
         <StorySection1 result={result} />
       </section>
 
       {Array.isArray(result.type_description) &&
         result.type_description.length > 2 && (
-          <section className="min-h-screen snap-start">
+          <section className="min-h-screen md:snap-start">
             <StorySection2 result={result} />
           </section>
         )}
 
-      <section className="min-h-screen snap-start">
+      <section className="min-h-screen md:snap-start">
         <GrowthSection result={result} />
       </section>
 
       {result.example_characters && result.example_characters.length > 0 && (
-        <section className="min-h-screen snap-start">
+        <section className="min-h-screen md:snap-start">
           <CharactersSection result={result} />
         </section>
       )}
 
-      <section className="min-h-screen snap-start">
+      <section className="min-h-screen md:snap-start">
         <ResultSurveySection submitSurvey={submitSurvey} />
       </section>
     </div>
