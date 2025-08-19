@@ -57,6 +57,8 @@ export interface ShareData {
   imageUrl: string;
   url: string;
   hashtags: string[];
+  testStartUrl: string;
+  typeName: string;
 }
 
 // 카카오 SDK가 로드되었는지 확인 (기존 방식)
@@ -170,6 +172,13 @@ export const shareToKakao = async (shareData: ShareData) => {
           {
             title: "테스트 하러가기",
             link: {
+              mobileWebUrl: shareData.testStartUrl,
+              webUrl: shareData.testStartUrl,
+            },
+          },
+          {
+            title: `${shareData.typeName}형 결과보기`,
+            link: {
               mobileWebUrl: shareData.url,
               webUrl: shareData.url,
             },
@@ -195,6 +204,13 @@ export const shareToKakao = async (shareData: ShareData) => {
         buttons: [
           {
             title: "테스트 하러가기",
+            link: {
+              mobileWebUrl: shareData.testStartUrl,
+              webUrl: shareData.testStartUrl,
+            },
+          },
+          {
+            title: `${shareData.typeName}형 결과보기`,
             link: {
               mobileWebUrl: shareData.url,
               webUrl: shareData.url,
@@ -252,6 +268,7 @@ export const createShareData = (
 ): ShareData => {
   const baseUrl = "https://worksauce.kr";
   const shareUrl = `${baseUrl}/mini-testV2/${finalType}`;
+  const testStartUrl = `${baseUrl}/mini-testV2`; // 테스트 시작 페이지
 
   return {
     title: `나의 워크소스는 ${typeName}입니다!`,
@@ -259,5 +276,7 @@ export const createShareData = (
     imageUrl: `${baseUrl}/images/OG_orangebg.png`, // 기본 OG 이미지 사용
     url: shareUrl,
     hashtags: ["워크소스", "worksauce", typeName, ...keywords.slice(0, 2)],
+    testStartUrl, // 테스트 시작 URL 추가
+    typeName, // 타입명 추가
   };
 };
