@@ -55,12 +55,16 @@ export default async function RootLayout({
     <html lang="ko">
       <head>
         <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        />
+        <meta
           name="naver-site-verification"
           content="9af28a4c3ff8920f6f1ed0a4ef357358e2e748c9"
         />
       </head>
       <body
-        className={`relative ${pretendard.variable} font-pretendard text-[#1C1C1E] font-normal overflow-y-auto min-h-screen`}
+        className={`relative ${pretendard.variable} font-pretendard text-[#1C1C1E] font-normal`}
       >
         {children}
         <Analytics />
