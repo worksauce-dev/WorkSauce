@@ -39,7 +39,7 @@ function ResultSummarySection({
   finalType: string;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
+    <div className="min-h-screen-mobile flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-lg mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-12 animate-slide-in-up">
@@ -132,7 +132,7 @@ function ResultSummarySection({
 // --- 키워드 & 강점 통합 섹션 ---
 function KeywordsAndStrengthsSection({ result }: { result: MinitestResult }) {
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-y-auto">
+    <div className="min-h-screen-mobile flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
       <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center">
         {/* 키워드와 메시지 */}
         <div className="text-center mb-4 sm:mb-10">
@@ -211,7 +211,7 @@ function StorySection1({ result }: { result: MinitestResult }) {
     : [result.type_description];
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white overflow-y-auto">
+    <div className="min-h-screen-mobile flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white">
       <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
         <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
@@ -262,7 +262,7 @@ function StorySection2({ result }: { result: MinitestResult }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-y-auto">
+    <div className="min-h-screen-mobile flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
       <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
         <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
@@ -291,7 +291,7 @@ function StorySection2({ result }: { result: MinitestResult }) {
 // --- 성장 가이드 섹션 ---
 function GrowthSection({ result }: { result: MinitestResult }) {
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white overflow-y-auto">
+    <div className="min-h-screen-mobile flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white">
       <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
         <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
@@ -336,7 +336,7 @@ function CharactersSection({ result }: { result: MinitestResult }) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50 overflow-y-auto">
+    <div className="min-h-screen-mobile flex flex-col p-4 sm:p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
       <div className="w-full max-w-4xl mx-auto flex-1 flex flex-col justify-center">
         <div className="text-center mb-8 sm:mb-12 animate-slide-in-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
@@ -404,7 +404,7 @@ function ResultSurveySection({
   submitSurvey: (survey: SurveyData) => Promise<{ success: boolean }>;
 }) {
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white overflow-y-auto">
+    <div className="min-h-screen-mobile flex flex-col p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-orange-50 to-white">
       <div className="w-full max-w-2xl mx-auto flex-1 flex flex-col justify-center">
         <div className="text-center mb-6 sm:mb-8 animate-slide-in-up">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
@@ -467,7 +467,7 @@ export default function MiniTestV2ResultPage({
 
   if (error || !result) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
+      <div className="min-h-screen-mobile flex items-center justify-center p-6 bg-slate-50">
         <div className="text-center max-w-md mx-auto bg-white rounded-3xl p-8 shadow-lg border border-slate-200">
           <div className="text-6xl mb-6">😔</div>
           <h1 className="text-2xl font-bold text-slate-800 mb-4">
@@ -493,8 +493,8 @@ export default function MiniTestV2ResultPage({
     result.summary_card?.catchphrase || "나만의 소스를 발견했어요!";
 
   return (
-    <div className="overflow-y-auto h-screen w-full mx-auto scroll-smooth hide-scrollbar bg-white md:snap-y md:snap-mandatory">
-      <section className="min-h-screen md:snap-start">
+    <div className="h-screen-mobile w-full mx-auto bg-white">
+      <section className="min-h-screen-mobile snap-section">
         <ResultSummarySection
           result={result}
           emoji={emoji}
@@ -504,32 +504,32 @@ export default function MiniTestV2ResultPage({
         />
       </section>
 
-      <section className="min-h-screen md:snap-start">
+      <section className="min-h-screen-mobile snap-section">
         <KeywordsAndStrengthsSection result={result} />
       </section>
 
-      <section className="min-h-screen md:snap-start">
+      <section className="min-h-screen-mobile snap-section">
         <StorySection1 result={result} />
       </section>
 
       {Array.isArray(result.type_description) &&
         result.type_description.length > 2 && (
-          <section className="min-h-screen md:snap-start">
+          <section className="min-h-screen-mobile snap-section">
             <StorySection2 result={result} />
           </section>
         )}
 
-      <section className="min-h-screen md:snap-start">
+      <section className="min-h-screen-mobile snap-section">
         <GrowthSection result={result} />
       </section>
 
       {result.example_characters && result.example_characters.length > 0 && (
-        <section className="min-h-screen md:snap-start">
+        <section className="min-h-screen-mobile snap-section">
           <CharactersSection result={result} />
         </section>
       )}
 
-      <section className="min-h-screen md:snap-start">
+      <section className="min-h-screen-mobile snap-section">
         <ResultSurveySection submitSurvey={submitSurvey} />
       </section>
     </div>

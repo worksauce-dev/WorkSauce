@@ -15,3 +15,26 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* 모바일 브라우저 주소창 대응을 위한 viewport height */
+.h-screen-mobile {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height - 최신 브라우저 */
+}
+
+.min-h-screen-mobile {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height - 최신 브라우저 */
+}
+
+/* 모바일에서는 snap 스크롤 비활성화, 데스크톱에서만 활성화 */
+@media (min-width: 768px) {
+  body {
+    scroll-snap-type: y mandatory;
+  }
+  
+  .snap-section {
+    scroll-snap-align: start;
+  }
+}
