@@ -28,13 +28,12 @@
   min-height: 100dvh; /* Dynamic viewport height - 최신 브라우저 */
 }
 
-/* 모바일에서는 snap 스크롤 비활성화, 데스크톱에서만 활성화 */
-@media (min-width: 768px) {
-  body {
-    scroll-snap-type: y mandatory;
-  }
-  
-  .snap-section {
-    scroll-snap-align: start;
-  }
+/* 전체 페이지 snap 스크롤 */
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.snap-section {
+  scroll-snap-align: start;
 }
