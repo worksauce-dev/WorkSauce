@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { MiniTestContainer } from "@/components/test/minitest/MiniTestContainer";
+import { MiniTestV2Container } from "@/components/test/minitestV2/MiniTestContainer";
 import { submitSurvey } from "@/api/firebase/minitest/submitSurvey";
 
 export const metadata: Metadata = {
@@ -19,6 +19,6 @@ export const metadata: Metadata = {
   keywords: ["워크소스", "worksauce", "심리테스트", "일하는 방식", "워크 소스"],
 };
 
-export default function MiniTestPage() {
-  return <MiniTestContainer submitSurvey={submitSurvey} />;
+export default function MiniTestV2Page() {
+  return <MiniTestV2Container submitSurvey={submitSurvey} />;
 }
