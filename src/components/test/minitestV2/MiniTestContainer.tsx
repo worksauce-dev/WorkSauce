@@ -26,17 +26,11 @@ export function MiniTestV2Container({ submitSurvey }: MiniTestContainerProps) {
     const finalType = getFinalType(verbTest.answers, miniTest.miniTestAnswers);
 
     try {
-      router.push(`/mini-testV2/${finalType}`);
+      router.push(`/mini-test/${finalType}`);
     } catch (error) {
       console.error("Failed to send webhook:", error);
-      router.push(`/mini-testV2/${finalType}`);
+      router.push(`/mini-test/${finalType}`);
     }
-  };
-
-  const handleRestart = () => {
-    setStep("intro");
-    verbTest.reset();
-    miniTest.reset();
   };
 
   return (
