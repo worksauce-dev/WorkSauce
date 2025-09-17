@@ -248,7 +248,6 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
 // 유형별 OG 이미지 매핑 함수
 const getOGImageByType = (typeName: string): string => {
   const baseUrl = "https://worksauce.kr";
-  const testURL = "http://localhost:3000";
 
   // 유형명에 따른 OG 이미지 매핑
   const typeImageMap: { [key: string]: string } = {
@@ -266,7 +265,7 @@ const getOGImageByType = (typeName: string): string => {
 
   // 유형명이 매핑에 있으면 해당 이미지 사용, 없으면 기본 이미지 사용
   const imageFileName = typeImageMap[typeName] || "OG_orangebg.png";
-  return `${testURL}/images/${imageFileName}`;
+  return `${baseUrl}/images/${imageFileName}`;
 };
 
 // 공유 데이터 생성 함수
