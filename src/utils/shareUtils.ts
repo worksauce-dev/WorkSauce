@@ -245,6 +245,30 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
   }
 };
 
+// 유형별 OG 이미지 매핑 함수
+const getOGImageByType = (typeName: string): string => {
+  const baseUrl = "https://worksauce.kr";
+  const testURL = "http://localhost:3000";
+
+  // 유형명에 따른 OG 이미지 매핑
+  const typeImageMap: { [key: string]: string } = {
+    기준심미형: "OG_기준심미형.png",
+    기준윤리형: "OG_기준윤리형.png",
+    도전목표형: "OG_도전목표형.png",
+    도전확장형: "OG_도전확장형.png",
+    소통도움형: "OG_소통도움형.png",
+    소통조화형: "OG_소통조화형.png",
+    예술느낌형: "OG_예술느낌형.png",
+    예술융합형: "OG_예술융합형.png",
+    이해관리형: "OG_이해관리형.png",
+    이해연구형: "OG_이해연구형.png",
+  };
+
+  // 유형명이 매핑에 있으면 해당 이미지 사용, 없으면 기본 이미지 사용
+  const imageFileName = typeImageMap[typeName] || "OG_orangebg.png";
+  return `${testURL}/images/${imageFileName}`;
+};
+
 // 공유 데이터 생성 함수
 export const createShareData = (
   typeName: string,
@@ -259,7 +283,7 @@ export const createShareData = (
   return {
     title: `나의 워크소스는 ${typeName}입니다!`,
     description: oneLiner,
-    imageUrl: `${baseUrl}/images/OG_orangebg.png`, // 기본 OG 이미지 사용
+    imageUrl: getOGImageByType(typeName), // 유형별 OG 이미지 사용
     url: shareUrl,
     hashtags: ["워크소스", "worksauce", typeName, ...keywords.slice(0, 2)],
     testStartUrl, // 테스트 시작 URL 추가

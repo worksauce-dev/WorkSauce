@@ -438,6 +438,7 @@ export default function MiniTestV2ResultPage({
         const data = await supabaseService.getResultByFinalType(finalType);
 
         if (data) {
+          console.log(data);
           setResult(data);
         } else {
           setError("결과를 찾을 수 없습니다.");
