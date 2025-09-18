@@ -57,7 +57,6 @@ export interface ShareData {
   imageUrl: string;
   url: string;
   hashtags: string[];
-  testStartUrl: string;
   typeName: string;
 }
 
@@ -172,8 +171,8 @@ export const shareToKakao = async (shareData: ShareData) => {
           {
             title: "자세히 보기",
             link: {
-              mobileWebUrl: shareData.testStartUrl,
-              webUrl: shareData.testStartUrl,
+              mobileWebUrl: shareData.url,
+              webUrl: shareData.url,
             },
           },
         ],
@@ -276,8 +275,9 @@ export const createShareData = (
   finalType: string
 ): ShareData => {
   const baseUrl = "https://worksauce.kr";
-  const shareUrl = `${baseUrl}/mini-testV2/${finalType}`;
-  const testStartUrl = `${baseUrl}/mini-testV2`; // 테스트 시작 페이지
+  // 한글 finalType을 URL 인코딩하여 처리
+  const encodedFinalType = encodeURIComponent(finalType);
+  const shareUrl = `${baseUrl}/mini-test/${encodedFinalType}`;
 
   return {
     title: `나의 워크소스는 ${typeName}입니다!`,
@@ -285,7 +285,6 @@ export const createShareData = (
     imageUrl: getOGImageByType(typeName), // 유형별 OG 이미지 사용
     url: shareUrl,
     hashtags: ["워크소스", "worksauce", typeName, ...keywords.slice(0, 2)],
-    testStartUrl, // 테스트 시작 URL 추가
     typeName, // 타입명 추가
   };
 };
