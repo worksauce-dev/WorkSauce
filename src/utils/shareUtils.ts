@@ -152,7 +152,7 @@ export const shareToKakao = async (shareData: ShareData) => {
   }
 
   try {
-    // 더 간단하고 확실한 공유 방식 사용
+    // 카카오톡 공식 예제와 동일한 방식으로 공유 설정
     const shareOptions = {
       objectType: "feed",
       content: {
@@ -164,12 +164,20 @@ export const shareToKakao = async (shareData: ShareData) => {
           webUrl: shareData.url,
         },
       },
-      // buttons 제거하고 content.link에만 의존
+      buttons: [
+        {
+          title: "자세히 보기",
+          link: {
+            mobileWebUrl: shareData.url,
+            webUrl: shareData.url,
+          },
+        },
+      ],
     };
 
     console.log("Kakao share options:", shareOptions);
 
-    // 최신 카카오 SDK API 사용
+    // 공식 예제와 동일한 방식으로 공유
     if (
       window.Kakao.Share &&
       typeof window.Kakao.Share.sendDefault === "function"
