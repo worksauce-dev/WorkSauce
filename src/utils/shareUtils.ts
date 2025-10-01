@@ -16,7 +16,7 @@ declare global {
               webUrl: string;
             };
           };
-          buttons: Array<{
+          buttons?: Array<{
             title: string;
             link: {
               mobileWebUrl: string;
@@ -37,7 +37,7 @@ declare global {
               webUrl: string;
             };
           };
-          buttons: Array<{
+          buttons?: Array<{
             title: string;
             link: {
               mobileWebUrl: string;
@@ -152,6 +152,7 @@ export const shareToKakao = async (shareData: ShareData) => {
   }
 
   try {
+    // 더 간단하고 확실한 공유 방식 사용
     const shareOptions = {
       objectType: "feed",
       content: {
@@ -163,15 +164,7 @@ export const shareToKakao = async (shareData: ShareData) => {
           webUrl: shareData.url,
         },
       },
-      buttons: [
-        {
-          title: "자세히 보기",
-          link: {
-            mobileWebUrl: shareData.url,
-            webUrl: shareData.url,
-          },
-        },
-      ],
+      // buttons 제거하고 content.link에만 의존
     };
 
     console.log("Kakao share options:", shareOptions);
