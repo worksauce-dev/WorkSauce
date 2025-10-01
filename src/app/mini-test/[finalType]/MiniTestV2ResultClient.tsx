@@ -432,7 +432,6 @@ function MiniTestV2ResultClient({
     const fetchResult = async () => {
       try {
         const KoreanFinalType = convertEnglishToFinalType(finalType);
-        console.log("KoreanFinalType", KoreanFinalType);
 
         const data = await supabaseService.getResultByFinalType(
           KoreanFinalType
