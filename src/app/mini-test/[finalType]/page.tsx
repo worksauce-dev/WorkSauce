@@ -51,6 +51,7 @@ export async function generateMetadata({
       openGraph: {
         title,
         description,
+        url: `https://worksauce.kr/mini-test/${finalType}`,
         images: [
           {
             url: `/images/OG_${result.type_name}.png`,
