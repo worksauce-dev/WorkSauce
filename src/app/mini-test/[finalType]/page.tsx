@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { supabaseService } from "@/lib/supabase";
 import MiniTestV2ResultClient from "./MiniTestV2ResultClient";
+import { submitSurvey } from "@/api/firebase/minitest/submitSurvey";
 
 // 소스별 대표 이모지 매핑
 const SAUCE_EMOJIS: Record<string, string> = {
@@ -86,5 +87,7 @@ export default async function MiniTestV2ResultPage({
 }) {
   const { finalType } = await params;
 
-  return <MiniTestV2ResultClient finalType={finalType} />;
+  return (
+    <MiniTestV2ResultClient finalType={finalType} submitSurvey={submitSurvey} />
+  );
 }

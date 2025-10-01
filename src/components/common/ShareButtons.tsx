@@ -38,7 +38,40 @@ export const ShareButtons = ({
 
   const handleKakaoShare = async () => {
     try {
-      await shareToKakao(shareData);
+      // 카카오톡 앱이 설치되어 있는지 확인
+      const isKakaoInstalled = /KAKAOTALK/i.test(navigator.userAgent);
+
+      if (isKakaoInstalled) {
+        // 카카오톡 앱이 설치된 경우: kakao://sendurl 스키마 사용
+        const kakaoUrl = `kakao://sendurl?url=${encodeURIComponent(
+          shareData.url
+        )}&text=${encodeURIComponent(shareData.title)}`;
+
+        // 카카오톡 앱이 열리지 않는 경우를 대비한 fallback
+        const fallbackTimer = setTimeout(() => {
+          // 3초 후에도 페이지가 여전히 활성화되어 있으면 웹 공유로 fallback
+          if (document.visibilityState === "visible") {
+            shareToKakao(shareData);
+          }
+        }, 3000);
+
+        // 페이지가 숨겨지면 타이머 취소 (카카오톡 앱이 성공적으로 열린 것)
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === "hidden") {
+            clearTimeout(fallbackTimer);
+            document.removeEventListener(
+              "visibilitychange",
+              handleVisibilityChange
+            );
+          }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.location.href = kakaoUrl;
+      } else {
+        // 카카오톡 앱이 없는 경우: 웹 카카오톡 공유 사용
+        await shareToKakao(shareData);
+      }
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to share:", error);
@@ -151,7 +184,40 @@ export const SimpleShareButton = ({
   const handleShare = async () => {
     // 모바일에서는 카카오톡 공유, 데스크톱에서는 URL 복사
     if (window.innerWidth <= 768) {
-      shareToKakao(shareData);
+      // 카카오톡 앱이 설치되어 있는지 확인
+      const isKakaoInstalled = /KAKAOTALK/i.test(navigator.userAgent);
+
+      if (isKakaoInstalled) {
+        // 카카오톡 앱이 설치된 경우: kakao://sendurl 스키마 사용
+        const kakaoUrl = `kakao://sendurl?url=${encodeURIComponent(
+          shareData.url
+        )}&text=${encodeURIComponent(shareData.title)}`;
+
+        // 카카오톡 앱이 열리지 않는 경우를 대비한 fallback
+        const fallbackTimer = setTimeout(() => {
+          // 3초 후에도 페이지가 여전히 활성화되어 있으면 웹 공유로 fallback
+          if (document.visibilityState === "visible") {
+            shareToKakao(shareData);
+          }
+        }, 3000);
+
+        // 페이지가 숨겨지면 타이머 취소 (카카오톡 앱이 성공적으로 열린 것)
+        const handleVisibilityChange = () => {
+          if (document.visibilityState === "hidden") {
+            clearTimeout(fallbackTimer);
+            document.removeEventListener(
+              "visibilitychange",
+              handleVisibilityChange
+            );
+          }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        window.location.href = kakaoUrl;
+      } else {
+        // 카카오톡 앱이 없는 경우: 웹 카카오톡 공유 사용
+        await shareToKakao(shareData);
+      }
     } else {
       const success = await copyToClipboard(shareData.url);
       if (success) {

@@ -419,7 +419,13 @@ function ResultSurveySection({
   );
 }
 
-function MiniTestV2ResultClient({ finalType }: { finalType: string }) {
+function MiniTestV2ResultClient({
+  finalType,
+  submitSurvey,
+}: {
+  finalType: string;
+  submitSurvey: (survey: SurveyData) => Promise<{ success: boolean }>;
+}) {
   const router = useRouter();
   const [result, setResult] = useState<MinitestResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -447,11 +453,6 @@ function MiniTestV2ResultClient({ finalType }: { finalType: string }) {
 
   const handleRestart = () => {
     router.push("/mini-test");
-  };
-
-  const submitSurvey = async (survey: SurveyData) => {
-    // 설문 제출 로직 구현
-    return { success: true };
   };
 
   if (loading) {
