@@ -7,8 +7,8 @@ import { MdRefresh } from "react-icons/md";
 import { SurveySection } from "@/components/test/minitestV2/sections/SurveySection";
 import { SurveyData } from "@/types/surveyData";
 import TestLoadingAnimation from "@/components/test/common/TestLoadingAnimation";
-import { ShareButtons } from "@/components/common/ShareButtons";
-import { createShareData } from "@/utils/shareUtils";
+import { ShareButton } from "@/components/common/ShareButtons";
+import { createShareData, convertEnglishToFinalType } from "@/utils/shareUtils";
 
 // 소스별 대표 이모지 매핑
 const SAUCE_EMOJIS: Record<string, string> = {
@@ -30,13 +30,11 @@ function ResultSummarySection({
   emoji,
   comment,
   onRestart,
-  finalType,
 }: {
   result: MinitestResult;
   emoji: string;
   comment: string;
   onRestart: () => void;
-  finalType: string;
 }) {
   return (
     <div className="min-h-screen-mobile flex flex-col items-center justify-center p-6 bg-gradient-to-br from-white via-slate-50 to-orange-50">
@@ -95,12 +93,11 @@ function ResultSummarySection({
         <div className="flex flex-row gap-3 justify-center items-center mb-8">
           {/* Share Button */}
           <div className="flex-shrink-0">
-            <ShareButtons
+            <ShareButton
               shareData={createShareData(
                 result.type_name,
                 result.one_liner,
-                result.keywords,
-                finalType
+                result.keywords
               )}
             />
           </div>
@@ -434,7 +431,12 @@ function MiniTestV2ResultClient({
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const data = await supabaseService.getResultByFinalType(finalType);
+        const KoreanFinalType = convertEnglishToFinalType(finalType);
+        console.log("KoreanFinalType", KoreanFinalType);
+
+        const data = await supabaseService.getResultByFinalType(
+          KoreanFinalType
+        );
 
         if (data) {
           setResult(data);
@@ -494,7 +496,6 @@ function MiniTestV2ResultClient({
           emoji={emoji}
           comment={comment}
           onRestart={handleRestart}
-          finalType={finalType}
         />
       </section>
 
