@@ -138,6 +138,8 @@ export const isKakaoSDKAvailable = (): boolean => {
 
 // 카카오톡 공유 함수
 export const shareToKakao = async (shareData: ShareData) => {
+  console.log("Sharing to Kakao with data:", shareData);
+
   // 카카오 SDK 사용 가능 여부 확인
   if (!isKakaoSDKAvailable()) {
     console.error("Kakao SDK is not available or not properly initialized");
@@ -150,59 +152,43 @@ export const shareToKakao = async (shareData: ShareData) => {
   }
 
   try {
+    const shareOptions = {
+      objectType: "feed",
+      content: {
+        title: shareData.title,
+        description: shareData.description,
+        imageUrl: shareData.imageUrl,
+        link: {
+          mobileWebUrl: shareData.url,
+          webUrl: shareData.url,
+        },
+      },
+      buttons: [
+        {
+          title: "자세히 보기",
+          link: {
+            mobileWebUrl: shareData.url,
+            webUrl: shareData.url,
+          },
+        },
+      ],
+    };
+
+    console.log("Kakao share options:", shareOptions);
+
     // 최신 카카오 SDK API 사용
     if (
       window.Kakao.Share &&
       typeof window.Kakao.Share.sendDefault === "function"
     ) {
       // 새로운 Share API 사용 (v2.7.6+)
-      window.Kakao.Share.sendDefault({
-        objectType: "feed",
-        content: {
-          title: shareData.title,
-          description: shareData.description,
-          imageUrl: shareData.imageUrl,
-          link: {
-            mobileWebUrl: shareData.url,
-            webUrl: shareData.url,
-          },
-        },
-        buttons: [
-          {
-            title: "자세히 보기",
-            link: {
-              mobileWebUrl: shareData.url,
-              webUrl: shareData.url,
-            },
-          },
-        ],
-      });
+      window.Kakao.Share.sendDefault(shareOptions);
     } else if (
       window.Kakao.Link &&
       typeof window.Kakao.Link.sendDefault === "function"
     ) {
       // 기존 Link API 사용 (하위 호환성)
-      window.Kakao.Link.sendDefault({
-        objectType: "feed",
-        content: {
-          title: shareData.title,
-          description: shareData.description,
-          imageUrl: shareData.imageUrl,
-          link: {
-            mobileWebUrl: shareData.url,
-            webUrl: shareData.url,
-          },
-        },
-        buttons: [
-          {
-            title: "자세히 보기",
-            link: {
-              mobileWebUrl: shareData.url,
-              webUrl: shareData.url,
-            },
-          },
-        ],
-      });
+      window.Kakao.Link.sendDefault(shareOptions);
     } else {
       throw new Error("Neither Share nor Link API is available");
     }
@@ -275,9 +261,33 @@ export const createShareData = (
   finalType: string
 ): ShareData => {
   const baseUrl = "https://worksauce.kr";
-  // 한글 finalType을 URL 인코딩하여 처리
-  const encodedFinalType = encodeURIComponent(finalType);
+
+  // finalType이 이미 URL 인코딩되어 있는지 확인
+  // 만약 이미 인코딩되어 있다면 그대로 사용, 아니라면 인코딩
+  let encodedFinalType = finalType;
+  try {
+    // 이미 인코딩되어 있는지 확인 (디코딩 후 다시 인코딩했을 때 같으면 원본이 인코딩된 것)
+    const decoded = decodeURIComponent(finalType);
+    if (decoded !== finalType) {
+      // 이미 인코딩되어 있음
+      encodedFinalType = finalType;
+    } else {
+      // 인코딩되지 않았음
+      encodedFinalType = encodeURIComponent(finalType);
+    }
+  } catch (error) {
+    // 디코딩 실패 시 그대로 인코딩
+    encodedFinalType = encodeURIComponent(finalType);
+  }
+
   const shareUrl = `${baseUrl}/mini-test/${encodedFinalType}`;
+
+  console.log("Share data creation:", {
+    typeName,
+    finalType,
+    encodedFinalType,
+    shareUrl,
+  });
 
   return {
     title: `나의 워크소스는 ${typeName}입니다!`,
