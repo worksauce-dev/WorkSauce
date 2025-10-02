@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { supabaseService } from "@/lib/supabase";
 import MiniTestV2ResultClient from "./MiniTestV2ResultClient";
 import { submitSurvey } from "@/api/firebase/minitest/submitSurvey";
+import { convertEnglishToFinalType } from "@/utils/shareUtils";
 
 // 소스별 대표 이모지 매핑
 const SAUCE_EMOJIS: Record<string, string> = {
@@ -24,8 +25,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { finalType } = await params;
 
+  const KoreanFinalType = convertEnglishToFinalType(finalType);
+
   try {
-    const result = await supabaseService.getResultByFinalType(finalType);
+    const result = await supabaseService.getResultByFinalType(KoreanFinalType);
 
     if (!result) {
       return {
@@ -52,7 +55,7 @@ export async function generateMetadata({
       openGraph: {
         title,
         description,
-        url: `https://worksauce.kr/mini-test/${finalType}`,
+        url: `https://worksauce.kr/mini-test/${KoreanFinalType}`,
         images: [
           {
             url: `/images/OG_${result.type_name}.png`,
